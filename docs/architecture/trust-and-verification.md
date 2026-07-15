@@ -31,6 +31,8 @@ stateDiagram-v2
 5. **Skill/credencial verificada:** comprovação profissional específica; não substitui identidade.
 6. **Sessão de alta confiança:** MFA recente para ações sensíveis; não substitui verificação documental.
 
+O portal, cadastro, Google, recuperação de conta, sessão persistente e onboarding obrigatório estão especificados em `authentication-entry-and-map-shell.md`. Autenticação cria a conta; não concede automaticamente o estado `IDENTITY_VERIFIED`.
+
 Um badge sempre declara qual camada foi validada. “Identidade verificada” não implica “encanador verificado”; “curso verificado” não implica boa reputação.
 
 ## Capacidades por estado

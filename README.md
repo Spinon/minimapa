@@ -15,6 +15,7 @@ O modelo de negócio não desconta porcentagem do ganho do executor. O pagador p
 - RPG geolocalizado e dungeons em [`docs/architecture/location-rpg.md`](docs/architecture/location-rpg.md).
 - Referências externas de preço em [`docs/architecture/external-price-references.md`](docs/architecture/external-price-references.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
+- Entrada, Supabase Auth e shell do mapa-fantasia em [`docs/architecture/authentication-entry-and-map-shell.md`](docs/architecture/authentication-entry-and-map-shell.md).
 - Garagem, frota e organizações em [`docs/architecture/transport-and-organizations.md`](docs/architecture/transport-and-organizations.md).
 - Decisão Mapbox e contrato de navegação em [`docs/architecture/navigation-provider-decision.md`](docs/architecture/navigation-provider-decision.md).
 - Revisão de produto e recorte do MVP em [`docs/product/product-scope-review.md`](docs/product/product-scope-review.md).

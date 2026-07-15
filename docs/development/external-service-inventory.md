@@ -4,6 +4,7 @@ Este inventário é o registro técnico mínimo antes da criação de qualquer a
 
 | Serviço | Contrato interno | Unidade que pode gerar cobrança | Desenvolvimento atual | Hard cap antes de produção | Fallback seguro |
 | --- | --- | --- | --- | --- | --- |
+| Autenticação | `AuthGateway` (planejado) | usuário ativo mensal, usuário social/terceiro e MFA avançado conforme plano | Supabase local, Mailpit e provider Google mockado | nenhum projeto cloud/SMTP até orçamento, alertas e política de excedente aprovados | login local de teste; produção bloqueia com indisponibilidade explícita |
 | Mapas e busca | `MapProvider` (planejado) | carregamento de mapa, usuário ativo, busca/geocoding | fixtures locais | limite de chamadas no backend e orçamento do fornecedor verificados | mapa simplificado/cache ou indisponibilidade explícita |
 | Rota e navegação | `NavigationProvider` | rota, viagem ou usuário ativo conforme produto | `SimulatedNavigationProvider` | `CostGuard`, quota própria por ambiente e kill switch | rota simulada em teste; app externo ou pausa segura em operação |
 | Identidade | `IdentityVerificationProvider` | sessão/verificação e eventual revisão humana | `SimulatedIdentityVerificationProvider` | limite diário/mensal e nenhuma repetição sem idempotência | fila `REVIEW_REQUIRED`, sem liberar execução |
