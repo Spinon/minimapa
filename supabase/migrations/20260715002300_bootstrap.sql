@@ -1,0 +1,2 @@
+-- Baseline migration for the Minimapa database.
+-- Domain tables, PostGIS and RLS policies will be added in reviewed migrations.

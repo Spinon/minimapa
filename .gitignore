@@ -1,0 +1,27 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Node tooling
+node_modules/
+npm-debug.log*
+
+# Android / IntelliJ
+*.iml
+.gradle/
+.idea/
+local.properties
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/
+
+# Operating systems
+.DS_Store
+Thumbs.db
