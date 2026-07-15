@@ -8,6 +8,7 @@ O modelo de negócio não desconta porcentagem do ganho do executor. O pagador p
 
 - Aplicativo Android nativo em Kotlin e Jetpack Compose.
 - Showcase local funcional: portal de entrada, mapa-fantasia simulado, pins de quests e menus clicáveis, sem depender de serviços pagos.
+- Portal conectado ao Supabase Auth local com login, cadastro, confirmação por email capturado localmente e recuperação anti-enumeração; Google permanece mock, sem credenciais ou cobrança.
 - Backend local com Supabase CLI, PostGIS, migration do núcleo de quests, RLS e testes pgTAP cruzados.
 - CI para build, testes unitários, testes instrumentados de interface e lint do Android.
 - Planejamento vivo e decisões em [`TASKS.md`](TASKS.md).
@@ -92,9 +93,11 @@ Para executar testes e lint antes de abrir o aplicativo, use:
 npm run test:open
 ```
 
-Esse é o comando padrão usado quando o responsável pede para abrir um teste: ele acorda e desbloqueia o AVD, executa testes unitários e instrumentados de interface, lint e build, instala o APK e deixa o aplicativo aberto para inspeção manual.
+Esse é o comando padrão usado quando o responsável pede para abrir um teste: ele acorda e desbloqueia o AVD, injeta somente a configuração pública do Supabase local, executa testes unitários e instrumentados de interface, lint e build, instala o APK e deixa o aplicativo aberto para inspeção manual. Os testes dos fluxos alterados devem ser atualizados em todo round de desenvolvimento.
 
-Na demonstração atual, toque em **TOQUE PARA ENTRAR**. O mapa seguinte usa dados locais simulados: os três pins abrem detalhes de quest, o botão `!` lateral abre as ações e os demais atalhos abrem personagem e configurações. Login real e mapa externo entram nos incrementos seguintes.
+Na demonstração atual, toque em **TOQUE PARA ENTRAR** para abrir o login. **ENTRAR COM CONTA DE TESTE** abre o mapa sem representar autenticação real. O mapa usa dados locais simulados: os três pins abrem detalhes de quest, o botão `!` lateral abre as ações e os demais atalhos abrem personagem e configurações. O login por email já usa o Supabase local; mapa externo entra nos incrementos seguintes.
+
+Emails de confirmação e recuperação não são enviados para a internet. Com o Supabase local iniciado, eles aparecem no Mailpit em `http://127.0.0.1:54324`.
 
 O dispositivo criado se chama `medium_phone` e usa uma imagem x86_64 com Google Play, adequada aos futuros testes de mapas e localização.
 

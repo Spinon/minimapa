@@ -6,10 +6,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import app.minimapa.auth.AuthGateway
 import app.minimapa.ui.main.MainScreen
 
 @Composable
-fun MainNavigation() {
+fun MainNavigation(authGateway: AuthGateway) {
   val backStack = rememberNavBackStack(Main)
 
   NavDisplay(
@@ -18,7 +19,7 @@ fun MainNavigation() {
     entryProvider =
       entryProvider {
         entry<Main> {
-          MainScreen(modifier = Modifier.safeDrawingPadding())
+          MainScreen(modifier = Modifier.safeDrawingPadding(), authGateway = authGateway)
         }
       },
   )

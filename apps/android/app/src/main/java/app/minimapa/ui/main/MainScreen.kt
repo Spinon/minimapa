@@ -48,6 +48,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.minimapa.auth.AuthGateway
+import app.minimapa.auth.DemoAuthGateway
 import app.minimapa.theme.ForestDeep
 import app.minimapa.theme.ForestNight
 import app.minimapa.theme.ForestSurface
@@ -58,7 +60,9 @@ import app.minimapa.theme.ParchmentMuted
 import app.minimapa.theme.QuestAmber
 import app.minimapa.theme.RiverBlue
 import app.minimapa.theme.RoadStone
+import app.minimapa.ui.auth.AuthScreen
 
+private enum class AppStage { PORTAL, AUTH, WORLD }
 private enum class DemoScreen { MAP, ACTIONS, CREATE_QUEST, CHARACTER, SETTINGS }
 
 private data class DemoQuest(
@@ -77,35 +81,42 @@ private val demoQuests =
   )
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-  var entered by rememberSaveable { mutableStateOf(false) }
+fun MainScreen(modifier: Modifier = Modifier, authGateway: AuthGateway = DemoAuthGateway) {
+  var stage by rememberSaveable { mutableStateOf(AppStage.PORTAL) }
   var screen by rememberSaveable { mutableStateOf(DemoScreen.MAP) }
   var selectedQuestId by rememberSaveable { mutableStateOf<String?>(null) }
 
   Surface(modifier = modifier.fillMaxSize(), color = ForestNight) {
-    if (!entered) {
-      EntryPortal(onEnter = { entered = true })
-    } else {
-      when (screen) {
-        DemoScreen.MAP ->
-          FantasyMap(
-            selectedQuest = demoQuests.firstOrNull { it.id == selectedQuestId },
-            onQuestSelected = { selectedQuestId = it.id },
-            onCloseQuest = { selectedQuestId = null },
-            onOpenActions = { screen = DemoScreen.ACTIONS },
-            onOpenCharacter = { screen = DemoScreen.CHARACTER },
-            onOpenSettings = { screen = DemoScreen.SETTINGS },
-          )
-        DemoScreen.ACTIONS ->
-          ActionsMenu(
-            onBack = { screen = DemoScreen.MAP },
-            onCreateQuest = { screen = DemoScreen.CREATE_QUEST },
-          )
-        DemoScreen.CREATE_QUEST -> CreateQuestDemo(onBack = { screen = DemoScreen.ACTIONS })
-        DemoScreen.CHARACTER -> CharacterDemo(onBack = { screen = DemoScreen.MAP })
-        DemoScreen.SETTINGS -> SettingsDemo(onBack = { screen = DemoScreen.MAP })
+    when (stage) {
+      AppStage.PORTAL -> EntryPortal(onEnter = { stage = AppStage.AUTH })
+      AppStage.AUTH ->
+        AuthScreen(
+          gateway = authGateway,
+          onAuthenticated = { stage = AppStage.WORLD },
+          onDemoAccount = { stage = AppStage.WORLD },
+          onBack = { stage = AppStage.PORTAL },
+        )
+      AppStage.WORLD ->
+        when (screen) {
+          DemoScreen.MAP ->
+            FantasyMap(
+              selectedQuest = demoQuests.firstOrNull { it.id == selectedQuestId },
+              onQuestSelected = { selectedQuestId = it.id },
+              onCloseQuest = { selectedQuestId = null },
+              onOpenActions = { screen = DemoScreen.ACTIONS },
+              onOpenCharacter = { screen = DemoScreen.CHARACTER },
+              onOpenSettings = { screen = DemoScreen.SETTINGS },
+            )
+          DemoScreen.ACTIONS ->
+            ActionsMenu(
+              onBack = { screen = DemoScreen.MAP },
+              onCreateQuest = { screen = DemoScreen.CREATE_QUEST },
+            )
+          DemoScreen.CREATE_QUEST -> CreateQuestDemo(onBack = { screen = DemoScreen.ACTIONS })
+          DemoScreen.CHARACTER -> CharacterDemo(onBack = { screen = DemoScreen.MAP })
+          DemoScreen.SETTINGS -> SettingsDemo(onBack = { screen = DemoScreen.MAP })
+        }
       }
-    }
   }
 }
 
@@ -131,7 +142,7 @@ private fun EntryPortal(onEnter: () -> Unit) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.SpaceBetween,
     ) {
-      DemoBadge("DEMONSTRAÇÃO LOCAL  •  SEM LOGIN REAL")
+      DemoBadge("PORTAL LOCAL  •  CUSTO ZERO")
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("✦", color = GuildGold, fontSize = 72.sp)
         Text(

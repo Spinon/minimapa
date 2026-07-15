@@ -28,8 +28,20 @@ android {
     buildFeatures {
       compose = true
       aidl = false
-      buildConfig = false
+      buildConfig = true
       shaders = false
+    }
+
+    val supabaseUrl = providers.environmentVariable("MINIMAPA_SUPABASE_URL").getOrElse("")
+    val supabasePublishableKey =
+      providers.environmentVariable("MINIMAPA_SUPABASE_PUBLISHABLE_KEY").getOrElse("")
+    defaultConfig {
+      buildConfigField("String", "SUPABASE_URL", "\"${supabaseUrl.replace("\"", "\\\"")}\"")
+      buildConfigField(
+        "String",
+        "SUPABASE_PUBLISHABLE_KEY",
+        "\"${supabasePublishableKey.replace("\"", "\\\"")}\"",
+      )
     }
 
     packaging {
@@ -59,6 +71,9 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)
+  implementation(platform(libs.supabase.bom))
+  implementation(libs.supabase.auth)
+  implementation(libs.ktor.client.android)
 
   // Arch Components
   implementation(libs.androidx.lifecycle.runtime.compose)

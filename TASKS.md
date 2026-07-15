@@ -38,6 +38,19 @@ Esta fila define a ordem real de execução. O backlog detalha requisitos; a fil
 
 Itens pós-validação — ads, RPG, Conselho ativo, Gold, lojas e AR público — não entram na fila enquanto `DEVQ-011` não for concluído.
 
+### Definição de pronto de cada round
+
+Um round de desenvolvimento que altera comportamento do app só pode ser encerrado quando:
+
+1. os testes automatizados do fluxo alterado forem criados ou atualizados no mesmo round;
+2. `npm run test:open` passar com testes unitários, instrumentados de UI, lint e build;
+3. banco local, RLS/advisors e integrações afetadas forem verificados quando fizerem parte da mudança;
+4. a tela final for inspecionada visualmente no emulador, sem tela preta, conteúdo vazio ou bloqueio;
+5. `TASKS.md` e a documentação operacional refletirem o estado real; e
+6. o APK validado ficar instalado e aberto para teste manual.
+
+Hot reload pode ser usado no Android Studio como ferramenta de trabalho, mas não substitui esse fechamento reproduzível.
+
 ## 1. Visão do produto
 
 Criar um marketplace mobile/web inspirado no fluxo do Uber, com identidade medieval/fantasy:
@@ -502,8 +515,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DSN-004` Projetar estados do minimapa: exploração, rota, manobra, rerota, GPS degradado e chegada.
 - [ ] `DSN-008` Projetar garagem/frota: lista de meios, favorito, elegibilidade por quest, documentos, vínculos e seleção de funcionário/asset pela empresa.
 - [ ] `DSN-007` Projetar shells distintos para mapa-mundo e modo corrida, incluindo transição, retorno e estados interrompidos.
-- [ ] `DSN-009` Projetar splash, “Abrindo os portões”, portal de autenticação e “Toque para entrar”, com redução de movimento, timeout, erro e acessibilidade.
-- [ ] `DSN-010` Projetar login por email/Google, cadastro obrigatório, confirmação, MFA e recuperação de conta sem enumeração.
+- [~] `DSN-009` Projetar splash, “Abrindo os portões”, portal de autenticação e “Toque para entrar”, com redução de movimento, timeout, erro e acessibilidade. Portal e transição para Auth implementados; carregamento, timeout e redução de movimento seguem pendentes.
+- [~] `DSN-010` Projetar login por email/Google, cadastro obrigatório, confirmação, MFA e recuperação de conta sem enumeração. Login/cadastro/recuperação local implementados; Google permanece mock e MFA segue pendente.
 - [ ] `DSN-011` Projetar o shell do mapa-fantasia: busca, medalhão do avatar, trilhos laterais curtos, badges, bottom sheet e alternativa textual acessível.
 - [ ] `DSN-012` Projetar menus em tela cheia que substituem o mapa no `ExploreMode`, preservam contexto e ficam indisponíveis quando conflitarem com `ActiveQuestMode`.
 - [ ] `DSN-013` Projetar o Ateliê do Personagem do primeiro acesso e edição posterior: preview, presets inclusivos, categorias, aleatorizar, desfazer, salvar e pular, sem monetização no onboarding.
@@ -542,10 +555,10 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `REP-004` Garantir que recusa, quest ignorada, preço fora da sugestão, denúncia e cancelamento por segurança não reduzam Karma automaticamente.
 - [ ] `CAS-001` Modelar `OperationalCase`, evidências, contramanifestação, decisão, medida cautelar, SLA e recurso humano.
 - [x] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
-- [ ] `AUTH-001` Implementar Supabase Auth local para cadastro, confirmação e login por email/senha, com Mailpit e respostas anti-enumeração.
+- [~] `AUTH-001` Implementar Supabase Auth local para cadastro, confirmação e login por email/senha, com Mailpit e respostas anti-enumeração. SDK Android, cadastro com confirmação por email local, login, deep link e mensagens genéricas implementados; falta concluir bootstrap automático após o callback.
 - [ ] `AUTH-002` Implementar perfil `PLAYER` server-controlled sem confiar em `user_metadata` ou roles editáveis pelo cliente.
-- [ ] `AUTH-003` Implementar entrada Google atrás de adapter/feature flag: mock primeiro; depois OAuth nativo/PKCE, nonce, scopes mínimos e redirects allowlisted sem segredo no APK.
-- [ ] `AUTH-004` Implementar recuperação forte: link de uso único, deep link exato, expiração/replay, senha forte, rate limit, proteção anti-bot e notificação de segurança.
+- [~] `AUTH-003` Implementar entrada Google atrás de adapter/feature flag: mock primeiro; depois OAuth nativo/PKCE, nonce, scopes mínimos e redirects allowlisted sem segredo no APK. Mock explícito entregue; nenhuma credencial Google foi criada.
+- [~] `AUTH-004` Implementar recuperação forte: link de uso único, deep link exato, expiração/replay, senha forte, rate limit, proteção anti-bot e notificação de segurança. Solicitação local anti-enumeração e deep link exato entregues; troca de senha, replay, CAPTCHA e notificação seguem pendentes.
 - [ ] `AUTH-005` Implementar sessão persistente em armazenamento protegido pelo Android Keystore, rotação/refresh, logout local e “Sair de todos os dispositivos”.
 - [ ] `AUTH-006` Implementar bootstrap de entrada com timeout e roteamento explícito para portal, onboarding, MFA, atualização, manutenção, suspensão ou mapa.
 - [ ] `AUTH-007` Implementar identity linking seguro e impedir unlink que deixe a conta sem método recuperável; linking manual começa desabilitado.
@@ -941,3 +954,6 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-15 — concluído `DEVQ-003`: migration local reproduzível com PostGIS, núcleo universal de quests, detalhes exatos segregados e RLS; reset do banco, 17 testes pgTAP cruzados e advisors passaram; `DEVQ-004` iniciado.
 - 2026-07-15 — entregue showcase Android funcional: portal “Toque para entrar”, mapa-fantasia simulado, três pins clicáveis, detalhe de quest, ações, rascunho local, personagem e configurações; três testes instrumentados, lint/build e inspeção visual passaram.
 - 2026-07-15 — corrigida a causa da tela preta no teste assistido: `npm run test:open` agora acorda o AVD, dispensa o bloqueio, mantém a tela ativa, testa a UI e deixa o app visível no emulador.
+- 2026-07-15 — formalizada a definição de pronto por round: testes acompanham toda mudança funcional, o pacote completo passa, a interface é inspecionada e o app termina aberto; hot reload não substitui a validação reproduzível.
+- 2026-07-15 — iniciado o slice de Auth de `DEVQ-004`: Supabase Kotlin/Auth e Ktor integrados, configuração pública local injetada sem arquivo versionado, email/senha/cadastro/recuperação e deep link adicionados, senha forte exigida e Google mantido em mock sem custo.
+- 2026-07-15 — fluxo de entrada atualizado e verificado com cinco testes instrumentados; cadastro real local criou usuário sem sessão antes da confirmação, Mailpit capturou o email e o servidor rejeitou senha fraca com HTTP 422.

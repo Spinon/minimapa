@@ -72,6 +72,33 @@ if ($bootCompleted -ne "1") {
 & $adb -s $deviceSerial shell wm dismiss-keyguard | Out-Null
 & $adb -s $deviceSerial shell settings put system screen_off_timeout 1800000 | Out-Null
 
+# Inject only the public local Auth configuration into BuildConfig. The key is
+# discovered at build time and is never written to a tracked file.
+if (-not $env:MINIMAPA_SUPABASE_PUBLISHABLE_KEY) {
+  Push-Location $workspace
+  try {
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $supabaseEnvironment = @(& npx supabase status -o env 2>$null)
+    $supabaseStatusExitCode = $LASTEXITCODE
+    $ErrorActionPreference = $previousErrorActionPreference
+  } finally {
+    $ErrorActionPreference = "Stop"
+    Pop-Location
+  }
+  $publishableLine = $supabaseEnvironment | Where-Object { $_ -match "^PUBLISHABLE_KEY=" } | Select-Object -First 1
+  if (-not $publishableLine) {
+    $publishableLine = $supabaseEnvironment | Where-Object { $_ -match "^ANON_KEY=" } | Select-Object -First 1
+  }
+  if ($supabaseStatusExitCode -eq 0 -and $publishableLine) {
+    $env:MINIMAPA_SUPABASE_PUBLISHABLE_KEY = (($publishableLine -split "=", 2)[1]).Trim('"')
+    $env:MINIMAPA_SUPABASE_URL = "http://10.0.2.2:54321"
+    Write-Host "Using public credentials from the local Supabase stack."
+  } else {
+    Write-Warning "Supabase local is unavailable; real Auth will remain disabled and demo access will still work."
+  }
+}
+
 if ($Verify) {
   Write-Host "Running unit tests, UI tests, lint and debug build..."
   $gradleTasks = @("test", "connectedDebugAndroidTest", "lintDebug", "assembleDebug")
