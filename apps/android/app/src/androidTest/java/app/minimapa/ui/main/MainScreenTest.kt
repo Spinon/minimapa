@@ -1,26 +1,43 @@
 package app.minimapa.ui.main
 
-import androidx.activity.ComponentActivity
+import app.minimapa.MainActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
-import org.junit.Before
+import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 
-/** UI tests for [app.minimapa.ui.main.MainScreen]. */
 class MainScreenTest {
 
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-  @Before
-  fun setup() {
-    composeTestRule.setContent { MainScreen(FAKE_DATA) }
+  @Test
+  fun portalOpensFantasyMap() {
+    composeTestRule.onNodeWithText("TOQUE PARA ENTRAR").assertExists().performClick()
+
+    composeTestRule.onNodeWithContentDescription("Mapa fantasia simulado de Rio Claro").assertExists()
+    composeTestRule.onNodeWithText("MAPA SIMULADO  •  3 QUESTS").assertExists()
   }
 
   @Test
-  fun firstItem_exists() {
-    FAKE_DATA.forEach { composeTestRule.onNodeWithText("Hello $it!").assertExists() }
+  fun questPinOpensQuestSheet() {
+    composeTestRule.onNodeWithText("TOQUE PARA ENTRAR").performClick()
+    composeTestRule
+      .onNodeWithContentDescription("Quest disponível: Entrega do Mercado Central")
+      .performClick()
+
+    composeTestRule.onNodeWithText("Entrega do Mercado Central").assertExists()
+    composeTestRule.onNodeWithText("R$ 28").assertExists()
+  }
+
+  @Test
+  fun actionMenuCreatesLocalDraft() {
+    composeTestRule.onNodeWithText("TOQUE PARA ENTRAR").performClick()
+    composeTestRule.onNodeWithContentDescription("Abrir ações").performClick()
+    composeTestRule.onNodeWithText("Postar uma quest").performClick()
+    composeTestRule.onNodeWithText("SALVAR RASCUNHO LOCAL").performClick()
+
+    composeTestRule.onNodeWithContentDescription("Rascunho local salvo").assertExists()
   }
 }
-
-private val FAKE_DATA = listOf("Sample1", "Sample2", "Sample3")

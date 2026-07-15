@@ -26,8 +26,8 @@ Esta fila define a ordem real de execução. O backlog detalha requisitos; a fil
 | 0 | CONCLUÍDO | `DEVQ-000` | Congelar decisões do piloto | `LOCAL_DELIVERY`, limites/proibições, Mapbox v3, Stripe Connect e operação solo documentados |
 | 1 | CONCLUÍDO | `DEVQ-001` | Guardas e simuladores locais | `CST-001`–`CST-004`, `SIM-001`–`SIM-003`; relógio, personas, GPS/rota e providers determinísticos verificados sem rede |
 | 2 | CONCLUÍDO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-007`, `POL-002`–`POL-003`; lifecycle, registry, capabilities, schemas, policies e conformidade verificados em módulos Kotlin puros |
-| 3 | EM ANDAMENTO | `DEVQ-003` | Banco e segurança-base | `DB-002`–`DB-003`, `SEC-001`, `TST-001`; próximo: migrations locais, PostGIS, RLS e testes cruzados |
-| 4 | AGUARDANDO | `DEVQ-004` | Portal, autenticação, perfil e avatar inicial | `DSN-009`–`DSN-013`, `AUTH-001`–`AUTH-007`, `ONB-001`–`ONB-002`, `AVT-001`–`AVT-003`, `AGE-001`; email/Mailpit e Google mock antes de qualquer cloud |
+| 3 | CONCLUÍDO | `DEVQ-003` | Banco e segurança-base | Migration reproduzível com PostGIS, núcleo universal, detalhes segregados, RLS e 17 testes pgTAP cruzados; advisors sem alertas |
+| 4 | EM ANDAMENTO | `DEVQ-004` | Portal, autenticação, perfil e avatar inicial | Shell visual local entregue; próximo: `DSN-009`–`DSN-013`, `AUTH-001`–`AUTH-007`, `ONB-001`–`ONB-002`, `AVT-001`–`AVT-003`, `AGE-001`; email/Mailpit e Google mock antes de qualquer cloud |
 | 5 | AGUARDANDO | `DEVQ-005` | Garagem individual | `TRN-001`–`TRN-003`, `DRV-001`–`DRV-003`, `DSN-008`; múltiplos meios, favorito e elegibilidade |
 | 6 | AGUARDANDO | `DEVQ-006` | Vertical slice de entrega | `QST-001`–`QST-006`, `BRD-001`–`BRD-003`, `ASN-001`, `GEO-001`–`GEO-003`, `RSK-005`; publicar → aceitar → concluir local |
 | 7 | AGUARDANDO | `DEVQ-007` | Navegação simulada e Mapbox | `NAV-002`–`NAV-009`, `MAP-002`–`MAP-007`; primeiro provider simulado, depois SDK sob gate de custo |
@@ -510,9 +510,10 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [~] `DEV-001` Inicializar repositório, convenções, lint, format, testes e CI. Repositório, lint, testes e CI prontos; formatter dedicado ainda pendente.
 - [~] `DEV-002` Inicializar aplicativo Android nativo com Kotlin, Jetpack Compose e módulos por domínio. App-base compilando; modularização por domínio será feita junto aos primeiros módulos reais.
 - [~] `DEV-003` Configurar ambientes local, staging e produção sem versionar segredos. Ambiente local e regras de exclusão prontos; staging e produção pendentes.
-- [ ] `DEV-004` Criar navegação, tema e componentes básicos conforme o conceito aprovado.
+- [~] `DEV-004` Criar navegação, tema e componentes básicos conforme o conceito aprovado. Tema fantasy, portal, mapa simulado e menus básicos entregues; componentes definitivos e estados completos seguem em `DEVQ-004`.
 - [ ] `DEV-005` Definir contratos de API compartilháveis e fronteira do futuro cliente iOS/web.
 - [x] `DEV-006` Configurar emulador Android local e fluxo de um comando para compilar, instalar e abrir o aplicativo.
+- [x] `DEV-007` Entregar showcase local funcional e clicável com portal, mapa-fantasia, pins, detalhe de quest, menu de ações, rascunho, personagem e configurações; validar por testes instrumentados e inspeção visual.
 - [x] `DOM-001` Extrair contratos de domínio do motor de quests para `:core:domain`, independente de UI, navegação e providers.
 - [x] `DOM-002` Implementar registry de tipos/módulos compilados e definições orientadas a dados, sem regras arbitrárias executadas pelo cliente.
 - [x] `DOM-003` Definir e versionar `QuestModuleContract`, papéis universais, schemas, lifecycle, eventos e pontos de extensão.
@@ -526,8 +527,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 ### Fase 2 — backend, autenticação e perfis (estimativa: 1–2 semanas)
 
 - [x] `DB-001` Inicializar Supabase local e fluxo de migrations.
-- [ ] `DB-002` Criar schema inicial e extensão PostGIS.
-- [ ] `DB-003` Modelar núcleo universal de quests e tabelas tipadas dos módulos de deslocamento e serviço.
+- [x] `DB-002` Criar schema inicial e extensão PostGIS.
+- [x] `DB-003` Modelar núcleo universal de quests e tabelas tipadas dos módulos de deslocamento e serviço.
 - [ ] `RUL-001` Implementar requisitos tipados, versionamento e avaliação de elegibilidade exclusivamente no servidor.
 - [ ] `SKL-001` Modelar skills, proficiência, origem da comprovação e vínculo com jogadores.
 - [ ] `SKL-002` Implementar ledger idempotente de XP por skill acionado pela conclusão válida da quest.
@@ -540,7 +541,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `REP-003` Implementar ratings bilaterais cegos, confiança por amostra/recência, limite de influência por dupla e detecção de retaliação/conluio.
 - [ ] `REP-004` Garantir que recusa, quest ignorada, preço fora da sugestão, denúncia e cancelamento por segurança não reduzam Karma automaticamente.
 - [ ] `CAS-001` Modelar `OperationalCase`, evidências, contramanifestação, decisão, medida cautelar, SLA e recurso humano.
-- [ ] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
+- [x] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
 - [ ] `AUTH-001` Implementar Supabase Auth local para cadastro, confirmação e login por email/senha, com Mailpit e respostas anti-enumeração.
 - [ ] `AUTH-002` Implementar perfil `PLAYER` server-controlled sem confiar em `user_metadata` ou roles editáveis pelo cliente.
 - [ ] `AUTH-003` Implementar entrada Google atrás de adapter/feature flag: mock primeiro; depois OAuth nativo/PKCE, nonce, scopes mínimos e redirects allowlisted sem segredo no APK.
@@ -575,7 +576,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `ORG-001` Modelar organização, verificação, unidades, membros, convites e aceite do vínculo por uma conta existente.
 - [ ] `ORG-002` Implementar roles `OWNER`, `ADMIN`, `DISPATCHER`, `WORKER` e `FINANCE` com mínimo privilégio, MFA/step-up e auditoria.
 - [ ] `ORG-003` Implementar entrada, saída e revogação de vínculo sem permitir funcionário-fantasma, apropriação da conta ou transferência silenciosa de quest ativa.
-- [ ] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
+- [x] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
 - [ ] `TST-011` Tentar contornar gates de verificação via cliente, JWT desatualizado, chamada direta e replay de webhook.
 - [ ] `TST-010` Testar concessão única, pendência, confirmação e compensação de XP por skill sob retries e disputas.
 - [ ] `TST-013` Testar auth e entrada contra enumeração, credential stuffing, open redirect, deep-link hijack, replay de recuperação, sessão revogada, linking indevido e bypass de onboarding/MFA.
@@ -937,3 +938,6 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-15 — definida a experiência de entrada e interface-base: Supabase Auth email/Google, recuperação forte, onboarding obrigatório, portal “Toque para entrar” e mapa-fantasia como home com menus substitutivos.
 - 2026-07-15 — incluído Ateliê do Personagem no primeiro acesso: criação sugerida, pulável, conjunto inicial gratuito, edição posterior e separação rígida entre avatar, foto real e elegibilidade.
 - 2026-07-15 — concluído `DEVQ-002`: módulos puros de domínio, contrato de quest e policy implementados; lifecycle/policy obrigatórios, registry versionado e suíte de conformidade passaram com build Android; `DEVQ-003` iniciado.
+- 2026-07-15 — concluído `DEVQ-003`: migration local reproduzível com PostGIS, núcleo universal de quests, detalhes exatos segregados e RLS; reset do banco, 17 testes pgTAP cruzados e advisors passaram; `DEVQ-004` iniciado.
+- 2026-07-15 — entregue showcase Android funcional: portal “Toque para entrar”, mapa-fantasia simulado, três pins clicáveis, detalhe de quest, ações, rascunho local, personagem e configurações; três testes instrumentados, lint/build e inspeção visual passaram.
+- 2026-07-15 — corrigida a causa da tela preta no teste assistido: `npm run test:open` agora acorda o AVD, dispensa o bloqueio, mantém a tela ativa, testa a UI e deixa o app visível no emulador.

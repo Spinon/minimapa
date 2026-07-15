@@ -7,8 +7,9 @@ O modelo de negócio não desconta porcentagem do ganho do executor. O pagador p
 ## Estado atual
 
 - Aplicativo Android nativo em Kotlin e Jetpack Compose.
-- Backend local preparado com Supabase CLI, Postgres e fluxo de migrations.
-- CI para build, testes unitários e lint do Android.
+- Showcase local funcional: portal de entrada, mapa-fantasia simulado, pins de quests e menus clicáveis, sem depender de serviços pagos.
+- Backend local com Supabase CLI, PostGIS, migration do núcleo de quests, RLS e testes pgTAP cruzados.
+- CI para build, testes unitários, testes instrumentados de interface e lint do Android.
 - Planejamento vivo e decisões em [`TASKS.md`](TASKS.md).
 - Arquitetura do motor extensível em [`docs/architecture/quest-engine.md`](docs/architecture/quest-engine.md).
 - Governança do catálogo em [`docs/architecture/community-governance.md`](docs/architecture/community-governance.md).
@@ -79,7 +80,7 @@ Na primeira vez, instale a imagem Android 16/API 36 e crie o celular virtual:
 npm run android:setup-emulator
 ```
 
-Depois, um único comando inicia o emulador quando necessário, compila, instala e abre o Minimapa:
+Depois, um único comando inicia e acorda o emulador quando necessário, compila, instala e abre o Minimapa:
 
 ```powershell
 npm run android:run
@@ -91,7 +92,9 @@ Para executar testes e lint antes de abrir o aplicativo, use:
 npm run test:open
 ```
 
-Esse é o comando padrão usado quando o responsável pede para abrir um teste: ele aguarda o Android iniciar, valida o projeto e deixa o aplicativo aberto para inspeção manual.
+Esse é o comando padrão usado quando o responsável pede para abrir um teste: ele acorda e desbloqueia o AVD, executa testes unitários e instrumentados de interface, lint e build, instala o APK e deixa o aplicativo aberto para inspeção manual.
+
+Na demonstração atual, toque em **TOQUE PARA ENTRAR**. O mapa seguinte usa dados locais simulados: os três pins abrem detalhes de quest, o botão `!` lateral abre as ações e os demais atalhos abrem personagem e configurações. Login real e mapa externo entram nos incrementos seguintes.
 
 O dispositivo criado se chama `medium_phone` e usa uma imagem x86_64 com Google Play, adequada aos futuros testes de mapas e localização.
 

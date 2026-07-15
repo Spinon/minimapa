@@ -65,9 +65,16 @@ if ($bootCompleted -ne "1") {
   throw "Android emulator did not finish booting within 3 minutes."
 }
 
+# An already-running AVD may have gone to sleep between development sessions.
+# Compose UI tests need a resumed, visible Activity, and the final manual test
+# should never leave the user looking at a powered-off emulator display.
+& $adb -s $deviceSerial shell input keyevent KEYCODE_WAKEUP | Out-Null
+& $adb -s $deviceSerial shell wm dismiss-keyguard | Out-Null
+& $adb -s $deviceSerial shell settings put system screen_off_timeout 1800000 | Out-Null
+
 if ($Verify) {
-  Write-Host "Running tests, lint and debug build..."
-  $gradleTasks = @("test", "lintDebug", "assembleDebug")
+  Write-Host "Running unit tests, UI tests, lint and debug build..."
+  $gradleTasks = @("test", "connectedDebugAndroidTest", "lintDebug", "assembleDebug")
 } else {
   Write-Host "Building debug APK..."
   $gradleTasks = @("assembleDebug")
