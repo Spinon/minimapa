@@ -52,7 +52,11 @@ O MVP valida deslocamento, mas `Quest` é um contrato genérico de trabalho e co
 
 Uma quest de serviço pode exigir nível mínimo, karma contextual, skills e credenciais verificadas. A elegibilidade é calculada no servidor por regras tipadas, versionadas e explicáveis. Skills autodeclaradas, reputação derivada de avaliações e diplomas/certificados verificados possuem graus de confiança diferentes e não podem ser tratados como equivalentes.
 
-O detalhamento está em `docs/architecture/quest-engine.md`.
+Cada skill possui XP e proficiência próprios. Concluir uma quest concede XP somente às skills canônicas mapeadas e versionadas na definição daquele serviço. O perfil materializa apenas skills nas quais o jogador já recebeu XP ou possui comprovação/credencial, evitando milhares de trilhas vazias.
+
+O **Conselho do Reino** permite propor e votar mensalmente no próximo serviço. O vencedor que couber no workflow genérico entra automaticamente em beta por uma definição orientada a schema; serviços regulados ou de alto risco entram como aprovados pendentes de auditoria de segurança. Votação nunca injeta código nem cria skills livres diretamente.
+
+O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
 
 ### Métricas iniciais
 
@@ -196,10 +200,20 @@ O detalhamento está em `docs/architecture/quest-engine.md`.
 - `ratings`
 - `skills`
 - `player_skills`
+- `skill_xp_ledger`
+- `skill_proficiency_levels`
 - `credentials`
 - `credential_verifications`
 - `reputation_events`
 - `reputation_scores`
+- `service_categories`
+- `service_definitions`
+- `service_definition_versions`
+- `service_skill_rewards`
+- `service_proposals`
+- `council_cycles`
+- `council_votes`
+- `council_results`
 - `avatars`
 - `cosmetic_items`
 - `avatar_inventory`
@@ -353,6 +367,10 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DB-003` Modelar núcleo universal de quests e tabelas tipadas dos módulos de deslocamento e serviço.
 - [ ] `RUL-001` Implementar requisitos tipados, versionamento e avaliação de elegibilidade exclusivamente no servidor.
 - [ ] `SKL-001` Modelar skills, proficiência, origem da comprovação e vínculo com jogadores.
+- [ ] `SKL-002` Implementar ledger idempotente de XP por skill acionado pela conclusão válida da quest.
+- [ ] `SKL-003` Exibir somente skills com XP, credencial ou comprovação e separar experiência prática de verificação.
+- [ ] `SKL-004` Mapear cada versão de serviço para skills canônicas, pesos de XP, limites e regras de confirmação/reversão.
+- [ ] `SKL-005` Implementar limites e detecção antifarming para quests combinadas, repetição artificial e concessão de XP manipulada.
 - [ ] `CRD-001` Modelar credenciais, emissores, validade, evidências privadas e fluxo de verificação.
 - [ ] `REP-001` Modelar karma/reputação contextual por categoria e papel a partir de eventos auditáveis.
 - [ ] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
@@ -360,6 +378,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `AUTH-002` Implementar perfis de usuário e motorista sem confiar em roles editáveis pelo cliente.
 - [ ] `DRV-001` Implementar veículo, documentos e estado de aprovação.
 - [ ] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
+- [ ] `TST-010` Testar concessão única, pendência, confirmação e compensação de XP por skill sob retries e disputas.
 
 ### Fase 3 — spikes de navegação, mapas e criação de quest (estimativa: 2–3 semanas)
 
@@ -451,6 +470,12 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PRC-001` Avaliar preço sugerido/dinâmico com regras transparentes.
 - [ ] `SCL-001` Testar carga, particionamento/retenção de localizações e expansão regional.
 - [ ] `GAM-005` Avaliar progressão social, temporadas e novas categorias cosméticas sem prejudicar confiança.
+- [ ] `GOV-001` Implementar propostas, consolidação de duplicatas e ciclos mensais do Conselho do Reino.
+- [ ] `GOV-002` Implementar votação com elegibilidade, voto único, quórum, auditoria e controles antissybil.
+- [ ] `GOV-003` Criar catálogo e renderer de serviços orientados a blocos de schema aprovados.
+- [ ] `GOV-004` Publicar automaticamente o serviço vencedor como `ACTIVE_BETA` quando os gates genéricos forem satisfeitos.
+- [ ] `GOV-005` Encaminhar serviços regulados/alto risco para `APPROVED_PENDING_SAFETY_REVIEW` antes de permitir quests.
+- [ ] `GOV-006` Preservar versões antigas, permitir suspensão/rollback e auditar ajustes manuais posteriores.
 
 ### Fase 9 — economia digital e marketplace de lojas
 
@@ -526,6 +551,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-013` | decidida | Exibir publicidade em exploração/busca/mural/chegada, nunca durante navegação ativa. |
 | 2026-07-14 | `DEC-014` | decidida | Separar o mapa em `ExploreMode` rico em conteúdo e `ActiveQuestMode` limpo para curva a curva. |
 | 2026-07-14 | `DEC-015` | decidida | Tratar Quest como núcleo universal extensível por módulos tipados, requisitos versionados e estratégias configuráveis de atribuição. |
+| 2026-07-14 | `DEC-016` | decidida | Separar level global, XP de skill, proficiência, karma contextual e verificação por credencial. |
+| 2026-07-14 | `DEC-017` | decidida | Usar o Conselho do Reino para escolher mensalmente serviços; vencedores compatíveis entram automaticamente em beta por schema versionado, com gates adicionais para alto risco. |
 
 ## 9. Histórico de atualização
 
@@ -536,3 +563,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — fundação executável criada: Android nativo com Kotlin/Compose, Supabase local com migration-base, CI, documentação e validação por build, testes e lint.
 - 2026-07-14 — emulador Android 16/API 36 configurado e aplicativo instalado/aberto com sucesso no aparelho virtual `medium_phone`.
 - 2026-07-14 — arquitetura ampliada para quests genéricas de deslocamento e serviços, com skills, credenciais, karma contextual e elegibilidade auditável.
+- 2026-07-14 — adicionados XP/proficiência por skill e governança mensal do catálogo pelo Conselho do Reino, com publicação automática segura e versionada.

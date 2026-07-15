@@ -84,6 +84,27 @@ Uma skill representa capacidade, não necessariamente comprovação. Ela pode te
 
 Uma credencial registra tipo, emissor, titular, evidência protegida, datas de emissão/validade e estado de verificação. Documentos brutos ficam privados; quem publica a quest recebe apenas a afirmação necessária, como “curso de instalações hidráulicas verificado”.
 
+### Proficiência e XP por skill
+
+Level global, proficiência e comprovação são eixos independentes:
+
+- **level global:** participação e progressão geral no Minimapa;
+- **XP de skill:** experiência prática acumulada em uma capacidade específica;
+- **proficiência:** faixa derivada do XP daquela skill, como aprendiz, competente, especialista e mestre;
+- **verificação:** confiança externa proveniente de credencial, parceiro ou auditoria.
+
+Cada definição de serviço possui um mapa versionado de skills e pesos. Concluir uma quest de troca de chuveiro pode conceder XP principal em `PLUMBING` e, quando o escopo realmente exigir, XP secundário em outra skill já aprovada. O evento `QuestCompleted` cria lançamentos idempotentes em `skill_xp_ledger`; uma mesma execução nunca concede XP duas vezes.
+
+O XP pode nascer como pendente e ser confirmado após aceite do resultado ou janela curta de disputa. Fraude, cancelamento ou decisão de disputa pode bloquear ou reverter a concessão por evento compensatório, sem apagar o histórico.
+
+O perfil não materializa milhares de skills vazias. Uma skill aparece para o jogador somente quando existe pelo menos uma destas evidências:
+
+- XP recebido em quest válida;
+- credencial associada;
+- comprovação ou verificação aprovada.
+
+Uma credencial pode tornar a skill visível e elevar seu nível de verificação, mas não inventa experiência prática. Requisitos podem pedir proficiência, verificação ou ambas.
+
 Karma não deve ser somente uma nota global. O sistema mantém reputação contextual por categoria e papel, derivada de eventos auditáveis. Uma boa avaliação em entregas não comprova habilidade em encanamento. Penalidades, expiração, contestação e prevenção contra avaliações combinadas precisam ser definidas antes de o karma bloquear acesso a trabalho.
 
 ## Estratégias de atribuição
@@ -113,6 +134,7 @@ Eventos de domínio registram todas as transições. Interfaces e notificações
 - matching: `quest_applications`, `quest_assignments`, `eligibility_evaluations`;
 - módulos: `quest_movement_details`, `quest_service_details`;
 - capacidades: `skills`, `player_skills`, `credentials`, `credential_verifications`;
+- progressão específica: `service_skill_rewards`, `skill_xp_ledger`, `skill_proficiency_levels`;
 - confiança: `reputation_events`, `reputation_scores`, `ratings`.
 
 Campos flexíveis podem existir para metadados de apresentação versionados, mas dados usados por autorização, dinheiro, elegibilidade ou busca devem ser tipados e indexáveis.
