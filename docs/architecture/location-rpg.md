@@ -4,6 +4,12 @@
 
 Transformar o avatar do Minimapa em um personagem jogável e o mapa de exploração em um mundo compartilhado. Dungeons são pontos de interesse seguros onde jogadores, individualmente ou em party, iniciam encontros cooperativos e recebem XP de jogo, Gold e itens digitais.
 
+## Fundação do avatar no primeiro acesso
+
+O avatar visual básico nasce antes do RPG completo: após o primeiro onboarding, o jogador é convidado a abrir o Ateliê do Personagem, pode personalizar um conjunto inicial gratuito ou pular com um preset gerado. Essa fundação entrega identidade visual ao mapa sem antecipar dungeons, Gold, loja ou vantagens de jogo. Inventário expandido, equipamentos e progressão continuam nas fases próprias deste documento.
+
+Avatar, foto de identificação e evidência biométrica são objetos distintos. O personagem não substitui a imagem real exigida para reconhecer um executor atribuído, e nenhuma escolha estética produz efeito sobre quests reais.
+
 Esse sistema é uma camada posterior ao núcleo de quests e navegação. Sua arquitetura pode ser preparada desde cedo, mas a operação pública só entra depois que localização, segurança, confiança e o fluxo principal estiverem validados.
 
 ## Fronteiras obrigatórias

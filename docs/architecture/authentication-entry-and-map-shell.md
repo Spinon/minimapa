@@ -4,7 +4,7 @@
 
 O Minimapa começa como um jogo, mas autentica como uma aplicação de trabalho e pagamento. A sequência oficial é:
 
-`splash → carregamento seguro → portal de entrada → autenticação/onboarding quando necessário → toque para entrar → mapa-fantasia`
+`splash → carregamento seguro → portal de entrada → autenticação/onboarding quando necessário → convite para criar avatar no primeiro acesso → toque para entrar → mapa-fantasia`
 
 Supabase Auth é o provedor inicial. O Android aceita email e senha e **Entrar com Google**. A sessão pode permanecer ativa entre aberturas, mas ações sensíveis continuam sujeitas a sessão recente, MFA e reavaliação server-side. Nenhum login social substitui verificação de identidade civil, idade, CNH, credencial ou elegibilidade de quest.
 
@@ -28,7 +28,7 @@ Executa um bootstrap observável e com timeout:
 3. renova token quando necessário;
 4. consulta manutenção, versão mínima e estado essencial da conta;
 5. prepara dados mínimos do perfil e mapa sem iniciar navegação faturável;
-6. escolhe uma rota explícita: portal, onboarding, MFA, bloqueio, atualização ou mapa.
+6. escolhe uma rota explícita: portal, onboarding, convite de avatar, MFA, bloqueio, atualização ou mapa.
 
 Falha de rede não vira loading infinito. A tela oferece tentar novamente, diagnóstico simples e saída/troca de conta. Conteúdo cacheado futuro pode ser consultado somente quando a policy permitir; publicar, aceitar ou concluir quests nunca funciona “offline por esperança”.
 
@@ -73,6 +73,39 @@ Não haverá botão falso que apenas atrasa o usuário. Em retomadas rápidas, u
 - desconectar Google não pode deixar a conta sem método de entrada recuperável.
 
 Depois do Google, um novo usuário sempre passa pelo onboarding. Nome e foto vindos do provedor são sugestões editáveis, nunca dados legais nem autorização.
+
+## Primeiro acesso e criação do avatar
+
+Depois do onboarding obrigatório e antes do primeiro **Toque para entrar**, o Minimapa apresenta o **Ateliê do Personagem**. Criar o avatar é fortemente sugerido, mas pode ser pulado; trabalho, segurança e acesso básico não ficam presos a uma escolha cosmética.
+
+Estados persistidos:
+
+- `NOT_STARTED`: ainda não viu o convite;
+- `SKIPPED`: escolheu entrar com avatar inicial gerado;
+- `CREATED`: salvou uma personalização;
+- `NEEDS_MIGRATION`: loadout usa uma versão antiga do catálogo e precisa de conversão segura.
+
+Se o jogador pular, recebe um avatar inicial neutro e pode abrir o ateliê depois pelo medalhão/menu **Personagem**. A sugestão não reaparece em toda abertura; pode haver um lembrete discreto, com limite de frequência e opção de dispensar.
+
+### Tela “Crie seu aventureiro”
+
+- preview grande e animado no centro, com alternativa estática;
+- presets de corpo inclusivos sem exigir gênero como categoria de conta;
+- pele, rosto, olhos, cabelo, cores e conjunto inicial de roupa;
+- ações `Aleatorizar`, `Desfazer`, `Restaurar`, `Salvar aventureiro` e `Agora não`;
+- rotação/zoom acessíveis, nomes textuais para opções e contraste verificável;
+- conjunto inicial inteiramente gratuito, sem loja, Gold, oferta, contagem regressiva ou item pago no onboarding;
+- confirmação antes de perder alterações e salvamento idempotente.
+
+O avatar é uma composição versionada de IDs do catálogo e cores permitidas, não uma imagem remota arbitrária. O cliente nunca decide propriedade de cosmético: inventário e loadout são validados no servidor. Assets removidos recebem fallback visual sem quebrar o perfil.
+
+### Separação de identidade
+
+- avatar e nome de exibição são identidade lúdica;
+- foto/selfie de verificação é evidência privada e não vira avatar automaticamente;
+- foto necessária para identificação pós-atribuição segue política própria e não pode ser substituída pelo personagem;
+- aparência do avatar nunca altera Karma, elegibilidade, prioridade, remuneração, verificação ou resultado de disputa;
+- origem Google pode sugerir nome/foto de perfil, mas a foto não é importada como asset do avatar sem consentimento e pipeline específico.
 
 ## Criação e ativação de conta
 
@@ -163,6 +196,7 @@ Em `ActiveQuestMode`, o trilho de ícones, lojas, RPG, anúncios e quests alheia
 ## Estados de interface obrigatórios
 
 - primeira instalação;
+- primeiro acesso com avatar não iniciado, pulado, criado ou incompatível com nova versão;
 - sessão válida, expirada, revogada e sem rede;
 - email não confirmado;
 - onboarding incompleto;
@@ -181,6 +215,8 @@ Em `ActiveQuestMode`, o trilho de ícones, lojas, RPG, anúncios e quests alheia
 - reiniciar o app mantém uma sessão válida, mas nunca contorna MFA/step-up;
 - recuperação não permite enumeração de usuários, open redirect, replay ou reutilização de token;
 - cadastro incompleto não publica, aceita ou executa quests;
+- pular o avatar nunca contorna onboarding nem bloqueia capabilities não cosméticas;
+- loadout aceita somente itens gratuitos iniciais ou itens pertencentes ao inventário server-side;
 - perfil/roles não podem ser promovidos por metadata editável pelo cliente;
 - menus do ExploreMode preservam contexto; o modo corrida remove as camadas não essenciais da árvore de UI;
 - todos os fluxos possuem teste local com Supabase/Mailpit, providers fake e nenhuma chamada faturável.

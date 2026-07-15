@@ -27,7 +27,7 @@ Esta fila define a ordem real de execução. O backlog detalha requisitos; a fil
 | 1 | CONCLUÍDO | `DEVQ-001` | Guardas e simuladores locais | `CST-001`–`CST-004`, `SIM-001`–`SIM-003`; relógio, personas, GPS/rota e providers determinísticos verificados sem rede |
 | 2 | EM ANDAMENTO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-006`, `POL-002`–`POL-003`; portas externas neutras iniciadas em `:core:contracts`; próximo: núcleo genérico de quests e policies |
 | 3 | AGUARDANDO | `DEVQ-003` | Banco e segurança-base | `DB-002`–`DB-003`, `SEC-001`, `TST-001`; migrations locais, PostGIS, RLS e testes cruzados |
-| 4 | AGUARDANDO | `DEVQ-004` | Portal, autenticação e perfil mínimo | `DSN-009`–`DSN-012`, `AUTH-001`–`AUTH-007`, `ONB-001`–`ONB-002`, `AGE-001`; email/Mailpit e Google mock antes de qualquer cloud |
+| 4 | AGUARDANDO | `DEVQ-004` | Portal, autenticação, perfil e avatar inicial | `DSN-009`–`DSN-013`, `AUTH-001`–`AUTH-007`, `ONB-001`–`ONB-002`, `AVT-001`–`AVT-003`, `AGE-001`; email/Mailpit e Google mock antes de qualquer cloud |
 | 5 | AGUARDANDO | `DEVQ-005` | Garagem individual | `TRN-001`–`TRN-003`, `DRV-001`–`DRV-003`, `DSN-008`; múltiplos meios, favorito e elegibilidade |
 | 6 | AGUARDANDO | `DEVQ-006` | Vertical slice de entrega | `QST-001`–`QST-006`, `BRD-001`–`BRD-003`, `ASN-001`, `GEO-001`–`GEO-003`, `RSK-005`; publicar → aceitar → concluir local |
 | 7 | AGUARDANDO | `DEVQ-007` | Navegação simulada e Mapbox | `NAV-002`–`NAV-009`, `MAP-002`–`MAP-007`; primeiro provider simulado, depois SDK sob gate de custo |
@@ -62,7 +62,7 @@ O aplicativo possui interfaces de mapa com objetivos e densidades diferentes:
 2. **Modo corrida / quest ativa:** curva a curva, rota, posição, próxima manobra, faixas, voz, velocidade, ETA e status essencial da quest. Lojas, publicidade, recompensas e conteúdo de exploração ficam ocultos.
 3. **Modo dungeon:** experiência lúdica para usuários parados ou a pé, com lobby, party e encontro. Fica indisponível durante uma quest ativa e nunca aparece sobre a navegação veicular.
 
-Antes desses modos existe um **portal de entrada** com splash, carregamento seguro, autenticação e um gate significativo de “Toque para entrar”. Supabase Auth fornecerá email/senha e Google; uma sessão válida pode ser restaurada entre aberturas, mas onboarding, MFA e policies continuam obrigatórios. Após a entrada, `ExploreMode` usa o mapa-fantasia como home, com trilhos curtos de ícones e menus em tela própria que preservam o contexto do mapa. O desenho completo está em `docs/architecture/authentication-entry-and-map-shell.md`.
+Antes desses modos existe um **portal de entrada** com splash, carregamento seguro, autenticação e um gate significativo de “Toque para entrar”. Supabase Auth fornecerá email/senha e Google; uma sessão válida pode ser restaurada entre aberturas, mas onboarding, MFA e policies continuam obrigatórios. No primeiro acesso, após o cadastro obrigatório, o jogador é convidado a criar seu avatar em um ateliê próprio ou seguir com um preset gratuito. Após a entrada, `ExploreMode` usa o mapa-fantasia como home, com trilhos curtos de ícones e menus em tela própria que preservam o contexto do mapa. O desenho completo está em `docs/architecture/authentication-entry-and-map-shell.md`.
 
 Fluxo principal:
 
@@ -506,6 +506,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DSN-010` Projetar login por email/Google, cadastro obrigatório, confirmação, MFA e recuperação de conta sem enumeração.
 - [ ] `DSN-011` Projetar o shell do mapa-fantasia: busca, medalhão do avatar, trilhos laterais curtos, badges, bottom sheet e alternativa textual acessível.
 - [ ] `DSN-012` Projetar menus em tela cheia que substituem o mapa no `ExploreMode`, preservam contexto e ficam indisponíveis quando conflitarem com `ActiveQuestMode`.
+- [ ] `DSN-013` Projetar o Ateliê do Personagem do primeiro acesso e edição posterior: preview, presets inclusivos, categorias, aleatorizar, desfazer, salvar e pular, sem monetização no onboarding.
 - [~] `DEV-001` Inicializar repositório, convenções, lint, format, testes e CI. Repositório, lint, testes e CI prontos; formatter dedicado ainda pendente.
 - [~] `DEV-002` Inicializar aplicativo Android nativo com Kotlin, Jetpack Compose e módulos por domínio. App-base compilando; modularização por domínio será feita junto aos primeiros módulos reais.
 - [~] `DEV-003` Configurar ambientes local, staging e produção sem versionar segredos. Ambiente local e regras de exclusão prontos; staging e produção pendentes.
@@ -549,6 +550,9 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `AUTH-007` Implementar identity linking seguro e impedir unlink que deixe a conta sem método recuperável; linking manual começa desabilitado.
 - [ ] `ONB-001` Modelar ativação obrigatória com nome de exibição, nascimento, país/município, versões de termos/privacidade, locale e preferências essenciais; Google não pula campos ausentes.
 - [ ] `ONB-002` Manter cadastro incompleto em `ONBOARDING_REQUIRED`, sem capabilities operacionais, e definir expiração/limpeza de contas nunca ativadas.
+- [ ] `AVT-001` Modelar avatar inicial, versão do catálogo, composição/loadout e estados `NOT_STARTED`, `SKIPPED`, `CREATED`, `NEEDS_MIGRATION`, separados de foto e identidade verificadas.
+- [ ] `AVT-002` Implementar convite único após onboarding, preset inicial gratuito, aleatorização determinística, edição/salvamento idempotente e acesso posterior pelo menu Personagem.
+- [ ] `AVT-003` Validar server-side propriedade de itens e cores/opções permitidas, aplicar fallback de asset e garantir que avatar não afete qualquer policy de quest.
 - [ ] `AGE-001` Restringir o piloto a maiores de 18 anos verificados e manter experiência de menores totalmente desabilitada.
 - [ ] `SEC-003` Implementar kill switch por categoria, território, provider, feature e usuário sem depender de release do app.
 - [ ] `SEC-004` Auditar acesso administrativo, mudança de policy, documento, localização, payout, reward e moderação com step-up.
@@ -575,6 +579,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `TST-011` Tentar contornar gates de verificação via cliente, JWT desatualizado, chamada direta e replay de webhook.
 - [ ] `TST-010` Testar concessão única, pendência, confirmação e compensação de XP por skill sob retries e disputas.
 - [ ] `TST-013` Testar auth e entrada contra enumeração, credential stuffing, open redirect, deep-link hijack, replay de recuperação, sessão revogada, linking indevido e bypass de onboarding/MFA.
+- [ ] `TST-014` Testar criação/pulo/retomada/migração do avatar, salvamento idempotente, item não possuído, asset removido e isolamento total de identidade/eligibilidade.
 
 ### Fase 3 — spikes de navegação, mapas e criação de quest (estimativa: 2–3 semanas)
 
@@ -897,6 +902,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-15 | `DEC-053` | decidida | Adotar Supabase Auth com email/senha e Google; sessão persistente reduz logins repetidos, mas não contorna onboarding, verificação, MFA ou policy server-side. |
 | 2026-07-15 | `DEC-054` | decidida | Criar portal de entrada inspirado em games com splash, bootstrap observável e “Toque para entrar” significativo antes do mapa-fantasia. |
 | 2026-07-15 | `DEC-055` | decidida | Usar o mapa como home do `ExploreMode`, com trilhos curtos de ações e menus em tela própria; `ActiveQuestMode` desmonta ícones, comércio, RPG e distrações. |
+| 2026-07-15 | `DEC-056` | decidida | Após o primeiro onboarding, sugerir criação do avatar em tela própria, sempre permitindo pular com preset gratuito; avatar permanece separado da identidade real e sem efeito sobre quests. |
 
 ## 9. Histórico de atualização
 
@@ -929,3 +935,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-15 — concluído `DEVQ-001`: contratos externos neutros, relógio/personas determinísticos, navegação simulada e providers fake implementados; inventário de custos e scanner de segredos adicionados; `DEVQ-002` iniciado.
 - 2026-07-15 — automatizado o teste local assistido: `npm run test:open` valida testes/lint/build, aguarda o emulador, instala e deixa o Minimapa aberto; pedido genérico de teste passa a executar esse fluxo.
 - 2026-07-15 — definida a experiência de entrada e interface-base: Supabase Auth email/Google, recuperação forte, onboarding obrigatório, portal “Toque para entrar” e mapa-fantasia como home com menus substitutivos.
+- 2026-07-15 — incluído Ateliê do Personagem no primeiro acesso: criação sugerida, pulável, conjunto inicial gratuito, edição posterior e separação rígida entre avatar, foto real e elegibilidade.
