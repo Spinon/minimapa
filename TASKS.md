@@ -51,6 +51,8 @@ A mudança de modo precisa ser explícita, rápida e reversível quando seguro. 
 
 Começar em uma única cidade/região e com **um só tipo de quest ponto A → ponto B**. Antes da implementação, escolher se o primeiro caso será transporte de passageiros, entrega de itens ou pequenos serviços. Misturar os três no primeiro MVP aumenta regras, telas, operação e risco jurídico.
 
+A revisão de produto recomenda como cunha, condicionada à validação local, entrega urbana de pequenos itens permitidos e de baixo valor: Android, uma cidade, adultos verificados, sem passageiros, dinheiro em espécie, produtos regulados ou bens de alto risco. A visão completa permanece no roadmap, mas AR, RPG, Conselho, Gold, lojas, IAP e expansão de categorias não entram antes de liquidez, confiança e operação do núcleo. Detalhes em `docs/product/product-scope-review.md`.
+
 ### Quest como plataforma extensível
 
 O MVP valida deslocamento, mas `Quest` é um contrato genérico de trabalho e colaboração. O núcleo contém publicação, requisitos, matching, atribuição, execução, recompensa, eventos e avaliação. Dados específicos entram por módulos tipados, como `MovementQuest` e `ServiceQuest`, sem presumir que toda quest possui motorista, veículo, origem e destino.
@@ -61,11 +63,19 @@ Uma quest de serviço pode exigir nível mínimo, karma contextual, skills e cre
 
 Cada skill possui XP e proficiência próprios. Concluir uma quest concede XP somente às skills canônicas mapeadas e versionadas na definição daquele serviço. O perfil materializa apenas skills nas quais o jogador já recebeu XP ou possui comprovação/credencial, evitando milhares de trilhas vazias.
 
-O **Conselho do Reino** permite propor e votar mensalmente no próximo serviço. O vencedor que couber no workflow genérico entra automaticamente em beta por uma definição orientada a schema; serviços regulados ou de alto risco entram como aprovados pendentes de auditoria de segurança. Votação nunca injeta código nem cria skills livres diretamente.
+O **Conselho do Reino** permite propor e votar mensalmente no próximo serviço. O vencedor que couber no workflow genérico gera automaticamente uma definição candidata orientada a schema, ainda não executável. Toda categoria aguarda gate de compliance proporcional, com revisão especializada quando regulada ou de alto risco. Votação nunca injeta código, cria skills livres diretamente ou autoriza produção.
 
 Somente identidades verificadas podem candidatar-se, aceitar, executar ou concluir quests. Contas não verificadas podem publicar quests de baixo risco com o aviso **Identidade do solicitante não verificada**, mas a atribuição e a execução permanecem bloqueadas até o solicitante também concluir a verificação. Verificação de identidade, credencial profissional, karma e MFA são sinais independentes.
 
+No primeiro piloto fechado, aplica-se política mais restritiva: somente maiores de 18 anos com identidade verificada publicam ou executam. A publicação limitada por não verificados permanece como capacidade futura, desabilitada por feature flag até a operação comprovar segurança.
+
 O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
+
+### Gate público de política
+
+Módulos estendem comportamento, mas policies globais limitam comportamento. Um `PolicyGate` server-side reavalia publicação, revelação de localização, candidatura, aceite, atribuição, início, conclusão, recompensa e pagamento. Categoria, jurisdição, idade, identidade, credencial, veículo, localização, conteúdo, evidência, consumidor e pagamento retornam `ALLOW`, `REQUIRE_REVIEW` ou `DENY` com versão e motivo auditáveis.
+
+O Conselho do Reino pode nomear a próxima definição candidata, mas não ativá-la em produção. `ACTIVE_BETA` exige aprovação jurídica/segurança humana e versionada; nenhuma votação, schema ou admin genérico remove policy global. A auditoria completa está em `docs/security/public-risk-audit.md`.
 
 Para quests de transporte, a criação apresenta uma **faixa de valor sugerido** baseada em quests comparáveis concluídas nos 30 dias anteriores. A referência usa mediana robusta de valor líquido por quilômetro, segmentação geográfica/operacional, tamanho mínimo de amostra e confiança explícita. O autor pode editar o valor; a plataforma não impõe tarifa nem recebe percentual.
 
@@ -395,6 +405,13 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PRD-007` Definir a taxonomia inicial de tipos de quest e quais capacidades pertencem ao núcleo ou a módulos.
 - [ ] `PRD-008` Definir matriz de risco que limita publicação, visibilidade e verificação adicional por categoria de quest.
 - [ ] `PRD-009` Definir quais categorias/valores exigem aceite simples, assinatura avançada ou assinatura qualificada após validação jurídica.
+- [ ] `PRD-010` Aprovar ou substituir a cunha recomendada: pequenos itens permitidos, baixo valor, uma cidade e adultos verificados.
+- [ ] `PIL-001` Escrever service blueprint do piloto com responsáveis, horário e runbooks de acidente, fraude, disputa, item perdido, no-show e pedido de autoridade.
+- [ ] `PIL-002` Definir meta de oferta por zona/horário, tamanho da coorte, suporte e critérios de pausa/encerramento.
+- [ ] `LEG-001` Obter validação jurídica local para modalidade, município, seguro, consumidor, fiscal, trabalho e documentos antes de feature flag pública.
+- [ ] `RSK-001` Criar matriz versionada categoria × território × risco × obrigação e owner de compliance.
+- [ ] `RSK-002` Definir listas de itens/serviços proibidos, restritos e regulados com fluxo de notice/action e retirada emergencial.
+- [ ] `RSK-003` Definir revelação progressiva de localização e prazo de retenção por estado/relacionamento.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
 - [ ] `BUS-002` Definir se o pagamento da quest acontece fora da plataforma ou como repasse transparente sem receita de take rate.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
@@ -414,8 +431,6 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DSN-002` Aprovar tokens: cores, tipografia, espaçamento, ícones e tom fantasy.
 - [ ] `DSN-003` Definir componentes e estados de acessibilidade/contraste.
 - [ ] `DSN-004` Projetar estados do minimapa: exploração, rota, manobra, rerota, GPS degradado e chegada.
-- [ ] `DSN-005` Projetar avatar, níveis, loadout cosmético e recompensas sem pay-to-win.
-- [ ] `DSN-006` Projetar pins/locais patrocinados com identificação inequívoca e baixa densidade.
 - [ ] `DSN-007` Projetar shells distintos para mapa-mundo e modo corrida, incluindo transição, retorno e estados interrompidos.
 - [~] `DEV-001` Inicializar repositório, convenções, lint, format, testes e CI. Repositório, lint, testes e CI prontos; formatter dedicado ainda pendente.
 - [~] `DEV-002` Inicializar aplicativo Android nativo com Kotlin, Jetpack Compose e módulos por domínio. App-base compilando; modularização por domínio será feita junto aos primeiros módulos reais.
@@ -430,6 +445,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DOM-005` Criar registry por injeção de dependência; `QuestCore` não pode importar módulo concreto.
 - [ ] `DOM-006` Criar suíte de conformidade reutilizável para autorização, lifecycle, concorrência, idempotência, privacidade e compatibilidade.
 - [ ] `DOM-007` Provar extensibilidade com uma definição de serviço apenas por dados e um módulo-fixture sem alterar o core.
+- [ ] `POL-002` Definir contrato universal `PolicyGate` com decisões `ALLOW`, `REQUIRE_REVIEW`, `DENY`, códigos explicáveis e versão auditada.
+- [ ] `POL-003` Impedir que módulo, schema, votação ou configuração administrativa desabilite policy global obrigatória.
 
 ### Fase 2 — backend, autenticação e perfis (estimativa: 1–2 semanas)
 
@@ -447,6 +464,9 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
 - [ ] `AUTH-001` Implementar cadastro, login, recuperação e encerramento de sessão.
 - [ ] `AUTH-002` Implementar perfis de usuário e motorista sem confiar em roles editáveis pelo cliente.
+- [ ] `AGE-001` Restringir o piloto a maiores de 18 anos verificados e manter experiência de menores totalmente desabilitada.
+- [ ] `SEC-003` Implementar kill switch por categoria, território, provider, feature e usuário sem depender de release do app.
+- [ ] `SEC-004` Auditar acesso administrativo, mudança de policy, documento, localização, payout, reward e moderação com step-up.
 - [ ] `VER-001` Implementar máquina de estados de verificação, validade, reverificação, suspensão e recurso.
 - [ ] `VER-002` Criar adaptador de provedor para documento, dados cadastrais e prova de vida sem acoplar o domínio ao fornecedor.
 - [ ] `VER-003` Implementar publicação limitada e badge acessível de identidade não verificada sem usar rótulo “inseguro”.
@@ -468,7 +488,6 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `NAV-002` Fazer spike Android do Mapbox Navigation SDK v3 com `RouteProgress`, manobras, voz e rerota.
 - [ ] `NAV-003` Testar ambos em rotas reais da região piloto e registrar precisão, latência, cobertura, bateria e custo projetado.
 - [ ] `NAV-004` Registrar ADR escolhendo o SDK e documentando como trocar de fornecedor.
-- [ ] `AR-001` Fazer spike de ARCore Geospatial com uma manobra simulada derivada de `NavigationFrame`.
 - [ ] `MAP-002` Implementar o mapa Android com o SDK de navegação escolhido.
 - [ ] `MAP-003` Implementar busca/autocomplete e geocodificação reversa.
 - [ ] `MAP-004` Implementar cálculo e desenho de rota com distância/ETA.
@@ -488,11 +507,6 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PRC-010` Calcular faixa histórica somente após amostra mínima da mesma definição/versionamento, região e escopo de serviço.
 - [ ] `PRC-011` Exibir “ainda sem dados comparáveis” e permitir orçamento opcional ou “a combinar” durante o cold start.
 - [x] `PRC-012` Catalogar SINAPI, ANTT, tarifas municipais e tabelas profissionais como fontes candidatas, sem tratá-las como equivalentes.
-- [ ] `PRC-013` Implementar registro versionado de fonte, vigência, território, licença/termos, checksum, unidade, fórmula e natureza jurídica.
-- [ ] `PRC-014` Criar importador offline do SINAPI por fixtures e mapeamento revisado para serviços canônicos de construção/reparo.
-- [ ] `PRC-015` Cadastrar manualmente referências vigentes da cidade piloto e validar enquadramento jurídico antes de aplicar qualquer piso.
-- [ ] `PRC-016` Exibir histórico interno e referência externa em blocos separados, com metodologia e divergência visíveis.
-- [ ] `PRC-017` Automatizar atualização somente para fonte com download/API estável e termos compatíveis; não raspar concorrentes ou calculadoras fechadas.
 - [ ] `SEC-002` Manter chaves secretas de mapas/rotas no servidor quando exigido e restringir chaves públicas por app/domínio.
 
 ### Fase 4 — mural e aceite (estimativa: 1–2 semanas)
@@ -530,22 +544,19 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `MSG-001` Implementar contato seguro/chat mínimo sem expor telefone diretamente.
 - [ ] `RES-001` Tratar perda de rede, retomada e eventos duplicados.
 
-### Fase 6 — confiança, gamificação e piloto publicitário (estimativa: 2–3 semanas)
+### Fase 6 — confiança e operação do piloto (estimativa: 2–3 semanas)
 
 - [ ] `ADM-001` Criar painel de operação protegido.
 - [ ] `ADM-002` Implementar aprovação/bloqueio de motorista e auditoria.
 - [ ] `RAT-001` Implementar avaliações bilaterais e denúncia.
-- [ ] `GAM-001` Definir fontes de XP, curvas de nível, limites diários e controles antiabuso.
-- [ ] `GAM-002` Implementar avatar, inventário e loadout cosmético.
-- [ ] `GAM-003` Implementar ledger imutável de XP e concessão idempotente de recompensas.
-- [ ] `GAM-004` Entregar cosméticos conquistáveis no beta, sem compra com dinheiro real.
-- [ ] `ADS-003` Implementar anunciantes, campanhas e locais patrocinados administrados manualmente.
-- [ ] `ADS-004` Renderizar conteúdo patrocinado apenas em superfícies permitidas, com rótulo e limite de densidade.
-- [ ] `ADS-005` Registrar impressões/interações agregadas, frequência e orçamento sem trilha individual vendável.
-- [ ] `ADS-006` Criar relatório simples para validar valor com os primeiros anunciantes locais.
 - [ ] `PRV-001` Definir retenção e exclusão de localização/documentos conforme LGPD.
 - [ ] `PRV-002` Definir minimização, retenção, criptografia/tokenização e acesso auditado para documento e biometria.
+- [ ] `PRV-003` Elaborar RIPD de identidade, biometria, localização, profiling/antifraude e fornecedores antes do piloto.
 - [ ] `SAF-001` Implementar contato de emergência e compartilhamento da quest, se aplicável ao tipo escolhido.
+- [ ] `SAF-002` Implementar revelação progressiva de endereço e localização exata somente por finalidade/relação/janela.
+- [ ] `SAF-003` Implementar conteúdo proibido/restrito, moderação, bloqueio, denúncia, notice/action e retirada emergencial.
+- [ ] `SAF-004` Implementar política de evidência, disputa e conclusão sem tratar GPS/foto como prova absoluta.
+- [ ] `SUP-001` Implementar console e fila mínima de suporte com SLA do piloto, reason codes e preservação de evidência.
 
 ### Fase 7 — qualidade e beta (estimativa: 1–2 semanas)
 
@@ -566,6 +577,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 
 ### Fase 8 — pós-validação
 
+- [ ] `AR-001` Fazer spike de ARCore Geospatial com uma manobra simulada derivada de `NavigationFrame`.
 - [ ] `AR-002` Transformar corredor/manobras da rota em pontos geoespaciais seguros para renderização.
 - [ ] `AR-003` Implementar renderizador experimental com ARCore Geospatial e fallback quando VPS/precisão não estiver disponível.
 - [ ] `AR-004` Avaliar ARKit/ARCore no iOS e diferenças de cobertura geográfica.
@@ -576,11 +588,26 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PRC-007` Avaliar componente de tempo, sazonalidade e eventual preço dinâmico somente após medir o estimador transparente do MVP.
 - [ ] `SCL-001` Testar carga, particionamento/retenção de localizações e expansão regional.
 - [ ] `GAM-005` Avaliar progressão social, temporadas e novas categorias cosméticas sem prejudicar confiança.
+- [ ] `DSN-005` Projetar avatar, níveis, loadout cosmético e recompensas sem pay-to-win.
+- [ ] `GAM-001` Definir fontes de XP, curvas de nível, limites diários e controles antiabuso.
+- [ ] `GAM-002` Implementar avatar, inventário e loadout cosmético.
+- [ ] `GAM-003` Implementar ledger imutável de XP e concessão idempotente de recompensas.
+- [ ] `GAM-004` Entregar cosméticos conquistáveis, sem compra com dinheiro real.
+- [ ] `DSN-006` Projetar pins/locais patrocinados com identificação inequívoca e baixa densidade.
+- [ ] `ADS-003` Implementar anunciantes, campanhas e locais patrocinados administrados manualmente.
+- [ ] `ADS-004` Renderizar conteúdo patrocinado apenas em superfícies permitidas, com rótulo e limite de densidade.
+- [ ] `ADS-005` Registrar impressões/interações agregadas, frequência e orçamento sem trilha individual vendável.
+- [ ] `ADS-006` Criar relatório simples para validar valor com os primeiros anunciantes locais.
+- [ ] `PRC-013` Implementar registro versionado de fonte, vigência, território, licença/termos, checksum, unidade, fórmula e natureza jurídica.
+- [ ] `PRC-014` Criar importador offline do SINAPI por fixtures e mapeamento revisado para serviços canônicos de construção/reparo.
+- [ ] `PRC-015` Cadastrar manualmente referências vigentes da cidade piloto e validar enquadramento jurídico antes de aplicar qualquer piso.
+- [ ] `PRC-016` Exibir histórico interno e referência externa em blocos separados, com metodologia e divergência visíveis.
+- [ ] `PRC-017` Automatizar atualização somente para fonte com download/API estável e termos compatíveis; não raspar concorrentes ou calculadoras fechadas.
 - [ ] `GOV-001` Implementar propostas, consolidação de duplicatas e ciclos mensais do Conselho do Reino.
 - [ ] `GOV-002` Implementar votação com elegibilidade, voto único, quórum, auditoria e controles antissybil.
 - [ ] `GOV-003` Criar catálogo e renderer de serviços orientados a blocos de schema aprovados.
-- [ ] `GOV-004` Publicar automaticamente o serviço vencedor como `ACTIVE_BETA` quando os gates genéricos forem satisfeitos.
-- [ ] `GOV-005` Encaminhar serviços regulados/alto risco para `APPROVED_PENDING_SAFETY_REVIEW` antes de permitir quests.
+- [ ] `GOV-004` Gerar automaticamente apenas `ServiceDefinitionCandidate`; `ACTIVE_BETA` exige `ComplianceApproval` humano, assinado e versionado.
+- [ ] `GOV-005` Submeter todo vencedor a gates proporcionais; serviços regulados/alto risco exigem revisão especializada antes de permitir quests.
 - [ ] `GOV-006` Preservar versões antigas, permitir suspensão/rollback e auditar ajustes manuais posteriores.
 
 ### Fase 9 — RPG geolocalizado e dungeons
@@ -624,6 +651,12 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Somente um motorista consegue aceitar a mesma quest, inclusive sob concorrência.
 - Nenhum usuário não verificado consegue ser atribuído, iniciar ou concluir uma quest por qualquer cliente ou chamada direta.
 - Uma quest de solicitante não verificado fica claramente marcada e não avança para atribuição/execução antes da verificação.
+- No piloto fechado, somente maiores de 18 anos com identidade verificada conseguem publicar ou executar; a exceção futura para publicação não verificada permanece desabilitada.
+- Cidade, modalidade, seguro, pagamento e obrigações locais possuem aprovação registrada antes da abertura do piloto.
+- `PolicyGate` é aplicado server-side em todas as transições sensíveis e nenhum módulo/configuração consegue remover policy global.
+- Endereço exato não aparece na descoberta e só é liberado após relação, finalidade e janela autorizadas.
+- Existe lista de itens/serviços proibidos/restritos, notice/action, suporte humano, kill switch e runbook para incidente grave.
+- O Minimapa não custodia dinheiro no piloto; qualquer pagamento futuro usa PSP licenciado e integração explicitamente aprovada.
 - Build, CI e testes locais realizam zero chamadas faturáveis e funcionam apenas com serviços locais, mocks ou sandboxes garantidamente gratuitas.
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
 - A sugestão de transporte é editável, auditável, mostra faixa/confiança e não mistura custos reembolsáveis com o valor líquido por quilômetro.
@@ -645,7 +678,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - XP, níveis e cosméticos conquistados são consistentes, auditáveis e não compram vantagem operacional.
 - A separação de domínio impede que XP, skills, Gold ou equipamentos de dungeon alterem proficiência, credenciais, karma ou elegibilidade profissional.
 - `ActiveQuestMode` não renderiza nem processa dungeons, convites, recompensas de jogo ou outras interações lúdicas.
-- Existe um piloto publicitário manual mensurável antes de construir compra self-service de campanhas.
+- Publicidade permanece desabilitada até o núcleo provar liquidez, segurança e operação; um piloto manual precede qualquer compra self-service.
 
 ## 7. Riscos a acompanhar
 
@@ -676,6 +709,12 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Contrapropostas públicas podem provocar corrida ao menor preço e conluio; manter propostas privadas, limitar spam e auditar comportamento coordenado.
 - Mudanças informais de escopo ou materiais após o aceite favorecem conflito e bait-and-switch; exigir snapshot e aditivo bilateral.
 - Campos ou condicionais específicos de modalidade vazando para o core criam refactor futuro; aplicar dependency inversion, capabilities e testes de fronteira entre módulos.
+- Votação comunitária não comprova legalidade; ativação automática sem aprovação humana pode abrir categoria proibida, regulada ou sem seguro.
+- A relação entre plataformas e trabalhadores permanece juridicamente dinâmica; preço/controle unilateral, punição por recusa e bloqueio automático aumentam risco trabalhista.
+- Ausência de take rate não elimina responsabilidade consumerista, dever de informação, suporte, cancelamento, moderação ou segurança.
+- Custodiar fundos, permitir cashout/transferência de Gold ou misturar payout/refund pode criar risco regulatório financeiro e lavagem.
+- O ECA Digital amplia obrigações para produtos de acesso provável por menores e veda loot boxes no escopo legal; piloto será 18+ e RPG infantil exige revisão própria.
+- Conta tomada pode combinar fraude, endereço e risco físico; recuperação, MFA/step-up e cooldown de payout são controles de segurança pessoal.
 
 ## 8. Log de decisões
 
@@ -697,7 +736,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-014` | decidida | Separar o mapa em `ExploreMode` rico em conteúdo e `ActiveQuestMode` limpo para curva a curva. |
 | 2026-07-14 | `DEC-015` | decidida | Tratar Quest como núcleo universal extensível por módulos tipados, requisitos versionados e estratégias configuráveis de atribuição. |
 | 2026-07-14 | `DEC-016` | decidida | Separar level global, XP de skill, proficiência, karma contextual e verificação por credencial. |
-| 2026-07-14 | `DEC-017` | decidida | Usar o Conselho do Reino para escolher mensalmente serviços; vencedores compatíveis entram automaticamente em beta por schema versionado, com gates adicionais para alto risco. |
+| 2026-07-14 | `DEC-017` | em revisão | Usar o Conselho do Reino para escolher mensalmente serviços e ativar automaticamente vencedores compatíveis. A ativação automática foi considerada insegura pela auditoria e depende de decisão sobre `DEC-031`. |
 | 2026-07-14 | `DEC-018` | decidida | Exigir identidade verificada para executar quests; permitir publicação limitada por não verificados, bloqueando atribuição até a verificação de ambas as partes. |
 | 2026-07-14 | `DEC-019` | proposta | Selecionar verificação após spike entre Datavalid e um orquestrador privado; manter assinatura eletrônica como controle separado e baseado em risco. |
 | 2026-07-14 | `DEC-020` | decidida | Manter custo adicional zero durante desenvolvimento; preparar integrações por adaptadores e mocks, sem billing ou produção até autorização explícita. |
@@ -710,6 +749,11 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-027` | decidida | Permitir fontes externas oficiais/profissionais como referências versionadas e identificadas, separando piso legal, custo, honorário indicativo, tarifa regulada e histórico do Minimapa. |
 | 2026-07-14 | `DEC-028` | decidida | Adotar oferta do autor com dois caminhos: aceite integral ou contraproposta privada de pessoa/empresa elegível; o acordo aceito é atômico, versionado e imutável salvo aditivo bilateral. |
 | 2026-07-14 | `DEC-029` | decidida | Tornar extensibilidade uma invariável: definições entram por schema; modalidades implementam `QuestModuleContract` versionado por capabilities, sem dependência do core em módulos concretos. |
+| 2026-07-14 | `DEC-030` | proposta | Recortar o primeiro piloto para Android, uma cidade, adultos verificados e entrega de pequenos itens permitidos/baixo valor, sujeito à validação jurídica local. |
+| 2026-07-14 | `DEC-031` | proposta bloqueante | Conselho nomeia definição candidata; nenhuma categoria entra em `ACTIVE_BETA` sem `ComplianceApproval` humano, versionado e auditável. |
+| 2026-07-14 | `DEC-032` | proposta bloqueante | Restringir o piloto a maiores de 18 anos verificados nas duas pontas e revelar localização exata apenas progressivamente após atribuição. |
+| 2026-07-14 | `DEC-033` | proposta bloqueante | Não custodiar dinheiro no piloto; pagamentos futuros usam PSP licenciado, sem conversão entre Gold e dinheiro/serviços físicos. |
+| 2026-07-14 | `DEC-034` | proposta bloqueante | Policies globais de categoria, jurisdição, idade, identidade, localização, conteúdo, consumidor e pagamento limitam todos os módulos e transições sensíveis. |
 
 ## 9. Histórico de atualização
 
@@ -731,3 +775,5 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — catalogadas fontes externas de preço e definido pipeline versionado, auditável e sem scraping para complementar o cold start.
 - 2026-07-14 — contraproposta privada promovida ao fluxo principal: autor publica objetivo/oferta e aceita atomicamente termos versionados de pessoa ou empresa elegível.
 - 2026-07-14 — formalizado contrato de módulos e suíte de conformidade para expandir modalidades sem refactor da engine de quests.
+- 2026-07-14 — revisão de produto recomendou cunha estreita e postergou AR, RPG, Gold, Conselho ativo, lojas, ads e automação de preços até validação do núcleo.
+- 2026-07-14 — auditoria pública mapeou riscos jurídicos/fraude e propôs `PolicyGate`, compliance humano, piloto 18+ verificado, localização progressiva e zero custódia financeira.

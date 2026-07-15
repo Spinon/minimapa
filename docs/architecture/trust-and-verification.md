@@ -6,6 +6,8 @@ Verificação reduz anonimato e fraude, mas não certifica caráter, competênci
 
 Somente jogadores com identidade verificada podem ser atribuídos a uma quest, executá-la ou concluí-la. Usuários não verificados podem explorar e publicar quests de baixo risco com alcance limitado, mas precisam concluir a verificação antes de a quest avançar para atribuição e execução.
 
+No primeiro piloto fechado, uma policy mais restritiva substitui temporariamente essa capacidade: apenas maiores de 18 anos com identidade verificada publicam ou executam. Publicação por não verificados permanece desabilitada por feature flag até revisão operacional.
+
 ```mermaid
 stateDiagram-v2
     [*] --> Unverified
@@ -46,6 +48,8 @@ Um badge sempre declara qual camada foi validada. “Identidade verificada” n�
 | Votar no Conselho do Reino | não | não | conforme regras do ciclo |
 
 Uma quest de solicitante não verificado mostra **Identidade do solicitante não verificada** e `verification_required_before_assignment`. Prestadores podem demonstrar interesse sem receber endereço exato, contato direto ou atribuição. Ao verificar-se, o solicitante libera o matching normal sem precisar republicar a quest.
+
+Mesmo entre verificados, descoberta usa região/célula aproximada. Endereço exato é liberado progressivamente apenas após atribuição, finalidade ativa e janela autorizada por `LocationDisclosurePolicy`; encerrou ou expirou a necessidade, o acesso é revogado.
 
 ## Estados e reavaliação
 

@@ -15,6 +15,8 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - RPG geolocalizado e dungeons em [`docs/architecture/location-rpg.md`](docs/architecture/location-rpg.md).
 - Referências externas de preço em [`docs/architecture/external-price-references.md`](docs/architecture/external-price-references.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
+- Revisão de produto e recorte do MVP em [`docs/product/product-scope-review.md`](docs/product/product-scope-review.md).
+- Auditoria jurídica/antifraude do desenho em [`docs/security/public-risk-audit.md`](docs/security/public-risk-audit.md).
 - Política de custo zero em [`docs/development/cost-policy.md`](docs/development/cost-policy.md).
 - Escolha entre Google Navigation SDK e Mapbox Navigation SDK reservada para um spike comparativo.
 

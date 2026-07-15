@@ -48,6 +48,8 @@ Existem dois níveis diferentes de expansão:
 
 `QuestCore` é responsável apenas por identidade, participantes genéricos, versionamento, publicação, requisitos, propostas, termos acordados, atribuição, lifecycle universal, eventos, autorização e auditoria. Ele nunca importa um módulo concreto.
 
+Policies globais limitam o core e todos os módulos. Antes de cada transição sensível, `PolicyGate` recebe fatos tipados da quest, módulo, participantes, categoria, território e contexto e retorna `ALLOW`, `REQUIRE_REVIEW` ou `DENY`. A decisão, versão e códigos de motivo são auditados. Um módulo declara policies adicionais, mas não remove idade, identidade, jurisdição, localização, conteúdo, consumidor, pagamento ou outro gate obrigatório.
+
 Cada `QuestModuleContract` declara:
 
 - `moduleId`, versão e versões compatíveis do contrato;
@@ -73,6 +75,7 @@ Todo módulo precisa passar pela mesma suíte de conformidade antes do registro:
 - idempotência de eventos, conclusão e recompensa;
 - privacidade/redaction;
 - cancelamento, disputa e compatibilidade de versões antigas.
+- impossibilidade de contornar `PolicyGate`, inclusive por schema, admin ou módulo novo.
 
 Critério arquitetural: adicionar uma definição de serviço altera apenas dados/configuração; adicionar uma modalidade cria uma implementação do contrato e seus componentes, sem editar regras internas do `QuestCore`. Uma necessidade recorrente pode evoluir o contrato por versão, mas nunca justifica acoplamento direto a um módulo.
 

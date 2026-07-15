@@ -4,7 +4,7 @@
 
 Permitir que a comunidade escolha mensalmente novos serviços sem criar uma skill diferente para cada texto digitado e sem exigir uma versão nova do aplicativo para toda categoria simples.
 
-Usuários não publicam tipos de serviço diretamente. Eles propõem candidatos ao catálogo ou votam em propostas consolidadas. O vencedor é transformado automaticamente em uma definição versionada quando puder usar o workflow genérico já suportado.
+Usuários não publicam tipos de serviço diretamente. Eles propõem candidatos ao catálogo ou votam em propostas consolidadas. O vencedor pode ser transformado automaticamente em uma **definição candidata** versionada quando usar o workflow genérico, mas nunca recebe permissão operacional sem aprovação de compliance.
 
 ```mermaid
 stateDiagram-v2
@@ -13,9 +13,9 @@ stateDiagram-v2
     Consolidating --> Voting
     Voting --> Approved: maioria e quórum
     Voting --> Rejected
-    Approved --> ActiveBeta: template seguro suportado
-    Approved --> PendingSafetyReview: regulado ou alto risco
-    PendingSafetyReview --> ActiveBeta: auditoria aprovada
+    Approved --> PendingComplianceReview: definição candidata gerada
+    PendingComplianceReview --> ActiveBeta: jurídico e segurança aprovados
+    PendingComplianceReview --> Rejected: ilegal ou inviável
     ActiveBeta --> Active
     ActiveBeta --> Suspended: abuso ou regra inadequada
 ```
@@ -36,15 +36,16 @@ Isso evita variações duplicadas como “encanador”, “hidráulica”, “tr
 2. **Consolidação:** propostas duplicadas ou sinônimas são agrupadas e recebem uma definição candidata.
 3. **Votação:** contas elegíveis votam entre candidatos válidos durante uma janela explícita.
 4. **Apuração:** maioria dos votos válidos, quórum mínimo e controles antissybil determinam o vencedor.
-5. **Publicação automática:** o sistema cria `ServiceDefinition v1`, formulário genérico, política de matching e mapa de XP.
-6. **Beta observável:** quests usam a versão publicada e coletam métricas, denúncias e feedback.
-7. **Auditoria fina:** desenvolvimento/operação pode ajustar campos, pesos, requisitos e segurança em uma nova versão, sem reescrever o histórico.
+5. **Geração automática da candidata:** o sistema cria `ServiceDefinitionCandidate v1`, formulário genérico, proposta de matching e mapa de XP, ainda não executáveis.
+6. **Gate de compliance:** jurídico/segurança validam categoria, território, credenciais, idade, seguro, consumidor, fiscal, evidência e operação; a aprovação é assinada e versionada.
+7. **Beta observável:** somente a versão aprovada aceita quests e coleta métricas, denúncias e feedback.
+8. **Auditoria fina:** desenvolvimento/operação pode ajustar campos, pesos, requisitos e segurança em uma nova versão, sem reescrever o histórico.
 
 Propostas, votos, resultado e versão publicada são auditáveis. Mudanças posteriores nunca alteram retroativamente quests antigas, que preservam uma fotografia da definição usada.
 
 ## Limite da automação
 
-A ativação é automática quando o serviço cabe nos componentes já suportados, por exemplo:
+A geração da definição candidata pode ser automática quando o serviço cabe nos componentes já suportados, por exemplo:
 
 - presencial, remoto ou híbrido;
 - descrição, fotos e anexos;
@@ -54,9 +55,9 @@ A ativação é automática quando o serviço cabe nos componentes já suportado
 - skills e credenciais já existentes;
 - checklist e evidência de conclusão.
 
-Propostas ilegais, discriminatórias ou incompatíveis com os termos são removidas antes da votação e não entram no catálogo. Serviços regulados, de alto risco ou que exijam um workflow ainda inexistente entram automaticamente como `APPROVED_PENDING_SAFETY_REVIEW`, mas não aceitam quests até cumprir os gates necessários. Exemplos sensíveis incluem saúde, atividades jurídicas, gás, trabalho em altura e intervenções elétricas complexas.
+Propostas ilegais, discriminatórias ou incompatíveis com os termos são removidas antes da votação e não entram no catálogo. Todo vencedor entra como `PENDING_COMPLIANCE_REVIEW` e não aceita quests até cumprir os gates proporcionais. Serviços regulados ou de alto risco exigem revisão especializada. Exemplos sensíveis incluem saúde, atividades jurídicas, gás, trabalho em altura e intervenções elétricas complexas.
 
-A maioria escolhe a prioridade do produto; ela não pode remover controles legais, privacidade, idade mínima, licenças ou segurança.
+A maioria escolhe a prioridade de avaliação do produto; ela não pode ativar produção nem remover controles legais, privacidade, idade mínima, licenças ou segurança.
 
 ## Interface genérica orientada a schema
 
@@ -92,4 +93,4 @@ Os critérios exatos de elegibilidade e quórum serão calibrados no beta. Level
 - catálogo: `service_categories`, `service_definitions`, `service_definition_versions`;
 - composição: `service_form_blocks`, `service_skill_rewards`, `service_requirements`;
 - conselho: `service_proposals`, `proposal_relations`, `council_cycles`, `council_ballots`, `council_votes`, `council_results`;
-- operação: `service_risk_assessments`, `service_audit_events`, `service_rollouts`.
+- operação: `service_risk_assessments`, `compliance_approvals`, `service_audit_events`, `service_rollouts`.

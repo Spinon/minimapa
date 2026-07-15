@@ -86,6 +86,8 @@ Definições são orientadas a dados, validadas por schema e versionadas. Conte�
 
 Probabilidades de drops aleatórios devem ser transparentes. Itens pagos e mecânicas semelhantes a loot boxes exigem revisão jurídica e das políticas das lojas antes de qualquer implementação.
 
+O RPG permanece 18+ enquanto compartilhar o app com o marketplace profissional. A Lei 15.211/2025 (ECA Digital) cria obrigações para produtos de acesso provável por crianças/adolescentes e veda loot boxes no escopo previsto. Uma futura experiência para menores exige produto child-safe separado, aferição de idade proporcional, supervisão, privacidade, publicidade e social/location safety próprios; não herda automaticamente party, lojas ou recompensas aleatórias. Fonte: https://www.gov.br/anpd/pt-br/assuntos/eca-digital
+
 ## Party e encontro
 
 O primeiro encontro deve ser cooperativo e simples, com papéis de jogo opcionais e nenhuma relação com profissões reais. O backend é autoritativo sobre composição, energia, ações, resolução e recompensa. O cliente renderiza o estado e envia intenções.
