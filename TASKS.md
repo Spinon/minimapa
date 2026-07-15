@@ -321,6 +321,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [~] `DEV-003` Configurar ambientes local, staging e produção sem versionar segredos. Ambiente local e regras de exclusão prontos; staging e produção pendentes.
 - [ ] `DEV-004` Criar navegação, tema e componentes básicos conforme o conceito aprovado.
 - [ ] `DEV-005` Definir contratos de API compartilháveis e fronteira do futuro cliente iOS/web.
+- [x] `DEV-006` Configurar emulador Android local e fluxo de um comando para compilar, instalar e abrir o aplicativo.
 
 ### Fase 2 — backend, autenticação e perfis (estimativa: 1–2 semanas)
 
@@ -503,3 +504,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — modelo de receita revisado: sem take rate de motoristas, publicidade local como monetização, gamificação universal e marketplace de lojas como camada futura.
 - 2026-07-14 — experiência dividida em mapa-mundo para descoberta/comércio e modo corrida dedicado à navegação da quest.
 - 2026-07-14 — fundação executável criada: Android nativo com Kotlin/Compose, Supabase local com migration-base, CI, documentação e validação por build, testes e lint.
+- 2026-07-14 — emulador Android 16/API 36 configurado e aplicativo instalado/aberto com sucesso no aparelho virtual `medium_phone`.

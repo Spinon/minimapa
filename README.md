@@ -49,6 +49,22 @@ cd apps/android
 .\gradlew.bat test lintDebug assembleDebug
 ```
 
+### Testar no emulador do Windows
+
+Na primeira vez, instale a imagem Android 16/API 36 e crie o celular virtual:
+
+```powershell
+npm run android:setup-emulator
+```
+
+Depois, um único comando inicia o emulador quando necessário, compila, instala e abre o Minimapa:
+
+```powershell
+npm run android:run
+```
+
+O dispositivo criado se chama `medium_phone` e usa uma imagem x86_64 com Google Play, adequada aos futuros testes de mapas e localização.
+
 No macOS ou Linux:
 
 ```bash

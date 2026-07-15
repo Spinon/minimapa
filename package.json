@@ -4,6 +4,8 @@
   "private": true,
   "description": "Ferramentas locais do workspace Minimapa",
   "scripts": {
+    "android:setup-emulator": "powershell -ExecutionPolicy Bypass -File scripts/android-emulator-setup.ps1",
+    "android:run": "powershell -ExecutionPolicy Bypass -File scripts/android-run.ps1",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
