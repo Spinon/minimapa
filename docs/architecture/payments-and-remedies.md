@@ -1,6 +1,6 @@
 # Pagamentos, cancelamentos e remédios
 
-Data-base: 2026-07-14
+Data-base: 2026-07-15
 
 ## Princípios
 
@@ -8,11 +8,31 @@ Data-base: 2026-07-14
 - um PSP com produto de marketplace recebe, tokeniza, verifica o recebedor e faz repasse/reembolso/chargeback;
 - o Minimapa não mantém saldo sacável, não recebe dinheiro em conta própria para repassar e não converte Gold;
 - não há take rate sobre a remuneração do executor;
-- tarifa do PSP é custo real e aparece separadamente; seu pagador ainda será decidido;
+- o solicitante paga exatamente o valor acordado da quest e o executor não paga tarifa do Minimapa;
+- o Minimapa absorve tarifas de processamento, payout e disputa do PSP como custo da plataforma;
 - estado informado pelo cliente nunca confirma pagamento: somente API server-side e webhook verificado;
 - toda integração começa em mock ou sandbox sem cobrança.
 
 “Sem garantia de entrega” significa que o piloto não vende cobertura adicional, indenização própria ou seguro. Isso não elimina cancelamento, reembolso por serviço não prestado, direitos consumeristas nem responsabilidade por falha própria da plataforma. `Minimap Plus` só poderá anunciar seguro após contratação com seguradora/parceiro habilitado, termos claros, cobertura, exclusões, sinistro e regulação aprovados; o Minimapa não se autossegura.
+
+## Provedor primário e fluxo financeiro
+
+O provedor primário escolhido para o piloto é **Stripe Connect**, usando Accounts v2 e uma configuração de contas conectadas em que a plataforma é pagadora das tarifas. O fluxo inicial usa **destination charges**, sem `application_fee`, e transfere ao beneficiário o valor integral acordado. Pix é o primeiro meio planejado; cartões permanecem atrás de feature flag até o fluxo de fraude/chargeback estar validado.
+
+Esta decisão é de arquitetura e sandbox. Conta, credencial, billing e produção não serão ativados sem autorização de custo e validação jurídica/contratual. `MarketplacePaymentProvider` preserva a possibilidade de trocar de PSP.
+
+Mercado Pago Split 1:1 não é o primário porque sua documentação atual desconta a tarifa do Mercado Pago do valor do vendedor, contrariando a regra econômica do Minimapa. Pagar.me permanece candidato de contingência mediante proposta comercial compatível.
+
+Não cobrar solicitante/executor significa:
+
+- preço da quest não recebe adicional ou “taxa de serviço” do Minimapa;
+- payout não desconta comissão nem tarifa operacional do Minimapa;
+- taxas externas não são escondidas dentro da sugestão de preço;
+- custos são registrados em `platform_payment_costs` e subsidiados pela receita/capital da plataforma;
+- tributos/retenções legalmente obrigatórios não são tarifa do Minimapa e precisam de tratamento próprio;
+- refund ou reversão do principal de uma quest inválida não é taxa: é desfazer o pagamento correspondente, sempre por policy/caso.
+
+Esse subsídio precisa de orçamento e limite. Se a receita futura de publicidade, lojas e microtransações não cobrir o custo, o sistema pausa novos pagamentos; não transfere silenciosamente o custo às partes.
 
 ## Contrato neutro de provedor
 
@@ -27,7 +47,7 @@ Data-base: 2026-07-14
 - webhook assinado e idempotente;
 - reconciliação e relatório.
 
-Stripe Connect, Mercado Pago Split e Pagar.me Marketplace são candidatos a spike, não escolhas aprovadas. O fluxo jurídico e financeiro de cada produto muda quem é merchant of record, quem absorve saldo negativo, chargeback, tarifa e obrigação fiscal. A seleção exige contrato e parecer, não apenas comparação de SDK.
+Na implementação Stripe, usar a versão de API vigente aprovada no início do desenvolvimento (referência atual `2026-02-25.clover`), Accounts v2 e propriedades explícitas de controller/responsabilidade. Não usar tipos legados de conta nem a Charges API. Checkout/PaymentIntent e a superfície mobile serão confirmados no spike oficial antes de escrever o adapter definitivo.
 
 ## Estado financeiro
 
@@ -56,6 +76,9 @@ Requisitos técnicos:
 - alteração de conta de repasse com MFA, cooldown e alerta fora de banda;
 - jobs de reconciliação e fila de exceções;
 - logs sem PAN, CVV, token reutilizável ou documento bruto.
+- `application_fee=0` e teste contratual garantindo que nenhuma tarifa Minimapa seja criada;
+- ledger separado de custos absorvidos pela plataforma, sem descontá-los do payout;
+- hard cap financeiro que bloqueia produção quando o subsídio autorizado acabar.
 
 ## Cancelamento, no-show, disputa e evidência
 
@@ -98,6 +121,9 @@ Automação classifica e sugere; não encerra incidente grave, decide disputa ma
 ## Fontes oficiais/técnicas consultadas
 
 - Stripe Connect: https://docs.stripe.com/connect?locale=pt-BR
+- Connect Accounts v2: https://docs.stripe.com/connect/accounts-v2
+- tipos de cobrança Connect: https://docs.stripe.com/connect/charges?locale=pt-BR
+- Pix com Connect: https://docs.stripe.com/payments/pix
 - Mercado Pago Split 1:1: https://www.mercadopago.com.br/developers/pt/docs/split-payments/split-1-1/integration-configuration/integrate-marketplace
 - Consumidor.gov.br: https://www.consumidor.gov.br/pages/conteudo/publico/1
 - LGPD, art. 20: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm

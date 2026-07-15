@@ -16,19 +16,23 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - Referências externas de preço em [`docs/architecture/external-price-references.md`](docs/architecture/external-price-references.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
 - Garagem, frota e organizações em [`docs/architecture/transport-and-organizations.md`](docs/architecture/transport-and-organizations.md).
+- Decisão Mapbox e contrato de navegação em [`docs/architecture/navigation-provider-decision.md`](docs/architecture/navigation-provider-decision.md).
 - Revisão de produto e recorte do MVP em [`docs/product/product-scope-review.md`](docs/product/product-scope-review.md).
 - Piloto de Rio Claro, modalidades e liquidez em [`docs/product/rio-claro-pilot.md`](docs/product/rio-claro-pilot.md).
+- Limites e conteúdo permitido da entrega em [`docs/product/pilot-delivery-policy.md`](docs/product/pilot-delivery-policy.md).
+- Operação solo do piloto em [`docs/product/solo-pilot-operations.md`](docs/product/solo-pilot-operations.md).
 - Pagamentos, cancelamentos e suporte em [`docs/architecture/payments-and-remedies.md`](docs/architecture/payments-and-remedies.md).
 - Karma, casos e evidências em [`docs/architecture/karma-cases-and-evidence.md`](docs/architecture/karma-cases-and-evidence.md).
 - Auditoria interna, bugs e sugestões em [`docs/architecture/operations-audit-feedback.md`](docs/architecture/operations-audit-feedback.md).
 - Auditoria jurídica/antifraude do desenho em [`docs/security/public-risk-audit.md`](docs/security/public-risk-audit.md).
 - Política de custo zero em [`docs/development/cost-policy.md`](docs/development/cost-policy.md).
-- Escolha entre Google Navigation SDK e Mapbox Navigation SDK reservada para um spike comparativo.
+- Mapbox Navigation SDK v3 escolhido como provider primário; desenvolvimento começa com provider simulado e custo bloqueado.
 
 ## Estrutura
 
 ```text
 apps/android/       Aplicativo Android nativo
+  core/config/      Configuração segura, SimulationMode e CostGuard
 supabase/           Configuração local e futuras migrations
 .github/workflows/  Integração contínua
 TASKS.md            Backlog, critérios e decisões
@@ -89,7 +93,7 @@ Também é possível abrir `apps/android` diretamente no Android Studio. O arqui
 
 ## Segredos e serviços externos
 
-Nenhuma chave de mapa, token de serviço ou credencial deve entrar no Git. O repositório contém somente configuração local segura. Projetos cloud, chaves restritas de Android e credenciais de Google/Mapbox serão criados quando o provedor de navegação for escolhido.
+Nenhuma chave de mapa, token de serviço ou credencial deve entrar no Git. O repositório contém somente configuração local segura. Conta/tokens Mapbox e credenciais cloud serão criados apenas quando o provider simulado passar e houver aprovação explícita dos gates de custo.
 
 Durante o desenvolvimento, integrações externas usam mocks ou sandboxes garantidamente gratuitas. Billing, cartões, trials com conversão automática e chamadas faturáveis permanecem desabilitados por padrão; consulte a política de custo antes de integrar qualquer fornecedor.
 

@@ -31,3 +31,4 @@ plugins {
 
 rootProject.name = "Minimapa"
 include(":app")
+include(":core:config")

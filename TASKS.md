@@ -17,6 +17,27 @@ Nenhuma tarefa autoriza gasto. Todo serviço externo começa em `mock` ou sandbo
 - Uma tarefa só é concluída quando seus critérios de aceite e verificações relevantes passaram.
 - Novas decisões entram no log no final do arquivo; não apagar decisões antigas, marcar como substituídas.
 
+## Fila de desenvolvimento
+
+Esta fila define a ordem real de execução. O backlog detalha requisitos; a fila agrupa o próximo incremento entregável. Trabalhar de cima para baixo, manter no máximo um item `EM ANDAMENTO` e atualizar fila, tarefas canônicas, testes e histórico na mesma sessão. Um item só sai da fila após evidência de verificação.
+
+| Ordem | Estado | ID | Incremento | Tarefas principais / saída verificável |
+| ---: | --- | --- | --- | --- |
+| 0 | CONCLUÍDO | `DEVQ-000` | Congelar decisões do piloto | `LOCAL_DELIVERY`, limites/proibições, Mapbox v3, Stripe Connect e operação solo documentados |
+| 1 | EM ANDAMENTO | `DEVQ-001` | Guardas e simuladores locais | `CST-001`–`CST-004`, `SIM-001`–`SIM-003`; `:core:config`/CostGuard concluídos, faltam personas/GPS/tempo/providers simulados |
+| 2 | AGUARDANDO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-006`, `POL-002`–`POL-003`; módulos Kotlin e testes sem dependência de UI/provider |
+| 3 | AGUARDANDO | `DEVQ-003` | Banco e segurança-base | `DB-002`–`DB-003`, `SEC-001`, `TST-001`; migrations locais, PostGIS, RLS e testes cruzados |
+| 4 | AGUARDANDO | `DEVQ-004` | Identidade e perfis locais | `AUTH-001`–`AUTH-002`, `AGE-001`, `VER-001`–`VER-005`; providers ainda mockados |
+| 5 | AGUARDANDO | `DEVQ-005` | Garagem individual | `TRN-001`–`TRN-003`, `DRV-001`–`DRV-003`, `DSN-008`; múltiplos meios, favorito e elegibilidade |
+| 6 | AGUARDANDO | `DEVQ-006` | Vertical slice de entrega | `QST-001`–`QST-006`, `BRD-001`–`BRD-003`, `ASN-001`, `GEO-001`–`GEO-003`, `RSK-005`; publicar → aceitar → concluir local |
+| 7 | AGUARDANDO | `DEVQ-007` | Navegação simulada e Mapbox | `NAV-002`–`NAV-009`, `MAP-002`–`MAP-007`; primeiro provider simulado, depois SDK sob gate de custo |
+| 8 | AGUARDANDO | `DEVQ-008` | Casos, Karma e admin mínimo | `CAS-001`, `REP-001`–`REP-004`, `ADM-001`–`ADM-004`, `SAF-003`–`SAF-004` |
+| 9 | AGUARDANDO | `DEVQ-009` | Organização e frota | `ORG-001`–`ORG-003`, `ASN-002`–`ASN-004`; empresa → funcionário → asset sem dupla alocação |
+| 10 | AGUARDANDO | `DEVQ-010` | Pagamento sandbox | `PAY-001`–`PAY-006`; Stripe Connect mock/sandbox, zero taxa às partes e reconciliação |
+| 11 | AGUARDANDO | `DEVQ-011` | Piloto assistido | legal/compliance, testes de campo, sessão única supervisionada e critérios de parada |
+
+Itens pós-validação — ads, RPG, Conselho ativo, Gold, lojas e AR público — não entram na fila enquanto `DEVQ-011` não for concluído.
+
 ## 1. Visão do produto
 
 Criar um marketplace mobile/web inspirado no fluxo do Uber, com identidade medieval/fantasy:
@@ -112,11 +133,11 @@ Progressão profissional e progressão de jogo são domínios distintos, ligados
 
 ### Modelo de negócio e princípios econômicos
 
-- **Sem take rate do motorista:** o Minimapa não recebe percentual sobre o valor da quest. Custos de processamento eventualmente cobrados por terceiros devem ser transparentes e separados da receita do Minimapa.
+- **Sem taxa para as partes:** o solicitante paga o valor acordado e o executor não sofre take rate ou tarifa de processamento do Minimapa. A plataforma absorve o custo do PSP e o mede separadamente.
 - **Pagamento in-app sem custódia:** um PSP de marketplace processa checkout, KYC, repasse, refund e chargeback; o Minimapa mantém somente ledger reconciliável e não converte Gold. Detalhes em `docs/architecture/payments-and-remedies.md`.
 - **Receita principal:** empresas pagam por presença destacada, campanhas locais e pontos de interesse patrocinados.
 - **Receita digital:** cosméticos opcionais para avatar e personalização do minimapa, sem vantagem funcional sobre outros usuários.
-- **Marketplace futuro:** empresas abrem “lojas” temáticas, vendem bens/serviços reais e podem contratar entrega por quests. A receita pode vir do lojista, publicidade, software e processamento — não do ganho do motorista.
+- **Marketplace futuro:** empresas abrem “lojas” temáticas, vendem bens/serviços reais e podem contratar entrega por quests. A receita pode vir de publicidade, planos/licenças de loja, software e microtransações digitais — não do valor da quest.
 - **Progressão para todos:** XP e níveis são conquistados por participação segura e útil; dinheiro não compra nível, prioridade de aceite ou reputação.
 
 ### Camadas de evolução
@@ -380,19 +401,21 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 ### Recomendação inicial
 
 1. Criar uma camada `MapProvider`/`RoutingProvider` para evitar acoplamento do domínio a um fornecedor.
-2. Fazer um spike Android nativo comparando **Google Navigation SDK** e **Mapbox Navigation SDK v3** com uma rota real na região piloto.
-3. Comparar precisão no Brasil, rerota, voz, background, instruções de faixa, liberdade visual, acesso ao feed curva a curva, custo e termos de uso.
-4. Escolher o fornecedor antes de construir as telas definitivas do minimapa.
+2. Usar **Mapbox Navigation SDK v3** como provider primário e `SimulatedNavigationProvider` antes de qualquer credencial real.
+3. Validar em Rio Claro precisão, rerota, voz, background, instruções de faixa, liberdade visual, offline, custo e termos de uso.
+4. Manter o `NavigationFrame` e adapters independentes para troca de fornecedor.
 5. Implementar navegação embutida como caminho principal e deep link externo somente como contingência.
 6. Construir desde o início o `NavigationFrame` independente de fornecedor e um spike ARCore que consuma dados simulados desse contrato.
 
-### Comparação validada em 2026-07-14
+### Comparação revisada em 2026-07-15
 
 | Opção | Franquia gratuita relevante | Depois da franquia | Observações |
 | --- | --- | --- | --- |
 | Google Maps Platform | Maps SDK mobile sem cobrança por uso; web Dynamic Maps 10 mil cargas/mês; Routes Essentials 10 mil chamadas/mês; Navigation SDK 1 mil solicitações/mês | Dynamic Maps: US$ 7/1.000; Routes: US$ 5/1.000; Navigation: US$ 25/1.000 no primeiro nível pago | Forte candidato: possui experiência pronta e feed curva a curva customizável com manobras, faixas, tempo e distância. Combina naturalmente com ARCore Geospatial. Billing precisa ser configurado. |
 | Mapbox | Mapas mobile: 25 mil MAU/mês; web: 50 mil cargas/mês; Directions: 100 mil chamadas/mês; geocodificação temporária: 100 mil/mês | Maps mobile: US$ 4/1.000 MAU; web: US$ 5/1.000 cargas; Directions: US$ 2/1.000; geocoding temporário: US$ 0,75/1.000 no primeiro nível pago | Forte candidato para identidade visual: Navigation v3 expõe progresso, manobras, voz, rerota, tráfego e offline. No preço medido oferece atualmente 100 MAU e 1.000 viagens grátis; depois parte de US$ 0,30/MAU e US$ 0,08/viagem. |
 | MapLibre + OSM + openrouteservice/HeiGIT | Bibliotecas e dados abertos; plano Standard do HeiGIT: 2.000 rotas/dia e 3.000 geocodificações/dia | Pode exigir provedor de tiles/serviço comercial ou infraestrutura própria | Menor lock-in, mas “open source” não torna hospedagem gratuita. Não usar os servidores públicos do OSM como infraestrutura de produção. |
+
+**Decisão:** Mapbox Navigation SDK v3. A flexibilidade visual, `RouteProgress`, offline e franquia publicada para piloto superam o Google neste estágio. A decisão e os gates estão em `docs/architecture/navigation-provider-decision.md`.
 
 ### Alertas sobre a opção aberta
 
@@ -426,41 +449,47 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 
 - [x] `PLN-001` Criar plano inicial e arquivo vivo de tarefas.
 - [x] `MAP-001` Comparar opções atuais de mapas, rotas, geocoding e navegação.
-- [ ] `PRD-001` Escolher o primeiro tipo de quest: passageiro, item ou serviço.
+- [x] `PRD-001` Escolher o primeiro tipo de quest: `LOCAL_DELIVERY` de item pequeno, permitido, declarado e de baixo valor.
 - [x] `PRD-002` Definir cidade/região piloto, público e hipótese de valor: Rio Claro/SP, área técnica máxima de 50 km, Android, 18+ verificado e navigation-first.
 - [ ] `PRD-003` Definir regras de preço/recompensa, cancelamento e no-show.
 - [ ] `PRD-004` Validar requisitos jurídicos, seguro, verificação de motoristas, LGPD e termos locais.
 - [ ] `PRD-005` Desenhar jornadas e critérios de sucesso do beta.
 - [x] `ADR-001` Aprovar Android nativo como primeira plataforma e definir a sequência iOS/web.
-- [ ] `ADR-002` Escolher o Navigation SDK após o spike e definir limites de gasto.
+- [x] `ADR-002` Escolher Mapbox Navigation SDK v3 como provider primário, sempre atrás de adapter, simulador e hard cap de custo.
 - [x] `ADR-003` Decidir se pagamento real entra no beta fechado: checkout dentro do app via PSP de marketplace, condicionado a compliance, sandbox e autorização explícita de custo.
 - [ ] `PRD-006` Definir se a navegação/AR futura é para motorista, passageiro, pedestre ou dispositivo montado; isso altera requisitos de segurança.
 - [ ] `PRD-007` Definir a taxonomia inicial de tipos de quest e quais capacidades pertencem ao núcleo ou a módulos.
 - [ ] `PRD-008` Definir matriz de risco que limita publicação, visibilidade e verificação adicional por categoria de quest.
 - [ ] `PRD-009` Definir quais categorias/valores exigem aceite simples, assinatura avançada ou assinatura qualificada após validação jurídica.
-- [ ] `PRD-010` Aprovar ou substituir a modalidade recomendada: entrega de pequenos itens permitidos/baixo valor em zonas do piloto já definido.
-- [ ] `PIL-001` Escrever service blueprint do piloto com responsáveis, horário e runbooks de acidente, fraude, disputa, item perdido, no-show e pedido de autoridade.
+- [x] `PRD-010` Aprovar a modalidade oficial `LOCAL_DELIVERY`, com limites e proibições em `docs/product/pilot-delivery-policy.md`.
+- [x] `PIL-001` Escrever blueprint solo factível: sistema fechado, sessões assistidas, uma quest ativa e checklist de uma página em `docs/product/solo-pilot-operations.md`.
 - [ ] `PIL-002` Definir meta de oferta por zona/horário, tamanho da coorte, suporte e critérios de pausa/encerramento.
 - [ ] `PIL-003` Definir centro/polígono da área máxima de 50 km, municípios cruzados, zonas iniciais menores e áreas excluídas; não abrir zona sem oferta e suporte mínimos.
 - [ ] `LEG-001` Obter validação jurídica local para modalidade, município, seguro, consumidor, fiscal, trabalho e documentos antes de feature flag pública.
 - [ ] `LEG-002` Confirmar diretamente com Mobilidade de Rio Claro e municípios alcançados os cadastros/regras vigentes; não confiar apenas em notícia ou decreto histórico.
+- [ ] `LEG-003` Validar com profissional jurídico a matriz de `LOCAL_DELIVERY`: motofrete, carga local/intermunicipal, consumidor, trabalho, fiscal, LGPD, termos, incidentes e cooperação com autoridades.
+- [ ] `LEG-004` Registrar parecer/checklist versionado por município e impedir ativação quando obrigação, vigência ou responsável estiver ausente.
 - [ ] `RSK-001` Criar matriz versionada categoria × território × risco × obrigação e owner de compliance.
-- [ ] `RSK-002` Definir listas de itens/serviços proibidos, restritos e regulados com fluxo de notice/action e retirada emergencial.
+- [x] `RSK-002` Definir limites por modo e lista inicial de conteúdo financeiro, ilícito, perigoso, regulado e de alto risco proibido no piloto.
 - [ ] `RSK-003` Definir revelação progressiva de localização e prazo de retenção por estado/relacionamento.
 - [ ] `RSK-004` Implementar resolução de jurisdição por origem, destino, rota, categoria e data de vigência, sem tratar “Rio Claro + 50 km” como uma única legislação local.
+- [ ] `RSK-005` Aplicar server-side peso, volume, dimensão, valor e categoria proibida conforme modo/asset e versão de `LOCAL_DELIVERY`, com motivo explicável e kill switch.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
 - [x] `BUS-002` Definir pagamento da quest dentro do app como repasse transparente por PSP, sem custódia e sem receita de take rate.
-- [ ] `BUS-003` Decidir quem absorve e como exibe tarifa do PSP, refund, chargeback, saldo negativo e eventual custo de payout sem reduzir remuneração de forma oculta.
+- [x] `BUS-003` Definir que o Minimapa absorve tarifas de PSP/payout/disputa; solicitante paga e executor recebe o valor acordado, salvo refund/reversão do principal ou obrigação legal.
 - [ ] `INS-001` Redigir posicionamento do piloto sem cobertura adicional, preservando direitos legais e resposta a incidentes; desenhar Minimap Plus somente com seguradora/parceiro habilitado.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
 - [ ] `ADS-002` Definir modelo comercial do piloto: venda direta/faturada, CPM, período fixo ou destaque regional.
 - [x] `ECO-001` Aprovar separação entre XP global, XP profissional, XP de jogo, Gold, Chaves de Aventura e dinheiro real.
 - [ ] `POL-001` Validar App Store/Google Play para publicidade, moeda virtual, cosméticos e marketplace físico.
-- [ ] `CST-001` Implementar `CostGuard`, modos `mock/sandbox/production` e bloqueio quando `ALLOW_BILLABLE_REQUESTS=false`.
+- [x] `CST-001` Implementar `CostGuard`, modos `mock/sandbox/production` e bloqueio quando `ALLOW_BILLABLE_REQUESTS=false`, verificado por testes do módulo `:core:config`.
 - [ ] `CST-002` Criar mocks e contract tests para cada integração externa antes de qualquer credencial real.
 - [ ] `CST-003` Inventariar chamadas externas, unidade de cobrança, franquia, hard cap e fallback por fornecedor.
-- [ ] `CST-004` Garantir que CI, previews e desenvolvimento local nunca recebam chaves de produção.
+- [~] `CST-004` Garantir que CI, previews e desenvolvimento local nunca recebam chaves de produção. CI já fixa ambiente local/mock e billing falso; falta scanner/policy de segredo.
 - [ ] `CST-005` Criar checklist de aprovação explícita para billing, orçamento, alertas e desligamento.
+- [~] `SIM-001` Implementar `SimulationMode` com relógio controlado, personas e feature flags locais reproduzíveis. Config/seed seguros prontos; relógio e personas pendentes.
+- [ ] `SIM-002` Implementar GPS/rota simulados com pausa, rerota, precisão degradada, background e chegada.
+- [ ] `SIM-003` Implementar providers mockados de identidade, pagamento, notificação e suporte com cenários de sucesso/falha/retry.
 - [ ] `MKT-001` Definir o recorte futuro de lojas: tipos de produto, logística, responsabilidade e modelo de receita do lojista.
 
 ### Fase 1 — conceito visual e fundação (estimativa: 1 semana)
@@ -535,10 +564,10 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 
 ### Fase 3 — spikes de navegação, mapas e criação de quest (estimativa: 2–3 semanas)
 
-- [ ] `NAV-001` Fazer spike Android do Google Navigation SDK com experiência pronta e feed curva a curva customizado.
+- [ ] `NAV-001` Manter Google Navigation como alternativa documental; executar spike somente se Mapbox falhar nos gates de cobertura, termos, custo ou segurança.
 - [ ] `NAV-002` Fazer spike Android do Mapbox Navigation SDK v3 com `RouteProgress`, manobras, voz e rerota.
-- [ ] `NAV-003` Testar ambos em rotas reais da região piloto e registrar precisão, latência, cobertura, bateria e custo projetado.
-- [ ] `NAV-004` Registrar ADR escolhendo o SDK e documentando como trocar de fornecedor.
+- [ ] `NAV-003` Testar Mapbox em rotas reais da região piloto e registrar precisão, latência, cobertura, offline, bateria e custo projetado.
+- [x] `NAV-004` Registrar decisão Mapbox v3 e documentar adapters, simulador, hard cap e critérios de troca.
 - [ ] `MAP-002` Implementar o mapa Android com o SDK de navegação escolhido.
 - [ ] `MAP-003` Implementar busca/autocomplete e geocodificação reversa.
 - [ ] `MAP-004` Implementar cálculo e desenho de rota com distância/ETA.
@@ -622,9 +651,11 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `SUP-004` Preparar adesão futura ao Consumidor.gov.br após CNPJ, SAC acessível, termos e operação diária estarem prontos.
 - [ ] `FBK-001` Criar canal in-app para bug, sugestão, acessibilidade, segurança e legal com anexos consentidos/redigidos e logs opt-in.
 - [ ] `PAY-001` Implementar `MarketplacePaymentProvider`, ledger espelho, inbox de webhooks idempotente, reconciliação e mocks sem chamadas faturáveis.
-- [ ] `PAY-002` Fazer spike sandbox de Stripe Connect, Mercado Pago Split e Pagar.me Marketplace comparando KYC, checkout in-app, repasse, refund, chargeback, Pix, custo e responsabilidades.
+- [ ] `PAY-002` Fazer spike sandbox do Stripe Connect Accounts v2 com destination charges, Pix, conta conectada, refund, disputa e payout sem `application_fee`.
 - [ ] `PAY-003` Implementar estados de pagamento/payout/refund/disputa e congelar repasse durante caso quando suportado, sem usar Karma como ordem financeira.
 - [ ] `PAY-004` Separar contratado, executor físico e beneficiário do payout; o PSP paga somente a conta acordada/KYC sem inferir pelo asset ou despachante.
+- [ ] `PAY-005` Registrar tarifas/chargebacks absorvidos em `platform_payment_costs`, aplicar orçamento/hard cap e provar por teste que não há surcharge nem desconto de payout.
+- [ ] `PAY-006` Implementar e testar refund total/parcial, payout hold/reversal do principal, disputa/chargeback, saldo negativo e recurso sem repassar tarifa externa às partes.
 
 ### Fase 7 — qualidade e beta (estimativa: 1–2 semanas)
 
@@ -725,6 +756,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Endereço exato não aparece na descoberta e só é liberado após relação, finalidade e janela autorizadas.
 - Existe lista de itens/serviços proibidos/restritos, notice/action, suporte humano, kill switch e runbook para incidente grave.
 - O pagamento da quest ocorre dentro do app por PSP licenciado; o Minimapa não custodia dinheiro, e produção exige integração, compliance e custo explicitamente aprovados.
+- Solicitante não paga surcharge e executor não sofre take rate/tarifa de processamento; custos do PSP são da plataforma, enquanto refund/reversão do principal segue decisão do caso.
 - Karma nunca é a única base para refund, payout, culpa ou sanção material; existe caso, evidência proporcional, decisão explicável e recurso.
 - Ignorar ou recusar uma quest não altera Karma, visibilidade futura ou acesso ao mural.
 - A descoberta envia apenas área aproximada estável; zoom e consultas repetidas não revelam o endereço exato.
@@ -825,7 +857,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-027` | decidida | Permitir fontes externas oficiais/profissionais como referências versionadas e identificadas, separando piso legal, custo, honorário indicativo, tarifa regulada e histórico do Minimapa. |
 | 2026-07-14 | `DEC-028` | decidida | Adotar oferta do autor com dois caminhos: aceite integral ou contraproposta privada de pessoa/empresa elegível; o acordo aceito é atômico, versionado e imutável salvo aditivo bilateral. |
 | 2026-07-14 | `DEC-029` | decidida | Tornar extensibilidade uma invariável: definições entram por schema; modalidades implementam `QuestModuleContract` versionado por capabilities, sem dependência do core em módulos concretos. |
-| 2026-07-14 | `DEC-030` | parcialmente decidida | Piloto Android, 18+ verificado e Rio Claro/SP com área técnica máxima de 50 km; entrega de itens pequenos/permitidos permanece a modalidade recomendada, pendente de validação jurídica local. |
+| 2026-07-14 | `DEC-030` | substituída | Piloto Android, 18+ verificado e Rio Claro/SP com entrega recomendada. A modalidade foi confirmada e detalhada por `DEC-046`/`DEC-048`. |
 | 2026-07-14 | `DEC-031` | decidida | Conselho nomeia definição candidata; nenhuma categoria entra em `ACTIVE_BETA` sem `ComplianceApproval` humano, versionado e auditável. |
 | 2026-07-14 | `DEC-032` | decidida | Restringir o piloto a maiores de 18 anos verificados nas duas pontas e revelar localização exata apenas progressivamente após atribuição. |
 | 2026-07-14 | `DEC-033` | substituída | Não custodiar dinheiro no piloto e adiar pagamento interno. Substituída por `DEC-036`: checkout in-app via PSP sem custódia pelo Minimapa. |
@@ -841,6 +873,12 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-15 | `DEC-043` | decidida | Permitir múltiplos meios de transporte por jogador, favorito como preferência e seleção explícita de asset por quest, sempre sujeita à elegibilidade revalidada. |
 | 2026-07-15 | `DEC-044` | decidida | Criar módulo genérico de organizações com vínculos aceitos por contas existentes, roles de mínimo privilégio, frota e seleção auditável de funcionário/asset. |
 | 2026-07-15 | `DEC-045` | decidida | Separar contratado, despachante, executor, meio de transporte e beneficiário financeiro; substituições após o acordo são versionadas e exigem novo consentimento quando materiais. |
+| 2026-07-15 | `DEC-046` | decidida | Confirmar `LOCAL_DELIVERY` como modalidade oficial inicial, limitada a item pequeno, permitido, declarado e de baixo valor. |
+| 2026-07-15 | `DEC-047` | decidida | Adotar Mapbox Navigation SDK v3 como provider primário, com `NavigationFrame`, adapter, simulação e fallback externo independentes. |
+| 2026-07-15 | `DEC-048` | decidida | Aplicar limites conservadores por modo; van/caminhão e conteúdo financeiro, ilícito, perigoso ou regulado permanecem desabilitados no piloto. |
+| 2026-07-15 | `DEC-049` | decidida | Adotar Stripe Connect Accounts v2/destination charges como PSP primário em sandbox; Minimapa absorve tarifas e não cria surcharge/take rate. |
+| 2026-07-15 | `DEC-050` | decidida | Operar piloto real somente em sessões assistidas, sistema fechado por padrão e inicialmente uma quest simultânea; Codex não constitui plantão operacional. |
+| 2026-07-15 | `DEC-051` | decidida | Usar a seção Fila de Desenvolvimento como ordem canônica de execução, com no máximo um incremento em andamento. |
 
 ## 9. Histórico de atualização
 
@@ -867,3 +905,5 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — definido piloto em Rio Claro com raio máximo de 50 km e zonas graduais; documentadas modalidades, liquidez, mural sem punição por recusa e descoberta por área aproximada.
 - 2026-07-14 — aprovado pagamento in-app via PSP sem custódia/take rate, arquitetura robusta de casos/Karma/evidência, identificação por CNH/veículo, auditoria e canal administrativo de bugs/sugestões.
 - 2026-07-15 — planejadas garagem com múltiplos meios/favorito, frota empresarial, vínculos consentidos, seleção de funcionário/asset e reservas contra dupla alocação.
+- 2026-07-15 — confirmada `LOCAL_DELIVERY`; definidos limites/proibições, Mapbox v3, Stripe Connect subsidiado pela plataforma, operação solo e fila canônica de desenvolvimento.
+- 2026-07-15 — iniciado `DEVQ-001`: módulo `:core:config`, `CostGuard`, defaults de simulação e CI local/mock implementados; testes e lint Android passaram.

@@ -11,6 +11,12 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: local
+      INTEGRATION_MODE: mock
+      ALLOW_BILLABLE_REQUESTS: "false"
+      SIMULATION_ENABLED: "true"
+      SIMULATION_SCENARIO_SEED: ci
     defaults:
       run:
         working-directory: apps/android

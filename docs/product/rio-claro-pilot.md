@@ -10,6 +10,7 @@ Data-base: 2026-07-14
 - mural aberto de quests: o executor escolhe o que deseja analisar, aceitar ou contra-ofertar;
 - nenhuma punição por ignorar ou recusar uma quest;
 - pagamento dentro do aplicativo por PSP de marketplace, sem custódia pelo Minimapa e sem percentual sobre a remuneração;
+- modalidade oficial inicial `LOCAL_DELIVERY`, com limites e proibições versionados;
 - sem garantia comercial ou seguro do Minimapa no piloto; um futuro Minimap Plus dependerá de seguradora/parceiro habilitado;
 - itens e serviços obedecem à legislação federal, estadual e municipal aplicável a cada trecho, não somente às regras de Rio Claro.
 
@@ -27,7 +28,7 @@ Modalidade é uma família operacional de quests. Ela determina papéis, dados, 
 | `REMOTE_SERVICE` | entregáveis digitais, marcos e aceite sem navegação | design, revisão, consultoria |
 | `MARKETPLACE_FULFILLMENT` | pedido de loja, estoque, fiscal, pós-venda e entrega vinculada | compra e entrega de uma loja do mapa |
 
-“Transporte” não deve ser uma única modalidade: transportar uma pessoa e entregar um item têm riscos e obrigações diferentes. A recomendação permanece iniciar com `LOCAL_DELIVERY`, em uma única definição de item pequeno, permitido e de baixo valor. A decisão final da modalidade continua bloqueada até o checklist jurídico/operacional local; `PASSENGER_TRANSPORT` não entra por consequência automática do raio escolhido.
+“Transporte” não deve ser uma única modalidade: transportar uma pessoa e entregar um item têm riscos e obrigações diferentes. A modalidade oficial é `LOCAL_DELIVERY`, em uma única definição de item pequeno, permitido, declarado e de baixo valor. Sua ativação real continua bloqueada até o checklist jurídico/operacional local; `PASSENGER_TRANSPORT` não entra por consequência automática do raio escolhido. Limites por meio e conteúdo proibido estão em `docs/product/pilot-delivery-policy.md`.
 
 ## Área, zonas e liquidez
 
@@ -92,11 +93,9 @@ Cada executor pode manter vários meios cadastrados, marcar uma seleção favori
 
 ## Pendências bloqueantes
 
-- confirmar modalidade inicial e limite de valor/tamanho;
 - obter validação jurídica por município/rota, inclusive transporte, fiscal, consumidor e seguro;
 - definir centro geográfico, polígonos excluídos e primeiras zonas ativas;
 - definir horário do piloto, escala de suporte e coorte recrutada;
-- fechar quem paga a tarifa do PSP e como ela é mostrada;
 - aprovar termos que descrevam ausência de seguro/garantia adicional sem tentar afastar direitos legais.
 
 ## Fontes oficiais consultadas

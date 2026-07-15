@@ -19,7 +19,7 @@ O norte deve permanecer documentado, mas a implementação precisa validar uma c
 
 ### Cunha sugerida e território escolhido
 
-O território foi definido em **Rio Claro/SP, com área técnica máxima de 50 km**, Android e adultos verificados. Como o círculo alcança outros municípios, a abertura será por zonas menores e dependerá de policy por origem, destino e rota. A modalidade recomendada continua sendo **entrega urbana de pequenos itens permitidos e de baixo valor**, sem passageiros, dinheiro em espécie, produtos regulados, alimento com cadeia especial, animais, chaves, documentos sensíveis ou bens de alto risco. O enquadramento municipal, fiscal e de transporte precisa ser validado antes de confirmar essa modalidade.
+O território foi definido em **Rio Claro/SP, com área técnica máxima de 50 km**, Android e adultos verificados. Como o círculo alcança outros municípios, a abertura será por zonas menores e dependerá de policy por origem, destino e rota. A modalidade oficial é **entrega urbana de pequenos itens permitidos, declarados e de baixo valor**, sem passageiros, dinheiro em espécie, produtos regulados, alimento com cadeia especial, animais, chaves, documentos sensíveis ou bens de alto risco. O enquadramento municipal, fiscal e de transporte precisa ser validado antes de ativá-la com usuários reais.
 
 Por que começar aqui:
 
@@ -51,7 +51,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 
 ### P0 — antes de construir o fluxo completo
 
-1. **Escolha da modalidade:** Rio Claro e o raio máximo de 50 km estão definidos; falta aprovar a primeira definição de quest e validar obrigações em todos os municípios alcançados.
+1. **Validação da modalidade:** `LOCAL_DELIVERY` está aprovada como produto; faltam parecer/checklist e obrigações em todos os municípios alcançados.
 2. **Service blueprint operacional:** definir quem atende fraude, acidente, item perdido, no-show, disputa, conta tomada e pedido policial, inclusive fora do horário.
 3. **Matriz categoria × território × risco:** uma categoria só pode ser publicada, atribuída e concluída se todos os gates aplicáveis estiverem ativos e vigentes.
 4. **Operação financeira:** o pagamento será in-app por PSP licenciado; falta escolher o provedor, merchant of record, pagador da tarifa, hold, payout, refund, chargeback e reconciliação.
@@ -95,7 +95,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 
 ### Gate A — decisão de operação
 
-Rio Claro, 50 km e público 18+ já estão decididos. Ainda faltam modalidade, zonas, proibições, configuração do PSP, termos sobre cobertura, escala de suporte e parecer jurídico. Nenhuma feature de crescimento antes disso.
+Rio Claro, 50 km, público 18+, `LOCAL_DELIVERY`, limites/proibições, Stripe Connect e operação em sessões assistidas já estão decididos. Ainda faltam zonas iniciais, configuração sandbox/contratual do PSP, termos sobre cobertura e parecer jurídico. Nenhuma feature de crescimento antes disso.
 
 ### Gate B — walking skeleton local
 
@@ -132,4 +132,4 @@ Parar expansão quando houver incidente grave sem runbook, mais disputas que a o
 
 ## Decisão recomendada
 
-Preservar toda a visão como roadmap, mas congelar o MVP em `QuestCore + uma modalidade + uma definição + Android + Rio Claro/zonas graduais + adultos verificados + PSP + suporte assistido`. O próximo trabalho de produto é aprovar a modalidade e escrever o service blueprint operacional/financeiro do piloto.
+Preservar toda a visão como roadmap, mas congelar o MVP em `QuestCore + LOCAL_DELIVERY + uma definição + Android + Rio Claro/zonas graduais + adultos verificados + Stripe sandbox + sessões assistidas`. O próximo trabalho é executar `DEVQ-001`: guardas de custo e simuladores locais.

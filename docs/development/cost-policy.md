@@ -48,11 +48,11 @@ O domínio não conhece SDKs nem tipos do fornecedor. Feature flags controlam a 
 | Área | Desenvolvimento sem custo | Preparação para o futuro |
 | --- | --- | --- |
 | Supabase | stack local em Docker | migrations e configuração portáveis para cloud |
-| Mapas | mapa/mock e fixtures; SDK apenas em demo gratuita segura | `MapProvider` intercambiável |
-| Rotas/navegação | rotas gravadas e `NavigationFrame` simulado | adaptadores Google/Mapbox atrás de flags |
+| Mapas | mapa/mock e fixtures; Mapbox apenas após sandbox segura | `MapProvider` intercambiável |
+| Rotas/navegação | rotas gravadas e `NavigationFrame` simulado | Mapbox v3 primário e fallback externo atrás de flags |
 | CPF/biometria | estados, webhooks e resultados mockados; sandbox do fornecedor | `IdentityVerificationProvider` |
 | Assinatura | envelopes e callbacks falsos ou sandbox | `SignatureProvider` |
-| Pagamentos | test mode/sandbox e webhooks locais | `PaymentProvider` e ledger independente |
+| Pagamentos | Stripe test mode/mocks e webhooks locais | Connect Accounts v2 atrás de `MarketplacePaymentProvider`; custos reais absorvidos pela plataforma sob orçamento |
 | Email/SMS | Mailpit local e notificações fake | `NotificationProvider` |
 | Publicidade | campanhas e métricas sintéticas | adaptador de entrega e faturamento |
 
