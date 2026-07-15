@@ -69,7 +69,7 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 
 O avatar também será um personagem jogável. Dungeons versionadas podem aparecer em pontos seguros do mapa de exploração; o usuário se aproxima a pé, entra em uma party e participa de encontros cooperativos. As recompensas possíveis são XP de jogo, Gold, cosméticos e equipamentos com efeito exclusivamente lúdico.
 
-Progressão profissional e progressão de jogo são domínios distintos. Dungeon não comprova encanamento, não concede karma, credencial, elegibilidade, prioridade ou vantagem econômica em quests reais. Durante `ActiveQuestMode`, dungeons, convites e recompensas ficam desmontados e toda interação é bloqueada. O desenho completo está em `docs/architecture/location-rpg.md`.
+Progressão profissional e progressão de jogo são domínios distintos, ligados por uma ponte de mão única: **Quests → RPG**. Uma quest real concluída e validada pode conceder XP do avatar, Gold, cosméticos ou progresso lúdico; dungeon não comprova encanamento, não concede karma, credencial, elegibilidade, prioridade ou vantagem econômica em quests reais. Durante `ActiveQuestMode`, dungeons, convites e recompensas ficam desmontados e toda interação é bloqueada. O desenho completo está em `docs/architecture/location-rpg.md`.
 
 ### Métricas iniciais
 
@@ -253,6 +253,7 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `adventure_allowance_ledger`
 - `game_reward_ledger`
 - `gold_ledger`
+- `quest_game_reward_policies`
 - `advertisers`
 - `ad_campaigns`
 - `sponsored_places`
@@ -547,8 +548,9 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `RPG-011` Definir critérios operacionais para POIs seguros, acessíveis, permitidos, moderáveis e removíveis emergencialmente.
 - [ ] `RPG-012` Testar renderer AR opcional consumindo o mesmo estado da dungeon, com fallback 2D e uso somente parado/a pé.
 - [ ] `RPG-013` Definir transparência de drops, proteção de menores e revisão jurídica/políticas antes de qualquer recompensa aleatória paga.
+- [ ] `RPG-014` Implementar ponte idempotente `QuestCompleted → QuestGameRewardPolicy → GameRewardLedger`, sem dependência inversa na elegibilidade profissional.
 
-Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade veicular encerra/bloqueia interação; repetição de um evento não duplica recompensa; XP de dungeon não altera nenhuma regra de elegibilidade profissional; todos os serviços permanecem locais/mock e sem billing.
+Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade veicular encerra/bloqueia interação; repetição de um evento não duplica recompensa; concluir uma quest pode conceder recompensa de RPG uma única vez; nenhum estado do RPG altera uma regra de elegibilidade profissional; todos os serviços permanecem locais/mock e sem billing.
 
 ### Fase 10 — economia digital e marketplace de lojas
 
@@ -639,8 +641,9 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-019` | proposta | Selecionar verificação após spike entre Datavalid e um orquestrador privado; manter assinatura eletrônica como controle separado e baseado em risco. |
 | 2026-07-14 | `DEC-020` | decidida | Manter custo adicional zero durante desenvolvimento; preparar integrações por adaptadores e mocks, sem billing ou produção até autorização explícita. |
 | 2026-07-14 | `DEC-021` | decidida | Adotar Gold como moeda virtual fechada e separar nível global, XP profissional, XP de jogo, Chaves de Aventura, Gold e dinheiro real em domínios e ledgers independentes. |
-| 2026-07-14 | `DEC-022` | decidida | Criar dungeons geolocalizadas, party e avatar jogável como camada pós-validação, bloqueada durante navegação ativa e sem efeitos sobre confiança ou qualificação profissional. |
+| 2026-07-14 | `DEC-022` | decidida | Criar dungeons geolocalizadas, party e avatar jogável como camada pós-validação, bloqueada durante navegação ativa e sem efeitos do RPG sobre confiança ou qualificação profissional. |
 | 2026-07-14 | `DEC-023` | decidida | Tratar Chaves de Aventura como franquia limitada de participação, não como moeda; no desenho inicial são não transferíveis e não compráveis. |
+| 2026-07-14 | `DEC-024` | decidida | Permitir apenas a integração unidirecional `Quests → RPG`: quests validadas podem conceder progresso lúdico, mas nenhum estado ou recompensa do RPG melhora elegibilidade ou progressão profissional. |
 
 ## 9. Histórico de atualização
 
@@ -656,3 +659,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — mapeados candidatos brasileiros para CPF, biometria/liveness e assinatura eletrônica, mantendo seleção final condicionada a spike técnico, jurídico e de custo.
 - 2026-07-14 — estabelecida política de custo zero: ambiente local/mock por padrão, demos sem cobrança e proibição de billing sem autorização explícita.
 - 2026-07-14 — planejado RPG geolocalizado com avatar jogável, dungeons, parties, Gold e Chaves de Aventura, mantendo progressão profissional isolada e interação bloqueada durante navegação.
+- 2026-07-14 — definida ponte unidirecional: quests concluídas podem melhorar o RPG; RPG nunca melhora requisitos, reputação ou progressão das quests.
