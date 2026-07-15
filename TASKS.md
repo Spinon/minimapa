@@ -910,3 +910,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-15 — corrigida política financeira: custo operacional pode ser repassado ao pagador sem margem; principal do executor e lucro/receita da plataforma permanecem separados.
 - 2026-07-15 — iniciado `DEVQ-001`: módulo `:core:config`, `CostGuard`, defaults de simulação e CI local/mock implementados; testes e lint Android passaram.
 - 2026-07-15 — concluído `DEVQ-001`: contratos externos neutros, relógio/personas determinísticos, navegação simulada e providers fake implementados; inventário de custos e scanner de segredos adicionados; `DEVQ-002` iniciado.
+- 2026-07-15 — automatizado o teste local assistido: `npm run test:open` valida testes/lint/build, aguarda o emulador, instala e deixa o Minimapa aberto; pedido genérico de teste passa a executar esse fluxo.

@@ -80,6 +80,14 @@ Depois, um único comando inicia o emulador quando necessário, compila, instala
 npm run android:run
 ```
 
+Para executar testes e lint antes de abrir o aplicativo, use:
+
+```powershell
+npm run test:open
+```
+
+Esse é o comando padrão usado quando o responsável pede para abrir um teste: ele aguarda o Android iniciar, valida o projeto e deixa o aplicativo aberto para inspeção manual.
+
 O dispositivo criado se chama `medium_phone` e usa uma imagem x86_64 com Google Play, adequada aos futuros testes de mapas e localização.
 
 No macOS ou Linux:

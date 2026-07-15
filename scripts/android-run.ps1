@@ -1,3 +1,7 @@
+param(
+  [switch]$Verify
+)
+
 $ErrorActionPreference = "Stop"
 
 $workspace = Split-Path -Parent $PSScriptRoot
@@ -21,24 +25,57 @@ if (-not $env:ANDROID_HOME) {
 }
 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
 $adb = Join-Path $env:ANDROID_HOME "platform-tools\adb.exe"
+$emulator = Join-Path $env:ANDROID_HOME "emulator\emulator.exe"
 
 if (-not (Test-Path -LiteralPath $adb)) {
   throw "ADB not found. Run npm run android:setup-emulator first."
 }
 
-$onlineDevices = @(& $adb devices | Select-String -Pattern "\tdevice$")
-if ($onlineDevices.Count -eq 0) {
+$onlineEmulators = @(& $adb devices | Select-String -Pattern "^emulator-[0-9]+\s+device$")
+if ($onlineEmulators.Count -eq 0) {
   Write-Host "Starting medium_phone emulator..."
-  android emulator start medium_phone
-  if ($LASTEXITCODE -ne 0) {
-    throw "The medium_phone emulator could not be started."
+  if (-not (Test-Path -LiteralPath $emulator)) {
+    throw "Android Emulator not found. Run npm run android:setup-emulator first."
   }
+  $availableDevices = @(& $emulator -list-avds)
+  if ($availableDevices -notcontains "medium_phone") {
+    throw "Virtual device medium_phone not found. Run npm run android:setup-emulator first."
+  }
+  Start-Process -FilePath $emulator -ArgumentList @("-avd", "medium_phone") | Out-Null
 }
 
-Write-Host "Building debug APK..."
+Write-Host "Waiting for Android to finish booting..."
+$bootDeadline = (Get-Date).AddMinutes(3)
+do {
+  Start-Sleep -Seconds 2
+  $onlineEmulators = @(& $adb devices | Select-String -Pattern "^emulator-[0-9]+\s+device$")
+  $deviceSerial = if ($onlineEmulators.Count -gt 0) {
+    ($onlineEmulators[0].ToString() -split "\s+")[0]
+  } else {
+    $null
+  }
+  $bootCompleted = if ($deviceSerial) {
+    ([string](& $adb -s $deviceSerial shell getprop sys.boot_completed 2>$null)).Trim()
+  } else {
+    ""
+  }
+} until ($bootCompleted -eq "1" -or (Get-Date) -ge $bootDeadline)
+
+if ($bootCompleted -ne "1") {
+  throw "Android emulator did not finish booting within 3 minutes."
+}
+
+if ($Verify) {
+  Write-Host "Running tests, lint and debug build..."
+  $gradleTasks = @("test", "lintDebug", "assembleDebug")
+} else {
+  Write-Host "Building debug APK..."
+  $gradleTasks = @("assembleDebug")
+}
+
 Push-Location $androidProject
 try {
-  & .\gradlew.bat assembleDebug --console=plain
+  & .\gradlew.bat @gradleTasks --console=plain
   if ($LASTEXITCODE -ne 0) {
     throw "Android build failed with exit code $LASTEXITCODE."
   }
@@ -47,12 +84,14 @@ try {
 }
 
 Write-Host "Installing and opening Minimapa..."
-& $adb install -r $apk
+& $adb -s $deviceSerial install -r $apk
 if ($LASTEXITCODE -ne 0) {
   throw "APK installation failed with exit code $LASTEXITCODE."
 }
 
-& $adb shell am start -W -n app.minimapa/.MainActivity
+& $adb -s $deviceSerial shell am start -W -n app.minimapa/.MainActivity
 if ($LASTEXITCODE -ne 0) {
   throw "Minimapa could not be opened."
 }
+
+Write-Host "Minimapa is open in medium_phone. The emulator will remain open for manual testing."
