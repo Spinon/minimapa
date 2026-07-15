@@ -12,6 +12,7 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - Planejamento vivo e decisões em [`TASKS.md`](TASKS.md).
 - Arquitetura do motor extensível em [`docs/architecture/quest-engine.md`](docs/architecture/quest-engine.md).
 - Governança do catálogo em [`docs/architecture/community-governance.md`](docs/architecture/community-governance.md).
+- RPG geolocalizado e dungeons em [`docs/architecture/location-rpg.md`](docs/architecture/location-rpg.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
 - Política de custo zero em [`docs/development/cost-policy.md`](docs/development/cost-policy.md).
 - Escolha entre Google Navigation SDK e Mapbox Navigation SDK reservada para um spike comparativo.

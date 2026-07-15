@@ -33,12 +33,13 @@ A fantasia deve dar personalidade ao produto sem esconder informações de segur
 
 O produto é **mobile-first e navigation-first**. As quests organizam o motivo da jornada, mas o diferencial é manter o usuário dentro de uma interface de minimapa própria durante o deslocamento. A primeira versão entrega navegação curva a curva embutida em 2D; a arquitetura deve permitir que o mesmo estado de navegação alimente, no futuro, uma visualização em realidade aumentada.
 
-### Dois modos da experiência
+### Modos da experiência
 
-O aplicativo possui duas interfaces de mapa, com objetivos e densidades diferentes:
+O aplicativo possui interfaces de mapa com objetivos e densidades diferentes:
 
 1. **Mapa-mundo / exploração:** busca de conteúdo, lojas, lugares, quests, avatares, pins patrocinados, filtros e planejamento. É a superfície social, comercial e de descoberta.
 2. **Modo corrida / quest ativa:** curva a curva, rota, posição, próxima manobra, faixas, voz, velocidade, ETA e status essencial da quest. Lojas, publicidade, recompensas e conteúdo de exploração ficam ocultos.
+3. **Modo dungeon:** experiência lúdica para usuários parados ou a pé, com lobby, party e encontro. Fica indisponível durante uma quest ativa e nunca aparece sobre a navegação veicular.
 
 Fluxo principal:
 
@@ -63,6 +64,12 @@ O **Conselho do Reino** permite propor e votar mensalmente no próximo serviço.
 Somente identidades verificadas podem candidatar-se, aceitar, executar ou concluir quests. Contas não verificadas podem publicar quests de baixo risco com o aviso **Identidade do solicitante não verificada**, mas a atribuição e a execução permanecem bloqueadas até o solicitante também concluir a verificação. Verificação de identidade, credencial profissional, karma e MFA são sinais independentes.
 
 O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
+
+### RPG geolocalizado
+
+O avatar também será um personagem jogável. Dungeons versionadas podem aparecer em pontos seguros do mapa de exploração; o usuário se aproxima a pé, entra em uma party e participa de encontros cooperativos. As recompensas possíveis são XP de jogo, Gold, cosméticos e equipamentos com efeito exclusivamente lúdico.
+
+Progressão profissional e progressão de jogo são domínios distintos. Dungeon não comprova encanamento, não concede karma, credencial, elegibilidade, prioridade ou vantagem econômica em quests reais. Durante `ActiveQuestMode`, dungeons, convites e recompensas ficam desmontados e toda interação é bloqueada. O desenho completo está em `docs/architecture/location-rpg.md`.
 
 ### Métricas iniciais
 
@@ -103,13 +110,16 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 - Métricas de campanha devem usar agregação e limiares de privacidade; nunca vender trilhas individuais de localização.
 - Ao entrar no modo corrida, todas as camadas comerciais e de descoberta são removidas da árvore de renderização, não apenas escondidas visualmente por outro painel.
 
-### Três economias separadas
+### Progressões e economias separadas
 
-1. **XP/nível:** ganho por atividade; não transferível, não comprável e sem valor monetário.
-2. **Gemas:** moeda virtual fechada para cosméticos digitais. Pode ser comprada, mas não sacada, transferida entre usuários ou usada para pagar produtos físicos.
-3. **Dinheiro real:** pagamentos de publicidade e marketplace ficam em ledgers e provedores próprios, separados de XP/gemas.
+1. **XP/nível global:** ganho por participação segura; não transferível, não comprável e sem valor monetário.
+2. **XP profissional:** ganho por quests reais e credenciais verificadas, separado do RPG.
+3. **XP de jogo:** ganho em dungeons e eventos, usado apenas pelo avatar jogável.
+4. **Gold:** moeda virtual fechada para cosméticos e itens digitais permitidos. Não pode ser sacada, transferida ou usada para pagar produtos físicos.
+5. **Chaves de Aventura:** franquia diária/semanal/mensal não transferível para entradas com recompensa; não é moeda e, inicialmente, não pode ser comprada.
+6. **Dinheiro real:** pagamentos de publicidade e marketplace ficam em ledgers e provedores próprios, separados de XP e Gold.
 
-“Gemas” podem reforçar o tema, mas não devem esconder o preço real. A tela de compra deve mostrar quantidade, preço em moeda local, equivalência dos itens, saldo, histórico e política de reembolso. Para lojistas, preferir uma **Licença de Guilda** ou plano comercial com preço transparente em um portal B2B, em vez de misturar capital da loja com gemas de cosméticos.
+Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade, preço em moeda local, equivalência dos itens, saldo, histórico e política de reembolso. Para lojistas, preferir uma **Licença de Guilda** ou plano comercial com preço transparente em um portal B2B, em vez de misturar capital da loja com Gold.
 
 ## 2. Escopo funcional do MVP
 
@@ -149,10 +159,11 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 - Preço dinâmico, leilão ou contraproposta.
 - Quests com múltiplas paradas.
 - Grupos, guildas sociais, ranking complexo e itens colecionáveis.
+- Dungeons geolocalizadas em produção, parties públicas e recompensas aleatórias; primeiro haverá apenas uma vertical slice local simulada.
 - Divisão de tarifa, assinatura, carteira e programa de indicação.
 - Expansão para várias cidades antes de validar a operação local.
 - Marketplace completo com catálogo, estoque, split/payout, entrega, reembolso e disputa.
-- Compra de gemas com dinheiro real; o beta pode validar progressão e cosméticos apenas com recompensas conquistadas.
+- Compra de Gold com dinheiro real; o beta pode validar progressão e cosméticos apenas com recompensas conquistadas.
 
 ## 3. Arquitetura proposta
 
@@ -179,7 +190,7 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 - Push: FCM no Android e APNs no iOS, com disparo pelo backend.
 - Erros/telemetria: Sentry ou equivalente.
 - Produto: analytics com eventos mínimos e sem enviar localização precisa desnecessariamente.
-- Digital: Apple In-App Purchase e Google Play Billing para gemas/cosméticos comprados dentro do app, conforme as políticas vigentes.
+- Digital: Apple In-App Purchase e Google Play Billing para Gold/cosméticos comprados dentro do app, conforme as políticas vigentes.
 - Marketplace físico: provedor de pagamentos com suporte a marketplace, split/payout, estorno e KYC; não usar billing das lojas para bens e serviços físicos.
 - Anunciantes/lojistas: portal web B2B separado para campanhas, faturamento, catálogo e operação. Validar as regras de links/compra externa antes de apontar o app consumidor para esse portal.
 - Durante o protótipo, usar sandbox e não movimentar dinheiro real.
@@ -229,6 +240,19 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 - `xp_ledger`
 - `virtual_wallets`
 - `virtual_currency_ledger`
+- `game_skills`
+- `player_game_progress`
+- `player_loadouts`
+- `dungeon_definitions`
+- `dungeon_locations`
+- `dungeon_instances`
+- `dungeon_parties`
+- `dungeon_party_members`
+- `dungeon_runs`
+- `dungeon_events`
+- `adventure_allowance_ledger`
+- `game_reward_ledger`
+- `gold_ledger`
 - `advertisers`
 - `ad_campaigns`
 - `sponsored_places`
@@ -243,7 +267,7 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 - `fulfillments`
 - `reports`
 
-Os ledgers de XP, gemas e dinheiro real devem ser separados. Saldos não podem ser atualizados diretamente pelo cliente; toda concessão, compra, consumo, reembolso ou ajuste administrativo gera uma entrada imutável e idempotente.
+Os ledgers de XP global, XP profissional, XP de jogo, Gold, Chaves de Aventura e dinheiro real devem ser separados. Saldos não podem ser atualizados diretamente pelo cliente; toda concessão, compra, consumo, reembolso ou ajuste administrativo gera uma entrada imutável e idempotente.
 
 ### Máquina de estados da quest
 
@@ -271,14 +295,16 @@ Renderizadores iniciais: minimapa 2D, banner de manobra, áudio e HUD compacto. 
 
 ### Estado da experiência de mapa
 
-Um controlador de alto nível deve coordenar os dois produtos de mapa sem misturar suas responsabilidades:
+Um controlador de alto nível deve coordenar os modos do mapa sem misturar suas responsabilidades:
 
-- `ExploreMode`: conteúdo, quests, lojas, campanhas, busca e câmera livre.
+- `ExploreMode`: conteúdo, quests, lojas, campanhas, dungeons, busca e câmera livre.
 - `RoutePreviewMode`: origem/destino, alternativas, distância e confirmação, ainda sem orientação ativa.
 - `ActiveQuestMode`: `NavigationSession` ativa, câmera de seguimento, HUD mínimo e nenhuma camada comercial.
 - `ArrivalMode`: confirmação de chegada/conclusão; só então retorna ao mapa-mundo.
+- `DungeonApproachMode`: aproximação segura a pé, sem interação quando houver velocidade veicular ou quest ativa.
+- `DungeonMode`: lobby, party e encontro lúdico; isolado da progressão profissional e da navegação.
 
-As camadas do `ExploreMode` não recebem eventos durante `ActiveQuestMode`. Isso reduz distração, uso de rede/GPU e risco de um anúncio aparecer por engano sobre uma manobra.
+As camadas do `ExploreMode` e de dungeon não recebem eventos durante `ActiveQuestMode`. Isso reduz distração, uso de rede/GPU e risco de um anúncio, convite ou encontro aparecer por engano sobre uma manobra.
 
 ## 4. Estratégia de mapas e navegação
 
@@ -349,7 +375,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `BUS-002` Definir se o pagamento da quest acontece fora da plataforma ou como repasse transparente sem receita de take rate.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
 - [ ] `ADS-002` Definir modelo comercial do piloto: venda direta/faturada, CPM, período fixo ou destaque regional.
-- [ ] `ECO-001` Aprovar separação entre XP, gemas e dinheiro real.
+- [x] `ECO-001` Aprovar separação entre XP global, XP profissional, XP de jogo, Gold, Chaves de Aventura e dinheiro real.
 - [ ] `POL-001` Validar App Store/Google Play para publicidade, moeda virtual, cosméticos e marketplace físico.
 - [ ] `CST-001` Implementar `CostGuard`, modos `mock/sandbox/production` e bloqueio quando `ALLOW_BILLABLE_REQUESTS=false`.
 - [ ] `CST-002` Criar mocks e contract tests para cada integração externa antes de qualquer credencial real.
@@ -506,11 +532,29 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `GOV-005` Encaminhar serviços regulados/alto risco para `APPROVED_PENDING_SAFETY_REVIEW` antes de permitir quests.
 - [ ] `GOV-006` Preservar versões antigas, permitir suspensão/rollback e auditar ajustes manuais posteriores.
 
-### Fase 9 — economia digital e marketplace de lojas
+### Fase 9 — RPG geolocalizado e dungeons
 
-- [ ] `ECO-002` Definir nome, pacotes, sinks, não expiração e política de reembolso das gemas.
-- [ ] `ECO-003` Implementar wallet/ledger de gemas sem transferência ou saque entre usuários.
-- [ ] `IAP-001` Integrar Apple In-App Purchase e Google Play Billing para gemas/cosméticos digitais.
+- [ ] `RPG-001` Implementar domínios e ledgers separados para nível global, progressão profissional e progressão de jogo.
+- [ ] `RPG-002` Criar schemas versionados para definição, localização, instância e ciclo de vida de dungeon.
+- [ ] `RPG-003` Implementar `DungeonApproachMode` e `DungeonMode`, desmontados e bloqueados durante `ActiveQuestMode`.
+- [ ] `RPG-004` Implementar party pública, privada e por convite, com liderança, limite, saída, bloqueio e denúncia.
+- [ ] `RPG-005` Criar motor autoritativo de encontros por eventos e blocos de conteúdo aprovados, sem código arbitrário.
+- [ ] `RPG-006` Implementar Chaves de Aventura com concessões, consumo, estorno, cooldown e caps diários/semanais/mensais.
+- [ ] `RPG-007` Implementar recompensas idempotentes de XP de jogo, Gold e itens por tabelas versionadas.
+- [ ] `RPG-008` Implementar skills, equipamentos e loadout de jogo sem efeito em proficiência, karma, credencial ou matching profissional.
+- [ ] `RPG-009` Validar vertical slice local: dungeon mockada, GPS do emulador, party-bot, um encontro e ledger local, sem API paga.
+- [ ] `RPG-010` Implementar gates de movimento seguro, precisão, quest ativa, cooldown, spoofing e multiaccount proporcionais ao risco.
+- [ ] `RPG-011` Definir critérios operacionais para POIs seguros, acessíveis, permitidos, moderáveis e removíveis emergencialmente.
+- [ ] `RPG-012` Testar renderer AR opcional consumindo o mesmo estado da dungeon, com fallback 2D e uso somente parado/a pé.
+- [ ] `RPG-013` Definir transparência de drops, proteção de menores e revisão jurídica/políticas antes de qualquer recompensa aleatória paga.
+
+Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade veicular encerra/bloqueia interação; repetição de um evento não duplica recompensa; XP de dungeon não altera nenhuma regra de elegibilidade profissional; todos os serviços permanecem locais/mock e sem billing.
+
+### Fase 10 — economia digital e marketplace de lojas
+
+- [ ] `ECO-002` Definir pacotes, sinks, não expiração e política de reembolso de Gold.
+- [ ] `ECO-003` Implementar wallet/ledger de Gold sem transferência ou saque entre usuários.
+- [ ] `IAP-001` Integrar Apple In-App Purchase e Google Play Billing para Gold/cosméticos digitais.
 - [ ] `IAP-002` Implementar validação server-side, restore, reembolso e prevenção de replay de recibos.
 - [ ] `MER-001` Criar portal web B2B para onboarding, Licença de Guilda, campanhas e gestão da loja.
 - [ ] `MER-002` Implementar loja, catálogo, variações, estoque, disponibilidade e moderação.
@@ -542,6 +586,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - Conteúdo patrocinado é identificado, limitado e ausente durante navegação ativa.
 - A transição mapa-mundo → modo corrida remove camadas de lojas, busca, quests não relacionadas e publicidade; a conclusão restaura o contexto de exploração.
 - XP, níveis e cosméticos conquistados são consistentes, auditáveis e não compram vantagem operacional.
+- A separação de domínio impede que XP, skills, Gold ou equipamentos de dungeon alterem proficiência, credenciais, karma ou elegibilidade profissional.
+- `ActiveQuestMode` não renderiza nem processa dungeons, convites, recompensas de jogo ou outras interações lúdicas.
 - Existe um piloto publicitário manual mensurável antes de construir compra self-service de campanhas.
 
 ## 7. Riscos a acompanhar
@@ -557,12 +603,16 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - Uma interface AR usada por condutores pode aumentar distração e risco; o caso de uso e o suporte físico precisam ser validados antes de produção.
 - O feed customizado do Google e wrappers cross-platform ainda possuem superfícies preview/0.x; os spikes devem testar estabilidade e plano de migração.
 - Google Navigation impõe regras de segurança para overlays; publicidade durante navegação pode violar política e aumentar distração.
-- Gemas usadas para ocultar preço real podem ser consideradas experiência enganosa. Preço, equivalência, saldo e reembolso devem ser transparentes.
+- Gold usado para ocultar preço real pode ser considerado experiência enganosa. Preço, equivalência, saldo e reembolso devem ser transparentes.
 - Bens digitais, cosméticos e funcionalidades desbloqueadas no app normalmente exigem Apple IAP/Google Play Billing; bens e serviços físicos seguem outro fluxo de pagamento.
-- Misturar gemas com saldo de lojista, repasse ou remuneração de motorista cria risco contábil, fraude e possível enquadramento financeiro.
+- Misturar Gold com saldo de lojista, repasse ou remuneração de motorista cria risco contábil, fraude e possível enquadramento financeiro.
 - Marketplace traz KYC, chargeback, fraude, moderação, tributação, defesa do consumidor, logística e responsabilidade por produtos.
 - Publicidade baseada em localização precisa pode revelar padrões sensíveis; preferir contexto em tempo real e métricas agregadas.
 - O app deve declarar publicidade às lojas e distinguir claramente posicionamento pago de resultado orgânico.
+- Dungeons podem incentivar distração ao dirigir, travessias inseguras ou invasão de propriedade; interação exige gate de movimento e POIs previamente aprovados.
+- Party e encontro presencial ampliam riscos de assédio, exposição de localização e segurança de menores; aplicar privacidade por padrão, bloqueio, denúncia e regras etárias.
+- GPS spoofing, multiaccount e farming podem desequilibrar Gold e recompensas; usar sinais proporcionais sem transformar localização em vigilância permanente.
+- Drops aleatórios, energia comprável e itens com valor percebido podem acionar regras de loot box, jogos de azar ou proteção do consumidor; não monetizar sem revisão específica.
 
 ## 8. Log de decisões
 
@@ -579,7 +629,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-009` | decidida | Publicidade local é a fonte de receita principal planejada. |
 | 2026-07-14 | `DEC-010` | decidida | Todos os usuários participam de progressão com nível, avatar e recompensas estéticas. |
 | 2026-07-14 | `DEC-011` | decidida | Lojas de empresas, pedidos, pagamento e entrega formam uma camada posterior de marketplace. |
-| 2026-07-14 | `DEC-012` | proposta | Separar XP, gemas de cosméticos e dinheiro real em economias e ledgers independentes. |
+| 2026-07-14 | `DEC-012` | substituída | Separar XP, gemas de cosméticos e dinheiro real. Ampliada e renomeada por `DEC-021` após a inclusão do RPG geolocalizado. |
 | 2026-07-14 | `DEC-013` | decidida | Exibir publicidade em exploração/busca/mural/chegada, nunca durante navegação ativa. |
 | 2026-07-14 | `DEC-014` | decidida | Separar o mapa em `ExploreMode` rico em conteúdo e `ActiveQuestMode` limpo para curva a curva. |
 | 2026-07-14 | `DEC-015` | decidida | Tratar Quest como núcleo universal extensível por módulos tipados, requisitos versionados e estratégias configuráveis de atribuição. |
@@ -588,6 +638,9 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-018` | decidida | Exigir identidade verificada para executar quests; permitir publicação limitada por não verificados, bloqueando atribuição até a verificação de ambas as partes. |
 | 2026-07-14 | `DEC-019` | proposta | Selecionar verificação após spike entre Datavalid e um orquestrador privado; manter assinatura eletrônica como controle separado e baseado em risco. |
 | 2026-07-14 | `DEC-020` | decidida | Manter custo adicional zero durante desenvolvimento; preparar integrações por adaptadores e mocks, sem billing ou produção até autorização explícita. |
+| 2026-07-14 | `DEC-021` | decidida | Adotar Gold como moeda virtual fechada e separar nível global, XP profissional, XP de jogo, Chaves de Aventura, Gold e dinheiro real em domínios e ledgers independentes. |
+| 2026-07-14 | `DEC-022` | decidida | Criar dungeons geolocalizadas, party e avatar jogável como camada pós-validação, bloqueada durante navegação ativa e sem efeitos sobre confiança ou qualificação profissional. |
+| 2026-07-14 | `DEC-023` | decidida | Tratar Chaves de Aventura como franquia limitada de participação, não como moeda; no desenho inicial são não transferíveis e não compráveis. |
 
 ## 9. Histórico de atualização
 
@@ -602,3 +655,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — definida verificação forte e revogável: não verificados podem publicar com alcance limitado, mas somente partes verificadas avançam para atribuição e execução.
 - 2026-07-14 — mapeados candidatos brasileiros para CPF, biometria/liveness e assinatura eletrônica, mantendo seleção final condicionada a spike técnico, jurídico e de custo.
 - 2026-07-14 — estabelecida política de custo zero: ambiente local/mock por padrão, demos sem cobrança e proibição de billing sem autorização explícita.
+- 2026-07-14 — planejado RPG geolocalizado com avatar jogável, dungeons, parties, Gold e Chaves de Aventura, mantendo progressão profissional isolada e interação bloqueada durante navegação.
