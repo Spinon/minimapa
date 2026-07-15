@@ -65,6 +65,8 @@ Somente identidades verificadas podem candidatar-se, aceitar, executar ou conclu
 
 O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
 
+Para quests de transporte, a criação apresenta uma **faixa de valor sugerido** baseada em quests comparáveis concluídas nos 30 dias anteriores. A referência usa mediana robusta de valor líquido por quilômetro, segmentação geográfica/operacional, tamanho mínimo de amostra e confiança explícita. O autor pode editar o valor; a plataforma não impõe tarifa nem recebe percentual.
+
 ### RPG geolocalizado
 
 O avatar também será um personagem jogável. Dungeons versionadas podem aparecer em pontos seguros do mapa de exploração; o usuário se aproxima a pé, entra em uma party e participa de encontros cooperativos. As recompensas possíveis são XP de jogo, Gold, cosméticos e equipamentos com efeito exclusivamente lúdico.
@@ -213,6 +215,9 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `eligibility_evaluations`
 - `quest_movement_details`
 - `quest_service_details`
+- `price_suggestion_policies`
+- `price_suggestion_snapshots`
+- `transport_price_observations`
 - `driver_locations`
 - `navigation_sessions`
 - `navigation_events`
@@ -449,6 +454,12 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `MAP-007` Implementar `RoutePreviewMode` sem iniciar cobrança/sessão de navegação prematuramente.
 - [ ] `QST-001` Implementar criação, validação, prévia e publicação de quest.
 - [ ] `QST-002` Implementar histórico e detalhe para quem publicou.
+- [x] `PRC-001` Aprovar faixa sugerida e editável para transporte com base robusta em quests comparáveis concluídas nos últimos 30 dias.
+- [ ] `PRC-002` Modelar observações e snapshots auditáveis com versão, filtros, amostra, percentis, custos e confiança.
+- [ ] `PRC-003` Implementar agregação local por região, modalidade, veículo, faixa de distância e período, com amostra mínima e fallback explícito.
+- [ ] `PRC-004` Exibir faixa, decomposição, tamanho da amostra, confiança e aviso de que a sugestão não garante aceite.
+- [ ] `PRC-005` Excluir gorjeta, pedágio, reembolso, disputa, fraude e outliers; limitar influência repetida da mesma conta ou dupla.
+- [ ] `PRC-006` Testar recálculo, pouca amostra, privacidade, manipulação, rotas curtas/longas e escolha de valor fora da faixa.
 - [ ] `SEC-002` Manter chaves secretas de mapas/rotas no servidor quando exigido e restringir chaves públicas por app/domínio.
 
 ### Fase 4 — mural e aceite (estimativa: 1–2 semanas)
@@ -523,7 +534,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `NAV-011` Avaliar navegação offline e pacotes regionais conforme o SDK escolhido.
 - [ ] `MCH-001` Avaliar matching/recomendação automática sem remover o mural de quests.
 - [ ] `MCH-002` Implementar estratégias configuráveis de atribuição: aceite direto, candidatura, convite e orçamento/agendamento.
-- [ ] `PRC-001` Avaliar preço sugerido/dinâmico com regras transparentes.
+- [ ] `PRC-007` Avaliar componente de tempo, sazonalidade e eventual preço dinâmico somente após medir o estimador transparente do MVP.
 - [ ] `SCL-001` Testar carga, particionamento/retenção de localizações e expansão regional.
 - [ ] `GAM-005` Avaliar progressão social, temporadas e novas categorias cosméticas sem prejudicar confiança.
 - [ ] `GOV-001` Implementar propostas, consolidação de duplicatas e ciclos mensais do Conselho do Reino.
@@ -576,6 +587,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Uma quest de solicitante não verificado fica claramente marcada e não avança para atribuição/execução antes da verificação.
 - Build, CI e testes locais realizam zero chamadas faturáveis e funcionam apenas com serviços locais, mocks ou sandboxes garantidamente gratuitas.
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
+- A sugestão de transporte é editável, auditável, mostra faixa/confiança e não mistura custos reembolsáveis com o valor líquido por quilômetro.
 - Localização só é coletada com consentimento e durante a finalidade declarada.
 - RLS impede acesso cruzado a dados privados e documentos.
 - O fluxo principal funciona após perda temporária de rede sem duplicar cobrança ou eventos.
@@ -615,6 +627,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Party e encontro presencial ampliam riscos de assédio, exposição de localização e segurança de menores; aplicar privacidade por padrão, bloqueio, denúncia e regras etárias.
 - GPS spoofing, multiaccount e farming podem desequilibrar Gold e recompensas; usar sinais proporcionais sem transformar localização em vigilância permanente.
 - Drops aleatórios, energia comprável e itens com valor percebido podem acionar regras de loot box, jogos de azar ou proteção do consumidor; não monetizar sem revisão específica.
+- Uma média simples de preço por quilômetro pode reforçar distorções, manipulação ou remuneração inadequada; usar segmentos comparáveis, estatística robusta, amostra mínima e monitoramento de impacto.
 
 ## 8. Log de decisões
 
@@ -644,6 +657,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-022` | decidida | Criar dungeons geolocalizadas, party e avatar jogável como camada pós-validação, bloqueada durante navegação ativa e sem efeitos do RPG sobre confiança ou qualificação profissional. |
 | 2026-07-14 | `DEC-023` | decidida | Tratar Chaves de Aventura como franquia limitada de participação, não como moeda; no desenho inicial são não transferíveis e não compráveis. |
 | 2026-07-14 | `DEC-024` | decidida | Permitir apenas a integração unidirecional `Quests → RPG`: quests validadas podem conceder progresso lúdico, mas nenhum estado ou recompensa do RPG melhora elegibilidade ou progressão profissional. |
+| 2026-07-14 | `DEC-025` | decidida | Sugerir uma faixa editável para quests de transporte usando mediana robusta do valor por quilômetro de quests comparáveis concluídas nos 30 dias anteriores, com custos separados, amostra mínima, confiança e snapshot auditável. |
 
 ## 9. Histórico de atualização
 
@@ -660,3 +674,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — estabelecida política de custo zero: ambiente local/mock por padrão, demos sem cobrança e proibição de billing sem autorização explícita.
 - 2026-07-14 — planejado RPG geolocalizado com avatar jogável, dungeons, parties, Gold e Chaves de Aventura, mantendo progressão profissional isolada e interação bloqueada durante navegação.
 - 2026-07-14 — definida ponte unidirecional: quests concluídas podem melhorar o RPG; RPG nunca melhora requisitos, reputação ou progressão das quests.
+- 2026-07-14 — aprovado estimador transparente de valor para transporte, baseado em faixa robusta dos últimos 30 dias e sempre editável pelo autor.

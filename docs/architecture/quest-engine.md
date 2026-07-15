@@ -48,6 +48,27 @@ O núcleo não conhece termos como `driver`, `vehicle` ou `destination`. Esses c
 - veículo e requisitos legais;
 - rota, sessão de navegação, chegada e localização ao vivo.
 
+#### Valor sugerido para transporte
+
+Ao preparar uma quest de deslocamento, a plataforma pode apresentar uma faixa sugerida baseada em quests comparáveis concluídas nos 30 dias anteriores. A sugestão é informativa e editável: não é tarifa obrigatória, garantia de aceite nem comissão do Minimapa.
+
+A primeira versão usa estatística robusta e explicável, sem IA:
+
+1. selecionar apenas quests concluídas, não disputadas, com partes verificadas e dados de rota válidos;
+2. separar valor acordado de gorjeta, pedágio, estacionamento, reembolso e outros custos explícitos;
+3. agrupar por região, modalidade, veículo, faixa de distância e período do dia;
+4. calcular a mediana do valor líquido por quilômetro, removendo ou limitando outliers e contribuições repetidas suspeitas;
+5. multiplicar pela distância planejada e reaplicar somente os custos explícitos conhecidos;
+6. apresentar centro, faixa interquartil ou faixa mínima de variação, tamanho da amostra e confiança.
+
+Usar apenas a média aritmética de `valor / km` distorce viagens curtas, congestionadas e amostras com extremos. Faixas de distância e duração estimada devem participar da seleção; depois de haver volume suficiente, pode-se testar um modelo robusto com componentes de partida, distância e tempo, sempre mantendo uma decomposição compreensível.
+
+A agregação exige uma amostra mínima configurável, inicialmente 30 quests independentes. Abaixo disso, o algoritmo amplia progressivamente região ou janela histórica e reduz a confiança; sem base suficiente, usa uma referência operacional manual claramente identificada, nunca inventa precisão. Nenhuma estatística é exibida para grupos abaixo do limiar de privacidade.
+
+Cada cálculo gera um `PriceSuggestionSnapshot` com versão da política, filtros, janela, tamanho da amostra, percentis, distância, custos, faixa e confiança. O snapshot fica ligado à quest para auditoria, mesmo que o autor escolha outro valor.
+
+Controles antiabuso limitam a influência de uma mesma dupla ou conta, excluem fraude/disputa e monitoram manipulação coordenada. Cancelamento por segurança nunca deve gerar penalidade para atingir preço ou recompensa. O estimador não usa Gold, level, equipamento, karma ou qualquer estado do RPG.
+
 ### Prestação de serviço
 
 - local presencial, remoto ou híbrido;
@@ -138,6 +159,7 @@ Eventos de domínio registram todas as transições. Interfaces e notificações
 - módulos: `quest_movement_details`, `quest_service_details`;
 - capacidades: `skills`, `player_skills`, `credentials`, `credential_verifications`;
 - progressão específica: `service_skill_rewards`, `skill_xp_ledger`, `skill_proficiency_levels`;
+- preço sugerido: `price_suggestion_policies`, `price_suggestion_snapshots`, `transport_price_observations`;
 - confiança: `reputation_events`, `reputation_scores`, `ratings`.
 
 Campos flexíveis podem existir para metadados de apresentação versionados, mas dados usados por autorização, dinheiro, elegibilidade ou busca devem ser tipados e indexáveis.
