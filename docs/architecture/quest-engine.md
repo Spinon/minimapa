@@ -145,12 +145,35 @@ Karma não deve ser somente uma nota global. O sistema mantém reputação conte
 
 O mesmo núcleo aceita diferentes estratégias:
 
-- `FIRST_ELIGIBLE_ACCEPTS`: primeiro jogador elegível aceita; apropriado para certas quests de deslocamento.
+- `FIRST_ELIGIBLE_ACCEPTS`: primeiro jogador elegível aceita exatamente a oferta publicada; apropriado para certas quests de deslocamento e serviços simples.
 - `OWNER_SELECTS_APPLICATION`: interessados se candidatam e o criador escolhe; apropriado para serviços.
-- `QUOTE_AND_SCHEDULE`: candidatos enviam orçamento e disponibilidade antes da escolha.
+- `QUOTE_AND_SCHEDULE`: candidatos aceitam a oferta publicada ou enviam contraproposta de preço, prazo, escopo e materiais antes da escolha.
 - `INVITE_ONLY`: criador convida jogadores elegíveis.
 
 Concorrência e autorização permanecem atômicas no servidor em todas as estratégias.
+
+### Oferta, orçamento e contraproposta
+
+Toda quest pode nascer com uma oferta do autor: objetivo, escopo versionado, valor, moeda, janela e condições. Dependendo da categoria, o valor pode ser obrigatório, opcional ou “a combinar”. Uma empresa ou pessoa elegível que queira executar escolhe entre:
+
+1. `ACCEPT_AS_POSTED`: aceitar todos os termos publicados sem alteração;
+2. `SUBMIT_COUNTEROFFER`: propor outro valor e, quando necessário, prazo, agenda, materiais ou uma delimitação explícita do escopo;
+3. `DECLINE`: ignorar ou recusar a oportunidade.
+
+Contrapropostas são privadas entre autor e proponente. Outros candidatos não veem valores ou termos concorrentes. O autor pode aceitar, rejeitar ou solicitar revisão, e o proponente pode revisar ou retirar enquanto a quest permanecer aberta. Cada versão é preservada; editar nunca sobrescreve o histórico.
+
+Uma contraproposta declara seu tipo de preço:
+
+- `FIXED_TOTAL`: total fechado para o escopo descrito;
+- `LABOR_ONLY`: somente mão de obra, com materiais separados;
+- `ESTIMATE_WITH_CEILING`: estimativa acompanhada de teto que não pode ser ultrapassado sem nova aprovação;
+- `DIAGNOSIS_REQUIRED`: diagnóstico inicial antes de apresentar orçamento definitivo.
+
+Ao aceitar uma oferta ou contraproposta, uma transação única revalida identidade, credenciais, elegibilidade, vigência e disponibilidade da quest. Em seguida cria `AgreedTermsSnapshot`, atribui o executor e encerra as demais propostas. Dois aceites concorrentes não podem gerar duas atribuições.
+
+O snapshot contém versão do escopo, preço, componentes, prazo, materiais, garantias declaradas e responsabilidades. Alterações posteriores usam um aditivo bilateral versionado; nenhuma parte muda silenciosamente o acordo. A referência histórica ou externa que apareceu durante a negociação também fica registrada, mas nunca faz parte dos termos sem aceite explícito.
+
+Empresas e pessoas usam o mesmo protocolo de propostas. Uma empresa precisa de identidade organizacional verificada e de um responsável/executor elegível quando a categoria exigir execução pessoal ou credencial profissional.
 
 ## Ciclo de vida
 
@@ -165,7 +188,7 @@ Eventos de domínio registram todas as transições. Interfaces e notificações
 ## Persistência planejada
 
 - núcleo: `quest_types`, `quests`, `quest_requirements`, `quest_events`;
-- matching: `quest_applications`, `quest_assignments`, `eligibility_evaluations`;
+- matching: `quest_applications`, `quest_offers`, `quest_offer_versions`, `quest_offer_events`, `agreed_terms_snapshots`, `quest_assignments`, `eligibility_evaluations`;
 - módulos: `quest_movement_details`, `quest_service_details`;
 - capacidades: `skills`, `player_skills`, `credentials`, `credential_verifications`;
 - progressão específica: `service_skill_rewards`, `skill_xp_ledger`, `skill_proficiency_levels`;

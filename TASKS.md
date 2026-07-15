@@ -69,6 +69,8 @@ Para quests de transporte, a criação apresenta uma **faixa de valor sugerido**
 
 Para prestação de serviços, o cold start usa pedido de orçamento: escopo estruturado, orçamento opcional do autor e propostas com mão de obra, prazo, deslocamento e materiais separados. Não existe “valor-base da plataforma” antes de haver amostra suficiente. Futuras faixas históricas comparam somente a mesma definição/versionamento de serviço, região e escopo compatíveis.
 
+O autor publica o que precisa e quanto pretende pagar. Uma pessoa ou empresa elegível pode aceitar os termos como publicados ou enviar contraproposta privada com preço, prazo, materiais e eventual ajuste explícito de escopo. O autor escolhe; o aceite atômico congela um snapshot do acordo e encerra as demais propostas. Referências de preço apenas informam a negociação.
+
 Fontes oficiais ou profissionais podem complementar o cold start quando forem aplicáveis: custos SINAPI, pisos regulatórios de frete, tarifas municipais e honorários indicativos, por exemplo. Cada referência permanece separada do histórico do Minimapa e exibe publicador, território, competência, metodologia e natureza. Sem fonte aplicável nem amostra interna, não há sugestão. Detalhes em `docs/architecture/external-price-references.md`.
 
 ### RPG geolocalizado
@@ -162,7 +164,7 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 ### Fora do primeiro MVP
 
 - Realidade aumentada em produção; o MVP prepara o contrato e valida um spike técnico separado.
-- Preço dinâmico, leilão ou contraproposta.
+- Preço dinâmico e leilão público/reverso; contraproposta privada faz parte do fluxo principal.
 - Quests com múltiplas paradas.
 - Grupos, guildas sociais, ranking complexo e itens colecionáveis.
 - Dungeons geolocalizadas em produção, parties públicas e recompensas aleatórias; primeiro haverá apenas uma vertical slice local simulada.
@@ -214,6 +216,10 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `quests`
 - `quest_requirements`
 - `quest_applications`
+- `quest_offers`
+- `quest_offer_versions`
+- `quest_offer_events`
+- `agreed_terms_snapshots`
 - `quest_assignments`
 - `quest_events`
 - `eligibility_evaluations`
@@ -487,6 +493,12 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `BRD-002` Implementar filtros essenciais e detalhe da quest.
 - [ ] `QST-003` Implementar aceite atômico no banco (`open → accepted`).
 - [ ] `QST-004` Tratar corrida de dois motoristas aceitando a mesma quest.
+- [ ] `QST-007` Implementar aceite da oferta publicada ou contraproposta privada e versionada por pessoa/empresa elegível.
+- [ ] `QST-008` Modelar preço `FIXED_TOTAL`, `LABOR_ONLY`, `ESTIMATE_WITH_CEILING` e `DIAGNOSIS_REQUIRED`, separando materiais.
+- [ ] `QST-009` Aceitar proposta em transação atômica, criar `AgreedTermsSnapshot` e expirar/rejeitar as propostas concorrentes.
+- [ ] `QST-010` Implementar revisão, retirada, rejeição, expiração e aditivo bilateral sem apagar versões anteriores.
+- [ ] `QST-011` Garantir que candidatos nunca vejam valores/termos das propostas concorrentes.
+- [ ] `TST-012` Testar aceite concorrente, proposta vencida, perda de elegibilidade, revisão e tentativa de alterar termos após atribuição.
 - [ ] `NTF-001` Enviar notificações de publicação, aceite e cancelamento.
 - [ ] `TST-002` Criar teste de concorrência para aceite único.
 
@@ -551,7 +563,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `AR-005` Medir precisão, deriva, oclusão, bateria, temperatura e segurança antes de qualquer beta público.
 - [ ] `NAV-011` Avaliar navegação offline e pacotes regionais conforme o SDK escolhido.
 - [ ] `MCH-001` Avaliar matching/recomendação automática sem remover o mural de quests.
-- [ ] `MCH-002` Implementar estratégias configuráveis de atribuição: aceite direto, candidatura, convite e orçamento/agendamento.
+- [ ] `MCH-002` Ampliar estratégias configuráveis após validar aceite direto, contraproposta privada e orçamento/agendamento do fluxo principal.
 - [ ] `PRC-007` Avaliar componente de tempo, sazonalidade e eventual preço dinâmico somente após medir o estimador transparente do MVP.
 - [ ] `SCL-001` Testar carga, particionamento/retenção de localizações e expansão regional.
 - [ ] `GAM-005` Avaliar progressão social, temporadas e novas categorias cosméticas sem prejudicar confiança.
@@ -607,6 +619,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
 - A sugestão de transporte é editável, auditável, mostra faixa/confiança e não mistura custos reembolsáveis com o valor líquido por quilômetro.
 - Serviços sem amostra usam orçamento/propostas e nunca recebem um valor-base fabricado; materiais e deslocamento aparecem separados da mão de obra.
+- Autor pode publicar sua oferta; executor elegível pode aceitá-la ou fazer contraproposta privada, e o aceite congela termos sem permitir duas atribuições.
 - Toda referência externa mostra fonte, competência, território e natureza; piso legal, custo de referência, tarifa e histórico interno nunca são fundidos em uma média opaca.
 - Localização só é coletada com consentimento e durante a finalidade declarada.
 - RLS impede acesso cruzado a dados privados e documentos.
@@ -650,6 +663,8 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Uma média simples de preço por quilômetro pode reforçar distorções, manipulação ou remuneração inadequada; usar segmentos comparáveis, estatística robusta, amostra mínima e monitoramento de impacto.
 - Medianas de serviços pouco comparáveis podem induzir preço inadequado; não misturar categorias, versões, escopos ou materiais e ocultar a faixa quando faltar amostra.
 - Fonte externa pode estar vencida, fora do território, ter licença incompatível ou representar custo em vez de preço final; versionar, revisar e rotular antes de exibir.
+- Contrapropostas públicas podem provocar corrida ao menor preço e conluio; manter propostas privadas, limitar spam e auditar comportamento coordenado.
+- Mudanças informais de escopo ou materiais após o aceite favorecem conflito e bait-and-switch; exigir snapshot e aditivo bilateral.
 
 ## 8. Log de decisões
 
@@ -682,6 +697,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-025` | decidida | Sugerir uma faixa editável para quests de transporte usando mediana robusta do valor por quilômetro de quests comparáveis concluídas nos 30 dias anteriores, com custos separados, amostra mínima, confiança e snapshot auditável. |
 | 2026-07-14 | `DEC-026` | decidida | Não inventar valor-base no cold start: transporte sem amostra omite sugestão; serviços começam com pedido de orçamento e só exibem faixa histórica após amostra comparável suficiente. |
 | 2026-07-14 | `DEC-027` | decidida | Permitir fontes externas oficiais/profissionais como referências versionadas e identificadas, separando piso legal, custo, honorário indicativo, tarifa regulada e histórico do Minimapa. |
+| 2026-07-14 | `DEC-028` | decidida | Adotar oferta do autor com dois caminhos: aceite integral ou contraproposta privada de pessoa/empresa elegível; o acordo aceito é atômico, versionado e imutável salvo aditivo bilateral. |
 
 ## 9. Histórico de atualização
 
@@ -701,3 +717,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — aprovado estimador transparente de valor para transporte, baseado em faixa robusta dos últimos 30 dias e sempre editável pelo autor.
 - 2026-07-14 — definido cold start de preços sem referência artificial: serviços usam propostas e medianas surgem apenas após amostra comparável suficiente.
 - 2026-07-14 — catalogadas fontes externas de preço e definido pipeline versionado, auditável e sem scraping para complementar o cold start.
+- 2026-07-14 — contraproposta privada promovida ao fluxo principal: autor publica objetivo/oferta e aceita atomicamente termos versionados de pessoa ou empresa elegível.
