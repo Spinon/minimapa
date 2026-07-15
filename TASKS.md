@@ -25,8 +25,8 @@ Esta fila define a ordem real de execução. O backlog detalha requisitos; a fil
 | ---: | --- | --- | --- | --- |
 | 0 | CONCLUÍDO | `DEVQ-000` | Congelar decisões do piloto | `LOCAL_DELIVERY`, limites/proibições, Mapbox v3, Stripe Connect e operação solo documentados |
 | 1 | CONCLUÍDO | `DEVQ-001` | Guardas e simuladores locais | `CST-001`–`CST-004`, `SIM-001`–`SIM-003`; relógio, personas, GPS/rota e providers determinísticos verificados sem rede |
-| 2 | EM ANDAMENTO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-006`, `POL-002`–`POL-003`; portas externas neutras iniciadas em `:core:contracts`; próximo: núcleo genérico de quests e policies |
-| 3 | AGUARDANDO | `DEVQ-003` | Banco e segurança-base | `DB-002`–`DB-003`, `SEC-001`, `TST-001`; migrations locais, PostGIS, RLS e testes cruzados |
+| 2 | CONCLUÍDO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-007`, `POL-002`–`POL-003`; lifecycle, registry, capabilities, schemas, policies e conformidade verificados em módulos Kotlin puros |
+| 3 | EM ANDAMENTO | `DEVQ-003` | Banco e segurança-base | `DB-002`–`DB-003`, `SEC-001`, `TST-001`; próximo: migrations locais, PostGIS, RLS e testes cruzados |
 | 4 | AGUARDANDO | `DEVQ-004` | Portal, autenticação, perfil e avatar inicial | `DSN-009`–`DSN-013`, `AUTH-001`–`AUTH-007`, `ONB-001`–`ONB-002`, `AVT-001`–`AVT-003`, `AGE-001`; email/Mailpit e Google mock antes de qualquer cloud |
 | 5 | AGUARDANDO | `DEVQ-005` | Garagem individual | `TRN-001`–`TRN-003`, `DRV-001`–`DRV-003`, `DSN-008`; múltiplos meios, favorito e elegibilidade |
 | 6 | AGUARDANDO | `DEVQ-006` | Vertical slice de entrega | `QST-001`–`QST-006`, `BRD-001`–`BRD-003`, `ASN-001`, `GEO-001`–`GEO-003`, `RSK-005`; publicar → aceitar → concluir local |
@@ -513,15 +513,15 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DEV-004` Criar navegação, tema e componentes básicos conforme o conceito aprovado.
 - [ ] `DEV-005` Definir contratos de API compartilháveis e fronteira do futuro cliente iOS/web.
 - [x] `DEV-006` Configurar emulador Android local e fluxo de um comando para compilar, instalar e abrir o aplicativo.
-- [ ] `DOM-001` Extrair contratos de domínio do motor de quests para módulos independentes de UI e navegação.
-- [ ] `DOM-002` Implementar registro de tipos/módulos de quest sem permitir regras arbitrárias executadas pelo cliente.
-- [ ] `DOM-003` Definir e versionar `QuestModuleContract`, papéis universais, schemas, lifecycle, eventos e pontos de extensão.
-- [ ] `DOM-004` Modelar capabilities compostas (`LOCATION`, `ROUTE`, `QUOTE`, `SCHEDULING`, `MATERIALS`, `EVIDENCE` etc.) sem `if/else` global por modalidade.
-- [ ] `DOM-005` Criar registry por injeção de dependência; `QuestCore` não pode importar módulo concreto.
-- [ ] `DOM-006` Criar suíte de conformidade reutilizável para autorização, lifecycle, concorrência, idempotência, privacidade e compatibilidade.
-- [ ] `DOM-007` Provar extensibilidade com uma definição de serviço apenas por dados e um módulo-fixture sem alterar o core.
-- [ ] `POL-002` Definir contrato universal `PolicyGate` com decisões `ALLOW`, `REQUIRE_REVIEW`, `DENY`, códigos explicáveis e versão auditada.
-- [ ] `POL-003` Impedir que módulo, schema, votação ou configuração administrativa desabilite policy global obrigatória.
+- [x] `DOM-001` Extrair contratos de domínio do motor de quests para `:core:domain`, independente de UI, navegação e providers.
+- [x] `DOM-002` Implementar registry de tipos/módulos compilados e definições orientadas a dados, sem regras arbitrárias executadas pelo cliente.
+- [x] `DOM-003` Definir e versionar `QuestModuleContract`, papéis universais, schemas, lifecycle, eventos e pontos de extensão.
+- [x] `DOM-004` Modelar capabilities compostas (`LOCATION`, `ROUTE`, `QUOTE`, `SCHEDULING`, `MATERIALS`, `EVIDENCE` etc.) validadas por catálogo, sem `if/else` global por modalidade.
+- [x] `DOM-005` Criar registry por injeção; `QuestCore` não importa módulo concreto e resolve versões exatas antigas/novas em paralelo.
+- [x] `DOM-006` Criar `:testing:quest-conformance` para autorização, lifecycle, concorrência otimista, idempotência, privacidade, policies e compatibilidade.
+- [x] `DOM-007` Provar extensibilidade com duas definições de encanamento apenas por dados no mesmo módulo-fixture, sem alterar o core.
+- [x] `POL-002` Definir `PolicyGate` universal com `ALLOW`, `REQUIRE_REVIEW`, `DENY`, motivos, regras avaliadas e versão auditável do conjunto.
+- [x] `POL-003` Exigir todas as policies globais na construção do gate, impedir substituição por ID e fazer `QuestEngine` bloquear transição negada/em revisão antes do evento.
 
 ### Fase 2 — backend, autenticação e perfis (estimativa: 1–2 semanas)
 
@@ -936,3 +936,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-15 — automatizado o teste local assistido: `npm run test:open` valida testes/lint/build, aguarda o emulador, instala e deixa o Minimapa aberto; pedido genérico de teste passa a executar esse fluxo.
 - 2026-07-15 — definida a experiência de entrada e interface-base: Supabase Auth email/Google, recuperação forte, onboarding obrigatório, portal “Toque para entrar” e mapa-fantasia como home com menus substitutivos.
 - 2026-07-15 — incluído Ateliê do Personagem no primeiro acesso: criação sugerida, pulável, conjunto inicial gratuito, edição posterior e separação rígida entre avatar, foto real e elegibilidade.
+- 2026-07-15 — concluído `DEVQ-002`: módulos puros de domínio, contrato de quest e policy implementados; lifecycle/policy obrigatórios, registry versionado e suíte de conformidade passaram com build Android; `DEVQ-003` iniciado.

@@ -259,3 +259,9 @@ Evolução planejada dos módulos Gradle:
 Módulos concretos planejados: `:quest-module:movement` e `:quest-module:service`. Eles registram implementações no composition root do app; nunca são importados por `:core:quest-contract`.
 
 Os módulos serão extraídos junto às primeiras funcionalidades reais, evitando criar dezenas de módulos vazios. Dependências apontam das features para contratos de `core`; uma feature não importa implementação interna de outra.
+
+### Fundação implementada
+
+O incremento `DEVQ-002` materializou `:core:domain`, `:core:policy`, `:core:quest-contract` e `:testing:quest-conformance`. O lifecycle universal usa versão otimista, IDs de evento idempotentes e agregado sem `copy()` público. `QuestEngine` exige autorização antes de delegar qualquer transição ao agregado. O `CompositePolicyGate` só é construído quando todas as categorias globais obrigatórias estão presentes e avalia regras globais e adicionais sem short-circuit, preservando motivos para auditoria.
+
+O registry aceita implementações compiladas e confiáveis de `QuestModuleContract`, mas definições de serviço são somente dados tipados ligados a schema aprovado. Capabilities precisam existir no catálogo; papéis, autorização e visibilidade de cada campo são explícitos. A suíte-fixture registra duas definições de encanamento no mesmo módulo, mantém versões antigas e novas simultaneamente e tenta contornar lifecycle, concorrência, idempotência, visibilidade, compatibilidade e policies.

@@ -46,6 +46,9 @@ kotlin {
 dependencies {
   implementation(project(":core:config"))
   implementation(project(":core:contracts"))
+  implementation(project(":core:domain"))
+  implementation(project(":core:policy"))
+  implementation(project(":core:quest-contract"))
   debugImplementation(project(":testing:simulation"))
 
   val composeBom = platform(libs.androidx.compose.bom)

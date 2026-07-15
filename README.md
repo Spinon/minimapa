@@ -34,6 +34,10 @@ O modelo de negócio não desconta porcentagem do ganho do executor. O pagador p
 ```text
 apps/android/       Aplicativo Android nativo
   core/config/      Configuração segura, SimulationMode e CostGuard
+  core/domain/      Lifecycle universal, eventos e tipos estáveis de quest
+  core/policy/      PolicyGate global e autorização de transições
+  core/quest-contract/ Contratos versionados, capabilities, schemas e registry
+  testing/          Simuladores e suíte de conformidade de módulos
 supabase/           Configuração local e futuras migrations
 .github/workflows/  Integração contínua
 TASKS.md            Backlog, critérios e decisões

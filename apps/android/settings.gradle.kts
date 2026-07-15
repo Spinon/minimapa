@@ -33,4 +33,8 @@ rootProject.name = "Minimapa"
 include(":app")
 include(":core:config")
 include(":core:contracts")
+include(":core:domain")
+include(":core:policy")
+include(":core:quest-contract")
 include(":testing:simulation")
+include(":testing:quest-conformance")
