@@ -10,6 +10,7 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - Backend local preparado com Supabase CLI, Postgres e fluxo de migrations.
 - CI para build, testes unitários e lint do Android.
 - Planejamento vivo e decisões em [`TASKS.md`](TASKS.md).
+- Arquitetura do motor extensível em [`docs/architecture/quest-engine.md`](docs/architecture/quest-engine.md).
 - Escolha entre Google Navigation SDK e Mapbox Navigation SDK reservada para um spike comparativo.
 
 ## Estrutura

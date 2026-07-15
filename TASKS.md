@@ -46,6 +46,14 @@ A mudança de modo precisa ser explícita, rápida e reversível quando seguro. 
 
 Começar em uma única cidade/região e com **um só tipo de quest ponto A → ponto B**. Antes da implementação, escolher se o primeiro caso será transporte de passageiros, entrega de itens ou pequenos serviços. Misturar os três no primeiro MVP aumenta regras, telas, operação e risco jurídico.
 
+### Quest como plataforma extensível
+
+O MVP valida deslocamento, mas `Quest` é um contrato genérico de trabalho e colaboração. O núcleo contém publicação, requisitos, matching, atribuição, execução, recompensa, eventos e avaliação. Dados específicos entram por módulos tipados, como `MovementQuest` e `ServiceQuest`, sem presumir que toda quest possui motorista, veículo, origem e destino.
+
+Uma quest de serviço pode exigir nível mínimo, karma contextual, skills e credenciais verificadas. A elegibilidade é calculada no servidor por regras tipadas, versionadas e explicáveis. Skills autodeclaradas, reputação derivada de avaliações e diplomas/certificados verificados possuem graus de confiança diferentes e não podem ser tratados como equivalentes.
+
+O detalhamento está em `docs/architecture/quest-engine.md`.
+
 ### Métricas iniciais
 
 - Percentual de quests publicadas que recebem aceite.
@@ -169,17 +177,29 @@ Começar em uma única cidade/região e com **um só tipo de quest ponto A → p
 ### Entidades principais
 
 - `profiles`
+- `quest_types`
 - `driver_profiles`
 - `vehicles`
 - `driver_documents`
 - `quests`
+- `quest_requirements`
+- `quest_applications`
 - `quest_assignments`
 - `quest_events`
+- `eligibility_evaluations`
+- `quest_movement_details`
+- `quest_service_details`
 - `driver_locations`
 - `navigation_sessions`
 - `navigation_events`
 - `messages`
 - `ratings`
+- `skills`
+- `player_skills`
+- `credentials`
+- `credential_verifications`
+- `reputation_events`
+- `reputation_scores`
 - `avatars`
 - `cosmetic_items`
 - `avatar_inventory`
@@ -204,9 +224,9 @@ Os ledgers de XP, gemas e dinheiro real devem ser separados. Saldos não podem s
 
 ### Máquina de estados da quest
 
-`draft → open → accepted → driver_en_route → driver_arrived → in_progress → completed`
+Núcleo universal: `draft → published → matching → assigned → active → completed`.
 
-Saídas excepcionais: `cancelled` e `disputed`. Toda transição deve ser validada no servidor e registrada em `quest_events`.
+Saídas excepcionais: `cancelled`, `expired` e `disputed`. Subestados pertencem ao módulo: deslocamento pode usar `driver_en_route` e `driver_arrived`; serviço pode usar `scheduled`, `diagnosing` e `awaiting_owner_approval`. Toda transição deve ser validada no servidor e registrada em `quest_events`.
 
 ### Núcleo de navegação preparado para AR
 
@@ -299,6 +319,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `ADR-002` Escolher o Navigation SDK após o spike e definir limites de gasto.
 - [ ] `ADR-003` Decidir se pagamento real entra no beta fechado.
 - [ ] `PRD-006` Definir se a navegação/AR futura é para motorista, passageiro, pedestre ou dispositivo montado; isso altera requisitos de segurança.
+- [ ] `PRD-007` Definir a taxonomia inicial de tipos de quest e quais capacidades pertencem ao núcleo ou a módulos.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
 - [ ] `BUS-002` Definir se o pagamento da quest acontece fora da plataforma ou como repasse transparente sem receita de take rate.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
@@ -322,11 +343,18 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DEV-004` Criar navegação, tema e componentes básicos conforme o conceito aprovado.
 - [ ] `DEV-005` Definir contratos de API compartilháveis e fronteira do futuro cliente iOS/web.
 - [x] `DEV-006` Configurar emulador Android local e fluxo de um comando para compilar, instalar e abrir o aplicativo.
+- [ ] `DOM-001` Extrair contratos de domínio do motor de quests para módulos independentes de UI e navegação.
+- [ ] `DOM-002` Implementar registro de tipos/módulos de quest sem permitir regras arbitrárias executadas pelo cliente.
 
 ### Fase 2 — backend, autenticação e perfis (estimativa: 1–2 semanas)
 
 - [x] `DB-001` Inicializar Supabase local e fluxo de migrations.
 - [ ] `DB-002` Criar schema inicial e extensão PostGIS.
+- [ ] `DB-003` Modelar núcleo universal de quests e tabelas tipadas dos módulos de deslocamento e serviço.
+- [ ] `RUL-001` Implementar requisitos tipados, versionamento e avaliação de elegibilidade exclusivamente no servidor.
+- [ ] `SKL-001` Modelar skills, proficiência, origem da comprovação e vínculo com jogadores.
+- [ ] `CRD-001` Modelar credenciais, emissores, validade, evidências privadas e fluxo de verificação.
+- [ ] `REP-001` Modelar karma/reputação contextual por categoria e papel a partir de eventos auditáveis.
 - [ ] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
 - [ ] `AUTH-001` Implementar cadastro, login, recuperação e encerramento de sessão.
 - [ ] `AUTH-002` Implementar perfis de usuário e motorista sem confiar em roles editáveis pelo cliente.
@@ -419,6 +447,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `AR-005` Medir precisão, deriva, oclusão, bateria, temperatura e segurança antes de qualquer beta público.
 - [ ] `NAV-011` Avaliar navegação offline e pacotes regionais conforme o SDK escolhido.
 - [ ] `MCH-001` Avaliar matching/recomendação automática sem remover o mural de quests.
+- [ ] `MCH-002` Implementar estratégias configuráveis de atribuição: aceite direto, candidatura, convite e orçamento/agendamento.
 - [ ] `PRC-001` Avaliar preço sugerido/dinâmico com regras transparentes.
 - [ ] `SCL-001` Testar carga, particionamento/retenção de localizações e expansão regional.
 - [ ] `GAM-005` Avaliar progressão social, temporadas e novas categorias cosméticas sem prejudicar confiança.
@@ -496,6 +525,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-012` | proposta | Separar XP, gemas de cosméticos e dinheiro real em economias e ledgers independentes. |
 | 2026-07-14 | `DEC-013` | decidida | Exibir publicidade em exploração/busca/mural/chegada, nunca durante navegação ativa. |
 | 2026-07-14 | `DEC-014` | decidida | Separar o mapa em `ExploreMode` rico em conteúdo e `ActiveQuestMode` limpo para curva a curva. |
+| 2026-07-14 | `DEC-015` | decidida | Tratar Quest como núcleo universal extensível por módulos tipados, requisitos versionados e estratégias configuráveis de atribuição. |
 
 ## 9. Histórico de atualização
 
@@ -505,3 +535,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — experiência dividida em mapa-mundo para descoberta/comércio e modo corrida dedicado à navegação da quest.
 - 2026-07-14 — fundação executável criada: Android nativo com Kotlin/Compose, Supabase local com migration-base, CI, documentação e validação por build, testes e lint.
 - 2026-07-14 — emulador Android 16/API 36 configurado e aplicativo instalado/aberto com sucesso no aparelho virtual `medium_phone`.
+- 2026-07-14 — arquitetura ampliada para quests genéricas de deslocamento e serviços, com skills, credenciais, karma contextual e elegibilidade auditável.
