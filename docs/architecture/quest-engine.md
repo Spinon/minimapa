@@ -39,6 +39,43 @@ Toda quest possui, no mínimo:
 
 O núcleo não conhece termos como `driver`, `vehicle` ou `destination`. Esses conceitos pertencem ao módulo de deslocamento.
 
+## Contrato de extensibilidade
+
+Existem dois níveis diferentes de expansão:
+
+1. **Nova definição dentro de uma modalidade existente:** entra por dados versionados, schema e blocos aprovados. Exemplo: adicionar instalação de ventilador ao módulo de serviços. Não exige alterar nem recompilar o `QuestCore`.
+2. **Nova modalidade:** implementa uma nova versão de `QuestModuleContract`. Exemplo: aluguel de equipamento, aula remota, cuidado de animais ou evento colaborativo. Pode adicionar adaptador, persistência e interface próprios, mas não modifica lifecycle, ofertas, atribuição, segurança ou auditoria do núcleo.
+
+`QuestCore` é responsável apenas por identidade, participantes genéricos, versionamento, publicação, requisitos, propostas, termos acordados, atribuição, lifecycle universal, eventos, autorização e auditoria. Ele nunca importa um módulo concreto.
+
+Cada `QuestModuleContract` declara:
+
+- `moduleId`, versão e versões compatíveis do contrato;
+- schemas de criação, detalhe e execução;
+- papéis específicos apresentados ao usuário, mapeados aos papéis universais `REQUESTER`, `CANDIDATE`, `ASSIGNEE` e `BENEFICIARY`;
+- capabilities necessárias, como `LOCATION`, `ROUTE`, `SCHEDULING`, `QUOTE`, `MATERIALS`, `EVIDENCE`, `REMOTE_EXECUTION`, `MULTI_STOP` ou `LIVE_TRACKING`;
+- validadores server-side e requisitos obrigatórios que o template não pode remover;
+- blocos de interface suportados e regras de redaction/visibilidade;
+- subestados e eventos próprios, sempre mapeados ao lifecycle universal;
+- política de conclusão, evidências, disputa e recompensas profissionais;
+- estratégia de preço/referência e atribuição permitida.
+
+Capabilities são composição, não condicionais globais por tipo. A interface pergunta “esta quest possui `ROUTE`?” em vez de “esta quest é transporte?”. Módulos são resolvidos por um registry injetado; features dependem dos contratos do core, e o core não depende das features.
+
+Schemas e contratos são versionados e preservam leitura de quests antigas. Mudanças incompatíveis criam uma nova versão; migrações são aditivas sempre que possível. Uma definição publicada mantém a versão exata usada em requisitos, preço, XP e apresentação.
+
+Todo módulo precisa passar pela mesma suíte de conformidade antes do registro:
+
+- criação e validação de payload inválido;
+- autorização e RLS;
+- lifecycle universal e subestados;
+- aceite/contraproposta concorrente;
+- idempotência de eventos, conclusão e recompensa;
+- privacidade/redaction;
+- cancelamento, disputa e compatibilidade de versões antigas.
+
+Critério arquitetural: adicionar uma definição de serviço altera apenas dados/configuração; adicionar uma modalidade cria uma implementação do contrato e seus componentes, sem editar regras internas do `QuestCore`. Uma necessidade recorrente pode evoluir o contrato por versão, mas nunca justifica acoplamento direto a um módulo.
+
 ## Módulos tipados
 
 ### Deslocamento
@@ -187,7 +224,7 @@ Eventos de domínio registram todas as transições. Interfaces e notificações
 
 ## Persistência planejada
 
-- núcleo: `quest_types`, `quests`, `quest_requirements`, `quest_events`;
+- núcleo: `quest_types`, `quest_module_versions`, `quest_capability_definitions`, `quests`, `quest_requirements`, `quest_events`;
 - matching: `quest_applications`, `quest_offers`, `quest_offer_versions`, `quest_offer_events`, `agreed_terms_snapshots`, `quest_assignments`, `eligibility_evaluations`;
 - módulos: `quest_movement_details`, `quest_service_details`;
 - capacidades: `skills`, `player_skills`, `credentials`, `credential_verifications`;
@@ -204,10 +241,13 @@ Evolução planejada dos módulos Gradle:
 
 - `:app`: composição, inicialização e navegação global;
 - `:core:domain`: contratos de quest, jogador, requisitos e eventos;
+- `:core:quest-contract`: `QuestModuleContract`, capabilities, schemas e suíte de conformidade;
 - `:core:rules`: representação local dos resultados de elegibilidade;
 - `:core:data`: repositórios e sincronização;
 - `:core:designsystem`: tokens e componentes compartilhados;
 - `:feature:explore`, `:feature:quests`, `:feature:navigation`, `:feature:profile`;
 - `:feature:services` quando a segunda família de quest entrar no produto.
+
+Módulos concretos planejados: `:quest-module:movement` e `:quest-module:service`. Eles registram implementações no composition root do app; nunca são importados por `:core:quest-contract`.
 
 Os módulos serão extraídos junto às primeiras funcionalidades reais, evitando criar dezenas de módulos vazios. Dependências apontam das features para contratos de `core`; uma feature não importa implementação interna de outra.

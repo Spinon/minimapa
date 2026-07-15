@@ -55,6 +55,8 @@ Começar em uma única cidade/região e com **um só tipo de quest ponto A → p
 
 O MVP valida deslocamento, mas `Quest` é um contrato genérico de trabalho e colaboração. O núcleo contém publicação, requisitos, matching, atribuição, execução, recompensa, eventos e avaliação. Dados específicos entram por módulos tipados, como `MovementQuest` e `ServiceQuest`, sem presumir que toda quest possui motorista, veículo, origem e destino.
 
+Extensibilidade é uma invariável: uma nova definição de serviço entra por dados/schema sem alteração da engine; uma modalidade nova implementa um `QuestModuleContract` versionado sem editar regras internas do `QuestCore`. Capabilities compostas substituem condicionais globais por tipo.
+
 Uma quest de serviço pode exigir nível mínimo, karma contextual, skills e credenciais verificadas. A elegibilidade é calculada no servidor por regras tipadas, versionadas e explicáveis. Skills autodeclaradas, reputação derivada de avaliações e diplomas/certificados verificados possuem graus de confiança diferentes e não podem ser tratados como equivalentes.
 
 Cada skill possui XP e proficiência próprios. Concluir uma quest concede XP somente às skills canônicas mapeadas e versionadas na definição daquele serviço. O perfil materializa apenas skills nas quais o jogador já recebeu XP ou possui comprovação/credencial, evitando milhares de trilhas vazias.
@@ -210,6 +212,8 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `identity_verification_events`
 - `verification_provider_sessions`
 - `quest_types`
+- `quest_module_versions`
+- `quest_capability_definitions`
 - `driver_profiles`
 - `vehicles`
 - `driver_documents`
@@ -421,6 +425,11 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [x] `DEV-006` Configurar emulador Android local e fluxo de um comando para compilar, instalar e abrir o aplicativo.
 - [ ] `DOM-001` Extrair contratos de domínio do motor de quests para módulos independentes de UI e navegação.
 - [ ] `DOM-002` Implementar registro de tipos/módulos de quest sem permitir regras arbitrárias executadas pelo cliente.
+- [ ] `DOM-003` Definir e versionar `QuestModuleContract`, papéis universais, schemas, lifecycle, eventos e pontos de extensão.
+- [ ] `DOM-004` Modelar capabilities compostas (`LOCATION`, `ROUTE`, `QUOTE`, `SCHEDULING`, `MATERIALS`, `EVIDENCE` etc.) sem `if/else` global por modalidade.
+- [ ] `DOM-005` Criar registry por injeção de dependência; `QuestCore` não pode importar módulo concreto.
+- [ ] `DOM-006` Criar suíte de conformidade reutilizável para autorização, lifecycle, concorrência, idempotência, privacidade e compatibilidade.
+- [ ] `DOM-007` Provar extensibilidade com uma definição de serviço apenas por dados e um módulo-fixture sem alterar o core.
 
 ### Fase 2 — backend, autenticação e perfis (estimativa: 1–2 semanas)
 
@@ -620,6 +629,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - A sugestão de transporte é editável, auditável, mostra faixa/confiança e não mistura custos reembolsáveis com o valor líquido por quilômetro.
 - Serviços sem amostra usam orçamento/propostas e nunca recebem um valor-base fabricado; materiais e deslocamento aparecem separados da mão de obra.
 - Autor pode publicar sua oferta; executor elegível pode aceitá-la ou fazer contraproposta privada, e o aceite congela termos sem permitir duas atribuições.
+- Adicionar uma definição de serviço exige apenas dados/schema; adicionar uma modalidade exige novo módulo que passe na suíte de conformidade, sem editar o `QuestCore`.
 - Toda referência externa mostra fonte, competência, território e natureza; piso legal, custo de referência, tarifa e histórico interno nunca são fundidos em uma média opaca.
 - Localização só é coletada com consentimento e durante a finalidade declarada.
 - RLS impede acesso cruzado a dados privados e documentos.
@@ -665,6 +675,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Fonte externa pode estar vencida, fora do território, ter licença incompatível ou representar custo em vez de preço final; versionar, revisar e rotular antes de exibir.
 - Contrapropostas públicas podem provocar corrida ao menor preço e conluio; manter propostas privadas, limitar spam e auditar comportamento coordenado.
 - Mudanças informais de escopo ou materiais após o aceite favorecem conflito e bait-and-switch; exigir snapshot e aditivo bilateral.
+- Campos ou condicionais específicos de modalidade vazando para o core criam refactor futuro; aplicar dependency inversion, capabilities e testes de fronteira entre módulos.
 
 ## 8. Log de decisões
 
@@ -698,6 +709,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-026` | decidida | Não inventar valor-base no cold start: transporte sem amostra omite sugestão; serviços começam com pedido de orçamento e só exibem faixa histórica após amostra comparável suficiente. |
 | 2026-07-14 | `DEC-027` | decidida | Permitir fontes externas oficiais/profissionais como referências versionadas e identificadas, separando piso legal, custo, honorário indicativo, tarifa regulada e histórico do Minimapa. |
 | 2026-07-14 | `DEC-028` | decidida | Adotar oferta do autor com dois caminhos: aceite integral ou contraproposta privada de pessoa/empresa elegível; o acordo aceito é atômico, versionado e imutável salvo aditivo bilateral. |
+| 2026-07-14 | `DEC-029` | decidida | Tornar extensibilidade uma invariável: definições entram por schema; modalidades implementam `QuestModuleContract` versionado por capabilities, sem dependência do core em módulos concretos. |
 
 ## 9. Histórico de atualização
 
@@ -718,3 +730,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — definido cold start de preços sem referência artificial: serviços usam propostas e medianas surgem apenas após amostra comparável suficiente.
 - 2026-07-14 — catalogadas fontes externas de preço e definido pipeline versionado, auditável e sem scraping para complementar o cold start.
 - 2026-07-14 — contraproposta privada promovida ao fluxo principal: autor publica objetivo/oferta e aceita atomicamente termos versionados de pessoa ou empresa elegível.
+- 2026-07-14 — formalizado contrato de módulos e suíte de conformidade para expandir modalidades sem refactor da engine de quests.
