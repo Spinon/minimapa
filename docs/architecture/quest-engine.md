@@ -85,7 +85,7 @@ Depois de existir amostra mínima, o sistema pode exibir uma **faixa histórica*
 
 Não se calcula uma mediana genérica entre serviços diferentes. Uma troca de chuveiro não fornece base automática para instalação elétrica, e um serviço recém-aprovado pelo Conselho do Reino começa sem sugestão até formar sua própria amostra ou possuir um mapeamento revisado e justificável.
 
-As observações elegíveis são conclusões não disputadas entre partes verificadas. A faixa mostra período, quantidade e confiança, e desaparece quando o segmento não atinge o limiar de privacidade. Fontes externas, tabelas profissionais ou pisos legais só podem entrar futuramente como referências separadas, identificadas e revisadas; não serão inventadas pelo produto.
+As observações elegíveis são conclusões não disputadas entre partes verificadas. A faixa mostra período, quantidade e confiança, e desaparece quando o segmento não atinge o limiar de privacidade. Fontes externas, tabelas profissionais ou pisos legais entram somente como referências separadas, identificadas, versionadas e revisadas conforme `external-price-references.md`; não são misturadas silenciosamente à mediana do Minimapa.
 
 Novos módulos implementam contratos conhecidos de validação, apresentação, matching e ciclo de vida. Templates criados por usuários ou empresas poderão combinar capacidades suportadas, mas não criar código executável nem alterar regras de segurança.
 
@@ -170,6 +170,7 @@ Eventos de domínio registram todas as transições. Interfaces e notificações
 - capacidades: `skills`, `player_skills`, `credentials`, `credential_verifications`;
 - progressão específica: `service_skill_rewards`, `skill_xp_ledger`, `skill_proficiency_levels`;
 - preço sugerido: `price_suggestion_policies`, `price_suggestion_snapshots`, `transport_price_observations`;
+- referências externas: `external_price_sources`, `external_price_source_versions`, `external_price_references`, `external_price_category_mappings`;
 - confiança: `reputation_events`, `reputation_scores`, `ratings`.
 
 Campos flexíveis podem existir para metadados de apresentação versionados, mas dados usados por autorização, dinheiro, elegibilidade ou busca devem ser tipados e indexáveis.

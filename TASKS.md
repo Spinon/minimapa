@@ -69,6 +69,8 @@ Para quests de transporte, a criação apresenta uma **faixa de valor sugerido**
 
 Para prestação de serviços, o cold start usa pedido de orçamento: escopo estruturado, orçamento opcional do autor e propostas com mão de obra, prazo, deslocamento e materiais separados. Não existe “valor-base da plataforma” antes de haver amostra suficiente. Futuras faixas históricas comparam somente a mesma definição/versionamento de serviço, região e escopo compatíveis.
 
+Fontes oficiais ou profissionais podem complementar o cold start quando forem aplicáveis: custos SINAPI, pisos regulatórios de frete, tarifas municipais e honorários indicativos, por exemplo. Cada referência permanece separada do histórico do Minimapa e exibe publicador, território, competência, metodologia e natureza. Sem fonte aplicável nem amostra interna, não há sugestão. Detalhes em `docs/architecture/external-price-references.md`.
+
 ### RPG geolocalizado
 
 O avatar também será um personagem jogável. Dungeons versionadas podem aparecer em pontos seguros do mapa de exploração; o usuário se aproxima a pé, entra em uma party e participa de encontros cooperativos. As recompensas possíveis são XP de jogo, Gold, cosméticos e equipamentos com efeito exclusivamente lúdico.
@@ -220,6 +222,10 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `price_suggestion_policies`
 - `price_suggestion_snapshots`
 - `transport_price_observations`
+- `external_price_sources`
+- `external_price_source_versions`
+- `external_price_references`
+- `external_price_category_mappings`
 - `driver_locations`
 - `navigation_sessions`
 - `navigation_events`
@@ -466,6 +472,12 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PRC-009` Implementar proposta de serviço com mão de obra, prazo, deslocamento, materiais e validade discriminados.
 - [ ] `PRC-010` Calcular faixa histórica somente após amostra mínima da mesma definição/versionamento, região e escopo de serviço.
 - [ ] `PRC-011` Exibir “ainda sem dados comparáveis” e permitir orçamento opcional ou “a combinar” durante o cold start.
+- [x] `PRC-012` Catalogar SINAPI, ANTT, tarifas municipais e tabelas profissionais como fontes candidatas, sem tratá-las como equivalentes.
+- [ ] `PRC-013` Implementar registro versionado de fonte, vigência, território, licença/termos, checksum, unidade, fórmula e natureza jurídica.
+- [ ] `PRC-014` Criar importador offline do SINAPI por fixtures e mapeamento revisado para serviços canônicos de construção/reparo.
+- [ ] `PRC-015` Cadastrar manualmente referências vigentes da cidade piloto e validar enquadramento jurídico antes de aplicar qualquer piso.
+- [ ] `PRC-016` Exibir histórico interno e referência externa em blocos separados, com metodologia e divergência visíveis.
+- [ ] `PRC-017` Automatizar atualização somente para fonte com download/API estável e termos compatíveis; não raspar concorrentes ou calculadoras fechadas.
 - [ ] `SEC-002` Manter chaves secretas de mapas/rotas no servidor quando exigido e restringir chaves públicas por app/domínio.
 
 ### Fase 4 — mural e aceite (estimativa: 1–2 semanas)
@@ -595,6 +607,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
 - A sugestão de transporte é editável, auditável, mostra faixa/confiança e não mistura custos reembolsáveis com o valor líquido por quilômetro.
 - Serviços sem amostra usam orçamento/propostas e nunca recebem um valor-base fabricado; materiais e deslocamento aparecem separados da mão de obra.
+- Toda referência externa mostra fonte, competência, território e natureza; piso legal, custo de referência, tarifa e histórico interno nunca são fundidos em uma média opaca.
 - Localização só é coletada com consentimento e durante a finalidade declarada.
 - RLS impede acesso cruzado a dados privados e documentos.
 - O fluxo principal funciona após perda temporária de rede sem duplicar cobrança ou eventos.
@@ -636,6 +649,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Drops aleatórios, energia comprável e itens com valor percebido podem acionar regras de loot box, jogos de azar ou proteção do consumidor; não monetizar sem revisão específica.
 - Uma média simples de preço por quilômetro pode reforçar distorções, manipulação ou remuneração inadequada; usar segmentos comparáveis, estatística robusta, amostra mínima e monitoramento de impacto.
 - Medianas de serviços pouco comparáveis podem induzir preço inadequado; não misturar categorias, versões, escopos ou materiais e ocultar a faixa quando faltar amostra.
+- Fonte externa pode estar vencida, fora do território, ter licença incompatível ou representar custo em vez de preço final; versionar, revisar e rotular antes de exibir.
 
 ## 8. Log de decisões
 
@@ -667,6 +681,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-024` | decidida | Permitir apenas a integração unidirecional `Quests → RPG`: quests validadas podem conceder progresso lúdico, mas nenhum estado ou recompensa do RPG melhora elegibilidade ou progressão profissional. |
 | 2026-07-14 | `DEC-025` | decidida | Sugerir uma faixa editável para quests de transporte usando mediana robusta do valor por quilômetro de quests comparáveis concluídas nos 30 dias anteriores, com custos separados, amostra mínima, confiança e snapshot auditável. |
 | 2026-07-14 | `DEC-026` | decidida | Não inventar valor-base no cold start: transporte sem amostra omite sugestão; serviços começam com pedido de orçamento e só exibem faixa histórica após amostra comparável suficiente. |
+| 2026-07-14 | `DEC-027` | decidida | Permitir fontes externas oficiais/profissionais como referências versionadas e identificadas, separando piso legal, custo, honorário indicativo, tarifa regulada e histórico do Minimapa. |
 
 ## 9. Histórico de atualização
 
@@ -685,3 +700,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — definida ponte unidirecional: quests concluídas podem melhorar o RPG; RPG nunca melhora requisitos, reputação ou progressão das quests.
 - 2026-07-14 — aprovado estimador transparente de valor para transporte, baseado em faixa robusta dos últimos 30 dias e sempre editável pelo autor.
 - 2026-07-14 — definido cold start de preços sem referência artificial: serviços usam propostas e medianas surgem apenas após amostra comparável suficiente.
+- 2026-07-14 — catalogadas fontes externas de preço e definido pipeline versionado, auditável e sem scraping para complementar o cold start.
