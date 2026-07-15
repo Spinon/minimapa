@@ -4,6 +4,10 @@
 
 Este arquivo é a fonte de verdade do planejamento. Ele deve ser atualizado em toda sessão de desenvolvimento que altere escopo, arquitetura, status ou decisões.
 
+### Regra operacional de custo
+
+Nenhuma tarefa autoriza gasto. Todo serviço externo começa em `mock` ou sandbox/demo com cobrança tecnicamente impossível, usando `ALLOW_BILLABLE_REQUESTS=false`. Não cadastrar cartão, ativar billing, aceitar trial com conversão automática ou consumir cota que possa gerar excedente sem autorização explícita registrada. A implementação deve deixar portas/adaptadores, configuração e testes prontos para ativação futura. Detalhes em `docs/development/cost-policy.md`.
+
 ## Como manter este arquivo
 
 - `[ ]` pendente
@@ -347,6 +351,11 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `ADS-002` Definir modelo comercial do piloto: venda direta/faturada, CPM, período fixo ou destaque regional.
 - [ ] `ECO-001` Aprovar separação entre XP, gemas e dinheiro real.
 - [ ] `POL-001` Validar App Store/Google Play para publicidade, moeda virtual, cosméticos e marketplace físico.
+- [ ] `CST-001` Implementar `CostGuard`, modos `mock/sandbox/production` e bloqueio quando `ALLOW_BILLABLE_REQUESTS=false`.
+- [ ] `CST-002` Criar mocks e contract tests para cada integração externa antes de qualquer credencial real.
+- [ ] `CST-003` Inventariar chamadas externas, unidade de cobrança, franquia, hard cap e fallback por fornecedor.
+- [ ] `CST-004` Garantir que CI, previews e desenvolvimento local nunca recebam chaves de produção.
+- [ ] `CST-005` Criar checklist de aprovação explícita para billing, orçamento, alertas e desligamento.
 - [ ] `MKT-001` Definir o recorte futuro de lojas: tipos de produto, logística, responsabilidade e modelo de receita do lojista.
 
 ### Fase 1 — conceito visual e fundação (estimativa: 1 semana)
@@ -474,6 +483,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `QA-009` Testar idempotência, abuso e consistência do XP/inventário.
 - [ ] `OBS-001` Configurar alertas, logs com redaction e métricas do funil.
 - [ ] `OPS-001` Configurar limites/alertas de gasto dos provedores externos.
+- [ ] `OPS-002` Medir custo projetado por usuário e quest usando contadores locais antes de habilitar faturamento.
 - [ ] `BET-001` Rodar beta fechado em uma região com suporte manual.
 - [ ] `BET-002` Revisar métricas e decidir avançar, ajustar ou reduzir o escopo.
 
@@ -518,6 +528,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - Somente um motorista consegue aceitar a mesma quest, inclusive sob concorrência.
 - Nenhum usuário não verificado consegue ser atribuído, iniciar ou concluir uma quest por qualquer cliente ou chamada direta.
 - Uma quest de solicitante não verificado fica claramente marcada e não avança para atribuição/execução antes da verificação.
+- Build, CI e testes locais realizam zero chamadas faturáveis e funcionam apenas com serviços locais, mocks ou sandboxes garantidamente gratuitas.
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
 - Localização só é coletada com consentimento e durante a finalidade declarada.
 - RLS impede acesso cruzado a dados privados e documentos.
@@ -576,6 +587,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-017` | decidida | Usar o Conselho do Reino para escolher mensalmente serviços; vencedores compatíveis entram automaticamente em beta por schema versionado, com gates adicionais para alto risco. |
 | 2026-07-14 | `DEC-018` | decidida | Exigir identidade verificada para executar quests; permitir publicação limitada por não verificados, bloqueando atribuição até a verificação de ambas as partes. |
 | 2026-07-14 | `DEC-019` | proposta | Selecionar verificação após spike entre Datavalid e um orquestrador privado; manter assinatura eletrônica como controle separado e baseado em risco. |
+| 2026-07-14 | `DEC-020` | decidida | Manter custo adicional zero durante desenvolvimento; preparar integrações por adaptadores e mocks, sem billing ou produção até autorização explícita. |
 
 ## 9. Histórico de atualização
 
@@ -589,3 +601,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — adicionados XP/proficiência por skill e governança mensal do catálogo pelo Conselho do Reino, com publicação automática segura e versionada.
 - 2026-07-14 — definida verificação forte e revogável: não verificados podem publicar com alcance limitado, mas somente partes verificadas avançam para atribuição e execução.
 - 2026-07-14 — mapeados candidatos brasileiros para CPF, biometria/liveness e assinatura eletrônica, mantendo seleção final condicionada a spike técnico, jurídico e de custo.
+- 2026-07-14 — estabelecida política de custo zero: ambiente local/mock por padrão, demos sem cobrança e proibição de billing sem autorização explícita.

@@ -13,6 +13,7 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - Arquitetura do motor extensível em [`docs/architecture/quest-engine.md`](docs/architecture/quest-engine.md).
 - Governança do catálogo em [`docs/architecture/community-governance.md`](docs/architecture/community-governance.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
+- Política de custo zero em [`docs/development/cost-policy.md`](docs/development/cost-policy.md).
 - Escolha entre Google Navigation SDK e Mapbox Navigation SDK reservada para um spike comparativo.
 
 ## Estrutura
@@ -80,6 +81,8 @@ Também é possível abrir `apps/android` diretamente no Android Studio. O arqui
 ## Segredos e serviços externos
 
 Nenhuma chave de mapa, token de serviço ou credencial deve entrar no Git. O repositório contém somente configuração local segura. Projetos cloud, chaves restritas de Android e credenciais de Google/Mapbox serão criados quando o provedor de navegação for escolhido.
+
+Durante o desenvolvimento, integrações externas usam mocks ou sandboxes garantidamente gratuitas. Billing, cartões, trials com conversão automática e chamadas faturáveis permanecem desabilitados por padrão; consulte a política de custo antes de integrar qualquer fornecedor.
 
 ## Licença
 
