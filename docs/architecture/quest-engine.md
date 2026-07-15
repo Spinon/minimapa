@@ -63,7 +63,7 @@ A primeira versão usa estatística robusta e explicável, sem IA:
 
 Usar apenas a média aritmética de `valor / km` distorce viagens curtas, congestionadas e amostras com extremos. Faixas de distância e duração estimada devem participar da seleção; depois de haver volume suficiente, pode-se testar um modelo robusto com componentes de partida, distância e tempo, sempre mantendo uma decomposição compreensível.
 
-A agregação exige uma amostra mínima configurável, inicialmente 30 quests independentes. Abaixo disso, o algoritmo amplia progressivamente região ou janela histórica e reduz a confiança; sem base suficiente, usa uma referência operacional manual claramente identificada, nunca inventa precisão. Nenhuma estatística é exibida para grupos abaixo do limiar de privacidade.
+A agregação exige uma amostra mínima configurável, inicialmente 30 quests independentes. Abaixo disso, o algoritmo pode ampliar progressivamente região ou janela histórica e reduz a confiança. Se ainda não houver base suficiente, não mostra valor sugerido: o autor informa sua oferta e a interface declara que ainda não existem dados comparáveis. Nenhuma estatística é exibida para grupos abaixo do limiar de privacidade.
 
 Cada cálculo gera um `PriceSuggestionSnapshot` com versão da política, filtros, janela, tamanho da amostra, percentis, distância, custos, faixa e confiança. O snapshot fica ligado à quest para auditoria, mesmo que o autor escolha outro valor.
 
@@ -76,6 +76,16 @@ Controles antiabuso limitam a influência de uma mesma dupla ou conta, excluem f
 - fotos, diagnóstico inicial e materiais;
 - disponibilidade, duração estimada e agendamento;
 - evidências de execução e aceite do resultado.
+
+#### Preço de serviços e cold start
+
+No lançamento, a plataforma não possui base legítima para sugerir o preço de um serviço. O fluxo padrão usa `QUOTE_AND_SCHEDULE`: o autor descreve o escopo, pode informar um orçamento opcional e recebe propostas dos jogadores elegíveis com mão de obra, prazo, deslocamento e materiais discriminados. “A combinar” também é um estado válido.
+
+Depois de existir amostra mínima, o sistema pode exibir uma **faixa histórica**, nunca um orçamento garantido. A comparação exige a mesma definição e versão canônica de serviço, região compatível e atributos estruturados de escopo, complexidade e duração. Materiais, taxas e deslocamento permanecem separados da mão de obra.
+
+Não se calcula uma mediana genérica entre serviços diferentes. Uma troca de chuveiro não fornece base automática para instalação elétrica, e um serviço recém-aprovado pelo Conselho do Reino começa sem sugestão até formar sua própria amostra ou possuir um mapeamento revisado e justificável.
+
+As observações elegíveis são conclusões não disputadas entre partes verificadas. A faixa mostra período, quantidade e confiança, e desaparece quando o segmento não atinge o limiar de privacidade. Fontes externas, tabelas profissionais ou pisos legais só podem entrar futuramente como referências separadas, identificadas e revisadas; não serão inventadas pelo produto.
 
 Novos módulos implementam contratos conhecidos de validação, apresentação, matching e ciclo de vida. Templates criados por usuários ou empresas poderão combinar capacidades suportadas, mas não criar código executável nem alterar regras de segurança.
 
