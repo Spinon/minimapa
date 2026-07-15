@@ -18,6 +18,22 @@ Ainda existem cinco blockers para beta público:
 4. pagamento, responsabilidade consumerista e seguro não têm dono operacional definido;
 5. menores, RPG geolocalizado e recompensas aleatórias ficaram materialmente mais regulados pelo ECA Digital.
 
+## Resolução de decisões após a auditoria
+
+O responsável pelo produto aprovou os gates centrais e definiu Rio Claro/SP, área técnica máxima de 50 km, público 18+ verificado, pagamento in-app e mural por escolha. Isso resolve a direção, mas não elimina os blockers operacionais:
+
+- “legislação local” significa toda norma federal, estadual e municipal aplicável à origem, destino, rota, item, serviço, veículo e data; o raio cruza municípios;
+- o Conselho apenas nomeia candidato e não ativa categoria sem `ComplianceApproval` humano;
+- a descoberta exibe círculo/célula aproximada com exclamação; não recebe endereço exato nem permite refinamento por zoom;
+- CNH, categoria, validade, EAR quando aplicável, identidade e veículo entram na policy veicular sem exposição pública de documento bruto;
+- pagamento ocorre por PSP de marketplace, sem custódia/take rate/Gold, com refund, payout e chargeback próprios;
+- o piloto não vende seguro ou garantia adicional, mas mantém canal de incidente e não tenta afastar direitos ou responsabilidade legal;
+- Karma é derivado de caso decidido e nunca substitui prova, suporte, refund/payout ou recurso;
+- não aceitar uma quest é simples ausência de acordo: não existe taxa de aceite nem consequência reputacional;
+- auditoria interna e bugs/sugestões entram no painel administrativo com trilha e acesso controlado.
+
+Os desenhos resultantes estão em `docs/product/rio-claro-pilot.md`, `docs/architecture/payments-and-remedies.md`, `docs/architecture/karma-cases-and-evidence.md` e `docs/architecture/operations-audit-feedback.md`.
+
 ## Solução transversal sem refatorar a engine
 
 Adicionar um `PolicyGate` universal às transições sensíveis:

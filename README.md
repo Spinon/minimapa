@@ -16,6 +16,10 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - Referências externas de preço em [`docs/architecture/external-price-references.md`](docs/architecture/external-price-references.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
 - Revisão de produto e recorte do MVP em [`docs/product/product-scope-review.md`](docs/product/product-scope-review.md).
+- Piloto de Rio Claro, modalidades e liquidez em [`docs/product/rio-claro-pilot.md`](docs/product/rio-claro-pilot.md).
+- Pagamentos, cancelamentos e suporte em [`docs/architecture/payments-and-remedies.md`](docs/architecture/payments-and-remedies.md).
+- Karma, casos e evidências em [`docs/architecture/karma-cases-and-evidence.md`](docs/architecture/karma-cases-and-evidence.md).
+- Auditoria interna, bugs e sugestões em [`docs/architecture/operations-audit-feedback.md`](docs/architecture/operations-audit-feedback.md).
 - Auditoria jurídica/antifraude do desenho em [`docs/security/public-risk-audit.md`](docs/security/public-risk-audit.md).
 - Política de custo zero em [`docs/development/cost-policy.md`](docs/development/cost-policy.md).
 - Escolha entre Google Navigation SDK e Mapbox Navigation SDK reservada para um spike comparativo.

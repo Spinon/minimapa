@@ -17,9 +17,9 @@ O norte deve permanecer documentado, mas a implementação precisa validar uma c
 
 ## Recomendação para o primeiro piloto
 
-### Cunha sugerida
+### Cunha sugerida e território escolhido
 
-Uma única cidade, Android, adultos verificados e **entrega urbana de pequenos itens permitidos e de baixo valor**, sem passageiros, dinheiro em espécie, produtos regulados, alimento com cadeia especial, animais, chaves, documentos sensíveis ou bens de alto risco. O enquadramento municipal, fiscal e de transporte precisa ser validado antes de confirmar essa escolha.
+O território foi definido em **Rio Claro/SP, com área técnica máxima de 50 km**, Android e adultos verificados. Como o círculo alcança outros municípios, a abertura será por zonas menores e dependerá de policy por origem, destino e rota. A modalidade recomendada continua sendo **entrega urbana de pequenos itens permitidos e de baixo valor**, sem passageiros, dinheiro em espécie, produtos regulados, alimento com cadeia especial, animais, chaves, documentos sensíveis ou bens de alto risco. O enquadramento municipal, fiscal e de transporte precisa ser validado antes de confirmar essa modalidade.
 
 Por que começar aqui:
 
@@ -34,7 +34,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 ### MVP operacional
 
 - Android apenas;
-- uma cidade e raio operacional explícito;
+- Rio Claro como base, área técnica máxima de 50 km e zonas operacionais explícitas;
 - uma modalidade e uma definição de quest;
 - solicitante e executor maiores de 18 anos e verificados no piloto;
 - oferta do autor, aceite integral ou contraproposta privada;
@@ -44,23 +44,23 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 - chat mínimo, bloqueio, denúncia, contato de emergência e suporte humano;
 - cancelamento, no-show, disputa e compensação definidos;
 - avaliação bilateral com contestação;
-- pagamentos fora da plataforma apenas se o risco e a comunicação forem explicitamente aceitos no piloto; nenhum fundo custodiado pelo Minimapa;
+- pagamento dentro do app por PSP de marketplace, sem fundo custodiado pelo Minimapa, sem Gold e sem take rate;
 - métricas e revisão semanal da operação.
 
 ## O que está faltando e tem alto retorno
 
 ### P0 — antes de construir o fluxo completo
 
-1. **Escolha de cidade e modalidade:** hoje várias decisões críticas permanecem abertas. Sem elas não há regra jurídica, mapa de oferta, custo, seguro ou operação concreta.
+1. **Escolha da modalidade:** Rio Claro e o raio máximo de 50 km estão definidos; falta aprovar a primeira definição de quest e validar obrigações em todos os municípios alcançados.
 2. **Service blueprint operacional:** definir quem atende fraude, acidente, item perdido, no-show, disputa, conta tomada e pedido policial, inclusive fora do horário.
 3. **Matriz categoria × território × risco:** uma categoria só pode ser publicada, atribuída e concluída se todos os gates aplicáveis estiverem ativos e vigentes.
-4. **Modelo de pagamento do piloto:** decidir se é fora da plataforma ou por PSP licenciado em sandbox/produção autorizada. “Depois vemos” deixa disputa e fraude sem dono.
+4. **Operação financeira:** o pagamento será in-app por PSP licenciado; falta escolher o provedor, merchant of record, pagador da tarifa, hold, payout, refund, chargeback e reconciliação.
 5. **Política de endereço e encontro:** aproximado na descoberta, revelação progressiva, pontos seguros e prazo de retenção.
-6. **Regras de cancelamento/no-show:** separar desistência legítima, risco, falha de veículo, atraso, item divergente e abuso recorrente. Cancelar por segurança não pode prejudicar karma.
+6. **Regras de cancelamento/no-show:** separar desistência legítima, risco, falha de veículo, atraso, item divergente e abuso recorrente. Karma deriva da decisão de um caso; não decide dinheiro nem presume culpa.
 7. **Lista de itens/serviços proibidos e restritos:** com fluxo de moderação e retirada emergencial.
 8. **Termos acordados e evidência:** o que prova coleta, escopo, entrega e aceite sem transformar GPS ou foto em verdade absoluta.
-9. **Seguro e resposta a incidentes físicos:** determinar cobertura mínima e responsabilidade por modalidade antes do piloto.
-10. **Hipótese de liquidez:** número mínimo de executores verificados por zona/horário e tempo máximo aceitável até primeira proposta.
+9. **Incidentes e seguro:** o piloto não oferece cobertura adicional, mas precisa de canal, contenção, cooperação e termos claros. Minimap Plus com seguro fica condicionado a parceiro habilitado.
+10. **Hipótese de liquidez:** número mínimo de executores elegíveis por zona/horário e tempo máximo até primeira proposta. O raio máximo não deve dispersar a coorte inicial.
 
 ### P1 — para o beta fechado
 
@@ -72,7 +72,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 - política de indisponibilidade do SDK de navegação;
 - painel semanal de funil, segurança, fraude e qualidade;
 - pesquisa curta após publicação abandonada, aceite, cancelamento e conclusão;
-- ferramentas de supply activation: convites controlados, agenda e zonas — sem punição por recusar quests.
+- ferramentas de supply activation: convites controlados, agenda e zonas — sem despacho individual, taxa de aceite ou punição por recusar quests.
 
 ## O que podar ou postergar
 
@@ -95,7 +95,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 
 ### Gate A — decisão de operação
 
-Cidade, modalidade, público, território, proibições, pagamento, seguro e parecer jurídico. Nenhuma feature de crescimento antes disso.
+Rio Claro, 50 km e público 18+ já estão decididos. Ainda faltam modalidade, zonas, proibições, configuração do PSP, termos sobre cobertura, escala de suporte e parecer jurídico. Nenhuma feature de crescimento antes disso.
 
 ### Gate B — walking skeleton local
 
@@ -103,7 +103,7 @@ Publicar → descobrir → aceitar/contra-ofertar → navegar simulado → inici
 
 ### Gate C — piloto fechado assistido
 
-20–50 solicitantes, oferta recrutada manualmente, área pequena, verificação manual, suporte em horário restrito e zero dinheiro custodiado pelo Minimapa.
+20–50 solicitantes, oferta recrutada manualmente, uma ou poucas zonas dentro da área máxima, verificação manual, suporte em horário restrito e zero dinheiro custodiado pelo Minimapa.
 
 ### Gate D — beta medido
 
@@ -132,4 +132,4 @@ Parar expansão quando houver incidente grave sem runbook, mais disputas que a o
 
 ## Decisão recomendada
 
-Preservar toda a visão como roadmap, mas congelar o MVP em `QuestCore + MovementModule + uma definição + Android + uma cidade + adultos verificados + suporte manual`. O próximo trabalho de produto não é adicionar features: é fechar as decisões de Fase 0 e escrever o service blueprint do piloto.
+Preservar toda a visão como roadmap, mas congelar o MVP em `QuestCore + uma modalidade + uma definição + Android + Rio Claro/zonas graduais + adultos verificados + PSP + suporte assistido`. O próximo trabalho de produto é aprovar a modalidade e escrever o service blueprint operacional/financeiro do piloto.

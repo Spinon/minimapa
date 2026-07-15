@@ -134,6 +134,20 @@ Fontes oficiais:
 
 ## Controles adicionais
 
+### Identificação veicular no piloto
+
+Quando a modalidade usa veículo, identidade e habilitação são claims independentes e revogáveis:
+
+- selfie/foto atual compatível com a identidade verificada;
+- CNH válida, categoria compatível e EAR quando exigido pela operação;
+- veículo, documento, placa e características aprovados;
+- expiração, reverificação baseada em risco e bloqueio server-side;
+- divergência denunciável pelo solicitante antes do início.
+
+Após a atribuição, a interface mostra foto, nome necessário para identificação, status verificado, categoria relevante e marca/modelo/cor/placa do veículo. Número da CNH, CPF, imagem do documento, biometria e referências internas nunca são exibidos. O Datavalid é candidato porque a documentação oficial inclui categoria, validade, registro/QR de CNH e validação biométrica; a integração continua em mock até aprovação de custo, contrato, base legal e retenção.
+
+### Controles transversais
+
 - rate limits para tentativas e reenvios;
 - detecção privada de contas duplicadas e dispositivos abusivos;
 - assinatura e replay protection em webhooks;

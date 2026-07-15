@@ -51,7 +51,9 @@ A mudança de modo precisa ser explícita, rápida e reversível quando seguro. 
 
 Começar em uma única cidade/região e com **um só tipo de quest ponto A → ponto B**. Antes da implementação, escolher se o primeiro caso será transporte de passageiros, entrega de itens ou pequenos serviços. Misturar os três no primeiro MVP aumenta regras, telas, operação e risco jurídico.
 
-A revisão de produto recomenda como cunha, condicionada à validação local, entrega urbana de pequenos itens permitidos e de baixo valor: Android, uma cidade, adultos verificados, sem passageiros, dinheiro em espécie, produtos regulados ou bens de alto risco. A visão completa permanece no roadmap, mas AR, RPG, Conselho, Gold, lojas, IAP e expansão de categorias não entram antes de liquidez, confiança e operação do núcleo. Detalhes em `docs/product/product-scope-review.md`.
+A revisão de produto recomenda como cunha, condicionada à validação local, entrega urbana de pequenos itens permitidos e de baixo valor: Android, Rio Claro e zonas graduais, adultos verificados, sem passageiros, dinheiro em espécie, produtos regulados ou bens de alto risco. A visão completa permanece no roadmap, mas AR, RPG, Conselho, Gold, lojas, IAP e expansão de categorias não entram antes de liquidez, confiança e operação do núcleo. Detalhes em `docs/product/product-scope-review.md`.
+
+O território do piloto foi definido em Rio Claro/SP, com área técnica máxima de 50 km e abertura gradual por zonas menores. A legislação é resolvida por origem, destino, rota e vigência porque o raio cruza municípios. O desenho operacional está em `docs/product/rio-claro-pilot.md`.
 
 ### Quest como plataforma extensível
 
@@ -70,6 +72,8 @@ Somente identidades verificadas podem candidatar-se, aceitar, executar ou conclu
 No primeiro piloto fechado, aplica-se política mais restritiva: somente maiores de 18 anos com identidade verificada publicam ou executam. A publicação limitada por não verificados permanece como capacidade futura, desabilitada por feature flag até a operação comprovar segurança.
 
 O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
+
+Cancelamento, no-show, disputa e evidência são tratados por casos operacionais. Karma é uma consequência contextual de resultados confirmados, nunca juiz automático nem comando de payout/refund. Recusar ou ignorar uma quest não gera penalidade. Detalhes em `docs/architecture/karma-cases-and-evidence.md`.
 
 ### Gate público de política
 
@@ -107,6 +111,7 @@ Progressão profissional e progressão de jogo são domínios distintos, ligados
 ### Modelo de negócio e princípios econômicos
 
 - **Sem take rate do motorista:** o Minimapa não recebe percentual sobre o valor da quest. Custos de processamento eventualmente cobrados por terceiros devem ser transparentes e separados da receita do Minimapa.
+- **Pagamento in-app sem custódia:** um PSP de marketplace processa checkout, KYC, repasse, refund e chargeback; o Minimapa mantém somente ledger reconciliável e não converte Gold. Detalhes em `docs/architecture/payments-and-remedies.md`.
 - **Receita principal:** empresas pagam por presença destacada, campanhas locais e pontos de interesse patrocinados.
 - **Receita digital:** cosméticos opcionais para avatar e personalização do minimapa, sem vantagem funcional sobre outros usuários.
 - **Marketplace futuro:** empresas abrem “lojas” temáticas, vendem bens/serviços reais e podem contratar entrega por quests. A receita pode vir do lojista, publicidade, software e processamento — não do ganho do motorista.
@@ -172,6 +177,8 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - Tratamento básico de denúncias/disputas.
 - Cadastro manual de anunciante, campanha, local patrocinado, período e orçamento.
 - Auditoria de impressões/cliques agregados e identificação visual de conteúdo patrocinado.
+- Fila robusta de bugs, sugestões, acessibilidade, segurança e legal, com protocolo, triagem, histórico e retorno ao autor.
+- Audit log administrativo redigido e append-only. Detalhes em `docs/architecture/operations-audit-feedback.md`.
 
 ### Fora do primeiro MVP
 
@@ -394,26 +401,31 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [x] `PLN-001` Criar plano inicial e arquivo vivo de tarefas.
 - [x] `MAP-001` Comparar opções atuais de mapas, rotas, geocoding e navegação.
 - [ ] `PRD-001` Escolher o primeiro tipo de quest: passageiro, item ou serviço.
-- [ ] `PRD-002` Definir cidade/região piloto, público e hipótese de valor.
+- [x] `PRD-002` Definir cidade/região piloto, público e hipótese de valor: Rio Claro/SP, área técnica máxima de 50 km, Android, 18+ verificado e navigation-first.
 - [ ] `PRD-003` Definir regras de preço/recompensa, cancelamento e no-show.
 - [ ] `PRD-004` Validar requisitos jurídicos, seguro, verificação de motoristas, LGPD e termos locais.
 - [ ] `PRD-005` Desenhar jornadas e critérios de sucesso do beta.
 - [x] `ADR-001` Aprovar Android nativo como primeira plataforma e definir a sequência iOS/web.
 - [ ] `ADR-002` Escolher o Navigation SDK após o spike e definir limites de gasto.
-- [ ] `ADR-003` Decidir se pagamento real entra no beta fechado.
+- [x] `ADR-003` Decidir se pagamento real entra no beta fechado: checkout dentro do app via PSP de marketplace, condicionado a compliance, sandbox e autorização explícita de custo.
 - [ ] `PRD-006` Definir se a navegação/AR futura é para motorista, passageiro, pedestre ou dispositivo montado; isso altera requisitos de segurança.
 - [ ] `PRD-007` Definir a taxonomia inicial de tipos de quest e quais capacidades pertencem ao núcleo ou a módulos.
 - [ ] `PRD-008` Definir matriz de risco que limita publicação, visibilidade e verificação adicional por categoria de quest.
 - [ ] `PRD-009` Definir quais categorias/valores exigem aceite simples, assinatura avançada ou assinatura qualificada após validação jurídica.
-- [ ] `PRD-010` Aprovar ou substituir a cunha recomendada: pequenos itens permitidos, baixo valor, uma cidade e adultos verificados.
+- [ ] `PRD-010` Aprovar ou substituir a modalidade recomendada: entrega de pequenos itens permitidos/baixo valor em zonas do piloto já definido.
 - [ ] `PIL-001` Escrever service blueprint do piloto com responsáveis, horário e runbooks de acidente, fraude, disputa, item perdido, no-show e pedido de autoridade.
 - [ ] `PIL-002` Definir meta de oferta por zona/horário, tamanho da coorte, suporte e critérios de pausa/encerramento.
+- [ ] `PIL-003` Definir centro/polígono da área máxima de 50 km, municípios cruzados, zonas iniciais menores e áreas excluídas; não abrir zona sem oferta e suporte mínimos.
 - [ ] `LEG-001` Obter validação jurídica local para modalidade, município, seguro, consumidor, fiscal, trabalho e documentos antes de feature flag pública.
+- [ ] `LEG-002` Confirmar diretamente com Mobilidade de Rio Claro e municípios alcançados os cadastros/regras vigentes; não confiar apenas em notícia ou decreto histórico.
 - [ ] `RSK-001` Criar matriz versionada categoria × território × risco × obrigação e owner de compliance.
 - [ ] `RSK-002` Definir listas de itens/serviços proibidos, restritos e regulados com fluxo de notice/action e retirada emergencial.
 - [ ] `RSK-003` Definir revelação progressiva de localização e prazo de retenção por estado/relacionamento.
+- [ ] `RSK-004` Implementar resolução de jurisdição por origem, destino, rota, categoria e data de vigência, sem tratar “Rio Claro + 50 km” como uma única legislação local.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
-- [ ] `BUS-002` Definir se o pagamento da quest acontece fora da plataforma ou como repasse transparente sem receita de take rate.
+- [x] `BUS-002` Definir pagamento da quest dentro do app como repasse transparente por PSP, sem custódia e sem receita de take rate.
+- [ ] `BUS-003` Decidir quem absorve e como exibe tarifa do PSP, refund, chargeback, saldo negativo e eventual custo de payout sem reduzir remuneração de forma oculta.
+- [ ] `INS-001` Redigir posicionamento do piloto sem cobertura adicional, preservando direitos legais e resposta a incidentes; desenhar Minimap Plus somente com seguradora/parceiro habilitado.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
 - [ ] `ADS-002` Definir modelo comercial do piloto: venda direta/faturada, CPM, período fixo ou destaque regional.
 - [x] `ECO-001` Aprovar separação entre XP global, XP profissional, XP de jogo, Gold, Chaves de Aventura e dinheiro real.
@@ -461,6 +473,10 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `SKL-005` Implementar limites e detecção antifarming para quests combinadas, repetição artificial e concessão de XP manipulada.
 - [ ] `CRD-001` Modelar credenciais, emissores, validade, evidências privadas e fluxo de verificação.
 - [ ] `REP-001` Modelar karma/reputação contextual por categoria e papel a partir de eventos auditáveis.
+- [ ] `REP-002` Implementar ledger idempotente de Karma derivado somente de resultados confirmados, com eventos compensatórios, versões e projeções por dimensão.
+- [ ] `REP-003` Implementar ratings bilaterais cegos, confiança por amostra/recência, limite de influência por dupla e detecção de retaliação/conluio.
+- [ ] `REP-004` Garantir que recusa, quest ignorada, preço fora da sugestão, denúncia e cancelamento por segurança não reduzam Karma automaticamente.
+- [ ] `CAS-001` Modelar `OperationalCase`, evidências, contramanifestação, decisão, medida cautelar, SLA e recurso humano.
 - [ ] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
 - [ ] `AUTH-001` Implementar cadastro, login, recuperação e encerramento de sessão.
 - [ ] `AUTH-002` Implementar perfis de usuário e motorista sem confiar em roles editáveis pelo cliente.
@@ -478,6 +494,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `VER-009` Medir falso aceite/rejeição, abandono, acessibilidade, fallback, latência, cobertura, retenção e custo na região piloto.
 - [ ] `SIG-001` Fazer spike de assinatura eletrônica via Clicksign API 3.0 e Autentique para fluxos de maior risco.
 - [ ] `DRV-001` Implementar veículo, documentos e estado de aprovação.
+- [ ] `DRV-002` Modelar CNH com categoria, validade, EAR quando aplicável e compatibilidade com veículo/modalidade, sem expor número ou imagem ao público.
+- [ ] `DRV-003` Projetar identificação pós-atribuição com foto verificada, nome necessário, veículo, cor e placa, além de fluxo de divergência/denúncia.
 - [ ] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
 - [ ] `TST-011` Tentar contornar gates de verificação via cliente, JWT desatualizado, chamada direta e replay de webhook.
 - [ ] `TST-010` Testar concessão única, pendência, confirmação e compensação de XP por skill sob retries e disputas.
@@ -494,6 +512,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `MAP-005` Criar adaptadores de provedor e telemetria de consumo/custo.
 - [ ] `MAP-006` Implementar `ExploreMode` com busca, quests, lojas/pontos, filtros, clustering e camadas patrocinadas.
 - [ ] `MAP-007` Implementar `RoutePreviewMode` sem iniciar cobrança/sessão de navegação prematuramente.
+- [ ] `GEO-002` Implementar `QuestDiscoveryArea` como círculo/célula aproximada com exclamação fantasy e centro estável dissociado do endereço exato.
+- [ ] `GEO-003` Garantir server-side que zoom, filtros e consultas repetidas não refinam a área; liberar endereço exato somente após atribuição e gates válidos.
 - [ ] `QST-001` Implementar criação, validação, prévia e publicação de quest.
 - [ ] `QST-002` Implementar histórico e detalhe para quem publicou.
 - [x] `PRC-001` Aprovar faixa sugerida e editável para transporte com base robusta em quests comparáveis concluídas nos últimos 30 dias.
@@ -514,6 +534,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `GEO-001` Consultar quests abertas por raio usando índice espacial.
 - [ ] `BRD-001` Implementar mural/lista/mapa de quests para motoristas.
 - [ ] `BRD-002` Implementar filtros essenciais e detalhe da quest.
+- [ ] `BRD-003` Implementar estratégia `PULL_BOARD`: mural opt-in e notificações por filtros, sem despacho individual, taxa de aceite ou penalidade por recusa.
 - [ ] `QST-003` Implementar aceite atômico no banco (`open → accepted`).
 - [ ] `QST-004` Tratar corrida de dois motoristas aceitando a mesma quest.
 - [ ] `QST-007` Implementar aceite da oferta publicada ou contraproposta privada e versionada por pessoa/empresa elegível.
@@ -548,6 +569,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 
 - [ ] `ADM-001` Criar painel de operação protegido.
 - [ ] `ADM-002` Implementar aprovação/bloqueio de motorista e auditoria.
+- [ ] `ADM-003` Implementar audit log append-only com RBAC, step-up, reason codes, correlação, redaction, retenção e dupla aprovação para ações materiais.
+- [ ] `ADM-004` Criar módulo administrativo de bugs/sugestões com triagem, deduplicação, severidade, owner, histórico, release e notificação ao autor.
 - [ ] `RAT-001` Implementar avaliações bilaterais e denúncia.
 - [ ] `PRV-001` Definir retenção e exclusão de localização/documentos conforme LGPD.
 - [ ] `PRV-002` Definir minimização, retenção, criptografia/tokenização e acesso auditado para documento e biometria.
@@ -557,6 +580,13 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `SAF-003` Implementar conteúdo proibido/restrito, moderação, bloqueio, denúncia, notice/action e retirada emergencial.
 - [ ] `SAF-004` Implementar política de evidência, disputa e conclusão sem tratar GPS/foto como prova absoluta.
 - [ ] `SUP-001` Implementar console e fila mínima de suporte com SLA do piloto, reason codes e preservação de evidência.
+- [ ] `SUP-002` Criar `SupportCaseProvider` e testar Chatwoot self-hosted local com API/webhooks, mantendo `support_cases` como registro canônico.
+- [ ] `SUP-003` Automatizar protocolo, classificação, SLA, macros, checklist e escalonamento; decisão material e incidente grave mantêm revisão humana.
+- [ ] `SUP-004` Preparar adesão futura ao Consumidor.gov.br após CNPJ, SAC acessível, termos e operação diária estarem prontos.
+- [ ] `FBK-001` Criar canal in-app para bug, sugestão, acessibilidade, segurança e legal com anexos consentidos/redigidos e logs opt-in.
+- [ ] `PAY-001` Implementar `MarketplacePaymentProvider`, ledger espelho, inbox de webhooks idempotente, reconciliação e mocks sem chamadas faturáveis.
+- [ ] `PAY-002` Fazer spike sandbox de Stripe Connect, Mercado Pago Split e Pagar.me Marketplace comparando KYC, checkout in-app, repasse, refund, chargeback, Pix, custo e responsabilidades.
+- [ ] `PAY-003` Implementar estados de pagamento/payout/refund/disputa e congelar repasse durante caso quando suportado, sem usar Karma como ordem financeira.
 
 ### Fase 7 — qualidade e beta (estimativa: 1–2 semanas)
 
@@ -637,9 +667,9 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - [ ] `IAP-002` Implementar validação server-side, restore, reembolso e prevenção de replay de recibos.
 - [ ] `MER-001` Criar portal web B2B para onboarding, Licença de Guilda, campanhas e gestão da loja.
 - [ ] `MER-002` Implementar loja, catálogo, variações, estoque, disponibilidade e moderação.
-- [ ] `PAY-001` Selecionar provedor de marketplace com KYC, split/payout, estorno e conciliação.
-- [ ] `PAY-002` Implementar pagamentos físicos em sandbox e webhooks idempotentes.
-- [ ] `PAY-003` Implementar recibo, cancelamento, reembolso, disputa e reconciliação.
+- [ ] `MKT-PAY-001` Estender o provedor aprovado para pagamentos de lojas com KYC, split/payout, estorno e conciliação multi-lojista.
+- [ ] `MKT-PAY-002` Implementar pagamentos físicos das lojas em sandbox e webhooks idempotentes.
+- [ ] `MKT-PAY-003` Implementar recibo, cancelamento, reembolso, disputa e reconciliação específicos de pedidos de loja.
 - [ ] `ORD-001` Implementar pedido, confirmação do lojista, separação e status de fulfillment.
 - [ ] `DLV-001` Converter pedido pronto em quest de entrega sem descontar comissão do motorista.
 - [ ] `DLV-002` Confirmar coleta/entrega, prova mínima e resolução de falhas.
@@ -656,7 +686,12 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - `PolicyGate` é aplicado server-side em todas as transições sensíveis e nenhum módulo/configuração consegue remover policy global.
 - Endereço exato não aparece na descoberta e só é liberado após relação, finalidade e janela autorizadas.
 - Existe lista de itens/serviços proibidos/restritos, notice/action, suporte humano, kill switch e runbook para incidente grave.
-- O Minimapa não custodia dinheiro no piloto; qualquer pagamento futuro usa PSP licenciado e integração explicitamente aprovada.
+- O pagamento da quest ocorre dentro do app por PSP licenciado; o Minimapa não custodia dinheiro, e produção exige integração, compliance e custo explicitamente aprovados.
+- Karma nunca é a única base para refund, payout, culpa ou sanção material; existe caso, evidência proporcional, decisão explicável e recurso.
+- Ignorar ou recusar uma quest não altera Karma, visibilidade futura ou acesso ao mural.
+- A descoberta envia apenas área aproximada estável; zoom e consultas repetidas não revelam o endereço exato.
+- CNH/categoria/EAR e veículo são validados quando aplicáveis, mas número e documento bruto não aparecem ao público.
+- Existe canal in-app de bugs/sugestões e audit log administrativo com acesso, redaction e ações materiais rastreáveis.
 - Build, CI e testes locais realizam zero chamadas faturáveis e funcionam apenas com serviços locais, mocks ou sandboxes garantidamente gratuitas.
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
 - A sugestão de transporte é editável, auditável, mostra faixa/confiança e não mistura custos reembolsáveis com o valor líquido por quilômetro.
@@ -736,7 +771,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-014` | decidida | Separar o mapa em `ExploreMode` rico em conteúdo e `ActiveQuestMode` limpo para curva a curva. |
 | 2026-07-14 | `DEC-015` | decidida | Tratar Quest como núcleo universal extensível por módulos tipados, requisitos versionados e estratégias configuráveis de atribuição. |
 | 2026-07-14 | `DEC-016` | decidida | Separar level global, XP de skill, proficiência, karma contextual e verificação por credencial. |
-| 2026-07-14 | `DEC-017` | em revisão | Usar o Conselho do Reino para escolher mensalmente serviços e ativar automaticamente vencedores compatíveis. A ativação automática foi considerada insegura pela auditoria e depende de decisão sobre `DEC-031`. |
+| 2026-07-14 | `DEC-017` | substituída | Usar o Conselho do Reino para escolher mensalmente serviços e ativar automaticamente vencedores compatíveis. A ativação automática foi substituída pelo gate humano de `DEC-031`. |
 | 2026-07-14 | `DEC-018` | decidida | Exigir identidade verificada para executar quests; permitir publicação limitada por não verificados, bloqueando atribuição até a verificação de ambas as partes. |
 | 2026-07-14 | `DEC-019` | proposta | Selecionar verificação após spike entre Datavalid e um orquestrador privado; manter assinatura eletrônica como controle separado e baseado em risco. |
 | 2026-07-14 | `DEC-020` | decidida | Manter custo adicional zero durante desenvolvimento; preparar integrações por adaptadores e mocks, sem billing ou produção até autorização explícita. |
@@ -749,11 +784,19 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-027` | decidida | Permitir fontes externas oficiais/profissionais como referências versionadas e identificadas, separando piso legal, custo, honorário indicativo, tarifa regulada e histórico do Minimapa. |
 | 2026-07-14 | `DEC-028` | decidida | Adotar oferta do autor com dois caminhos: aceite integral ou contraproposta privada de pessoa/empresa elegível; o acordo aceito é atômico, versionado e imutável salvo aditivo bilateral. |
 | 2026-07-14 | `DEC-029` | decidida | Tornar extensibilidade uma invariável: definições entram por schema; modalidades implementam `QuestModuleContract` versionado por capabilities, sem dependência do core em módulos concretos. |
-| 2026-07-14 | `DEC-030` | proposta | Recortar o primeiro piloto para Android, uma cidade, adultos verificados e entrega de pequenos itens permitidos/baixo valor, sujeito à validação jurídica local. |
-| 2026-07-14 | `DEC-031` | proposta bloqueante | Conselho nomeia definição candidata; nenhuma categoria entra em `ACTIVE_BETA` sem `ComplianceApproval` humano, versionado e auditável. |
-| 2026-07-14 | `DEC-032` | proposta bloqueante | Restringir o piloto a maiores de 18 anos verificados nas duas pontas e revelar localização exata apenas progressivamente após atribuição. |
-| 2026-07-14 | `DEC-033` | proposta bloqueante | Não custodiar dinheiro no piloto; pagamentos futuros usam PSP licenciado, sem conversão entre Gold e dinheiro/serviços físicos. |
-| 2026-07-14 | `DEC-034` | proposta bloqueante | Policies globais de categoria, jurisdição, idade, identidade, localização, conteúdo, consumidor e pagamento limitam todos os módulos e transições sensíveis. |
+| 2026-07-14 | `DEC-030` | parcialmente decidida | Piloto Android, 18+ verificado e Rio Claro/SP com área técnica máxima de 50 km; entrega de itens pequenos/permitidos permanece a modalidade recomendada, pendente de validação jurídica local. |
+| 2026-07-14 | `DEC-031` | decidida | Conselho nomeia definição candidata; nenhuma categoria entra em `ACTIVE_BETA` sem `ComplianceApproval` humano, versionado e auditável. |
+| 2026-07-14 | `DEC-032` | decidida | Restringir o piloto a maiores de 18 anos verificados nas duas pontas e revelar localização exata apenas progressivamente após atribuição. |
+| 2026-07-14 | `DEC-033` | substituída | Não custodiar dinheiro no piloto e adiar pagamento interno. Substituída por `DEC-036`: checkout in-app via PSP sem custódia pelo Minimapa. |
+| 2026-07-14 | `DEC-034` | decidida | Policies globais de categoria, jurisdição, idade, identidade, localização, conteúdo, consumidor e pagamento limitam todos os módulos e transições sensíveis. |
+| 2026-07-14 | `DEC-035` | decidida | Usar Rio Claro/SP como base do piloto, com área técnica máxima de 50 km, resolução jurídica por rota e abertura gradual por zonas menores. |
+| 2026-07-14 | `DEC-036` | decidida | Processar pagamento dentro do app por PSP de marketplace, sem custódia, take rate ou conversão de Gold; tarifa e responsabilidades serão transparentes e ainda precisam de seleção contratual. |
+| 2026-07-14 | `DEC-037` | decidida | Não oferecer seguro/garantia adicional no piloto; manter resposta a incidentes e preservar direitos legais. Minimap Plus com seguro exige parceiro habilitado e novo gate jurídico. |
+| 2026-07-14 | `DEC-038` | decidida | Karma deriva de casos e resultados confirmados; não decide sozinho disputa, refund, payout ou culpa e sempre admite explicação/recurso quando material. |
+| 2026-07-14 | `DEC-039` | decidida | Adotar mural `PULL_BOARD`: nenhuma designação individual, taxa de aceite ou punição por ignorar/recusar quest; sem interesse, o solicitante revisa os termos. |
+| 2026-07-14 | `DEC-040` | decidida | Exibir quests públicas como área aproximada/círculo com ícone de exclamação; endereço exato só após atribuição e gates válidos, sem refinamento por zoom/consultas repetidas. |
+| 2026-07-14 | `DEC-041` | decidida | Identificação veicular inclui identidade/foto verificadas, categoria e validade da CNH, EAR quando aplicável e dados necessários do veículo, sem exposição do documento bruto. |
+| 2026-07-14 | `DEC-042` | decidida | Implementar audit log interno e módulo robusto de bugs/sugestões no painel admin, com adapters opcionais para suporte e issue tracker. |
 
 ## 9. Histórico de atualização
 
@@ -777,3 +820,5 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — formalizado contrato de módulos e suíte de conformidade para expandir modalidades sem refactor da engine de quests.
 - 2026-07-14 — revisão de produto recomendou cunha estreita e postergou AR, RPG, Gold, Conselho ativo, lojas, ads e automação de preços até validação do núcleo.
 - 2026-07-14 — auditoria pública mapeou riscos jurídicos/fraude e propôs `PolicyGate`, compliance humano, piloto 18+ verificado, localização progressiva e zero custódia financeira.
+- 2026-07-14 — definido piloto em Rio Claro com raio máximo de 50 km e zonas graduais; documentadas modalidades, liquidez, mural sem punição por recusa e descoberta por área aproximada.
+- 2026-07-14 — aprovado pagamento in-app via PSP sem custódia/take rate, arquitetura robusta de casos/Karma/evidência, identificação por CNH/veículo, auditoria e canal administrativo de bugs/sugestões.
