@@ -32,3 +32,5 @@ plugins {
 rootProject.name = "Minimapa"
 include(":app")
 include(":core:config")
+include(":core:contracts")
+include(":testing:simulation")

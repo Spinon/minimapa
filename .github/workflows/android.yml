@@ -25,6 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Reject production secrets
+        working-directory: .
+        shell: pwsh
+        run: ./.github/scripts/check-secrets.ps1
+
       - name: Configure JDK 17
         uses: actions/setup-java@v5
         with:

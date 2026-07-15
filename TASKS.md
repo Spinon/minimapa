@@ -24,8 +24,8 @@ Esta fila define a ordem real de execução. O backlog detalha requisitos; a fil
 | Ordem | Estado | ID | Incremento | Tarefas principais / saída verificável |
 | ---: | --- | --- | --- | --- |
 | 0 | CONCLUÍDO | `DEVQ-000` | Congelar decisões do piloto | `LOCAL_DELIVERY`, limites/proibições, Mapbox v3, Stripe Connect e operação solo documentados |
-| 1 | EM ANDAMENTO | `DEVQ-001` | Guardas e simuladores locais | `CST-001`–`CST-004`, `SIM-001`–`SIM-003`; `:core:config`/CostGuard concluídos, faltam personas/GPS/tempo/providers simulados |
-| 2 | AGUARDANDO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-006`, `POL-002`–`POL-003`; módulos Kotlin e testes sem dependência de UI/provider |
+| 1 | CONCLUÍDO | `DEVQ-001` | Guardas e simuladores locais | `CST-001`–`CST-004`, `SIM-001`–`SIM-003`; relógio, personas, GPS/rota e providers determinísticos verificados sem rede |
+| 2 | EM ANDAMENTO | `DEVQ-002` | Contratos do domínio | `DOM-001`–`DOM-006`, `POL-002`–`POL-003`; portas externas neutras iniciadas em `:core:contracts`; próximo: núcleo genérico de quests e policies |
 | 3 | AGUARDANDO | `DEVQ-003` | Banco e segurança-base | `DB-002`–`DB-003`, `SEC-001`, `TST-001`; migrations locais, PostGIS, RLS e testes cruzados |
 | 4 | AGUARDANDO | `DEVQ-004` | Identidade e perfis locais | `AUTH-001`–`AUTH-002`, `AGE-001`, `VER-001`–`VER-005`; providers ainda mockados |
 | 5 | AGUARDANDO | `DEVQ-005` | Garagem individual | `TRN-001`–`TRN-003`, `DRV-001`–`DRV-003`, `DSN-008`; múltiplos meios, favorito e elegibilidade |
@@ -483,13 +483,13 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [x] `ECO-001` Aprovar separação entre XP global, XP profissional, XP de jogo, Gold, Chaves de Aventura e dinheiro real.
 - [ ] `POL-001` Validar App Store/Google Play para publicidade, moeda virtual, cosméticos e marketplace físico.
 - [x] `CST-001` Implementar `CostGuard`, modos `mock/sandbox/production` e bloqueio quando `ALLOW_BILLABLE_REQUESTS=false`, verificado por testes do módulo `:core:config`.
-- [ ] `CST-002` Criar mocks e contract tests para cada integração externa antes de qualquer credencial real.
-- [ ] `CST-003` Inventariar chamadas externas, unidade de cobrança, franquia, hard cap e fallback por fornecedor.
-- [~] `CST-004` Garantir que CI, previews e desenvolvimento local nunca recebam chaves de produção. CI já fixa ambiente local/mock e billing falso; falta scanner/policy de segredo.
+- [x] `CST-002` Criar mocks e contract tests para cada integração externa antes de qualquer credencial real. Portas atuais de navegação, identidade, pagamento, notificação e suporte possuem simuladores e testes determinísticos.
+- [x] `CST-003` Inventariar chamadas externas, unidade de cobrança, franquia, hard cap e fallback por fornecedor em `docs/development/external-service-inventory.md`; preço vigente só será registrado no gate imediatamente anterior à ativação.
+- [x] `CST-004` Garantir que CI, previews e desenvolvimento local nunca recebam chaves de produção. CI fixa ambiente local/mock, billing falso e executa varredura própria de padrões de segredo.
 - [ ] `CST-005` Criar checklist de aprovação explícita para billing, orçamento, alertas e desligamento.
-- [~] `SIM-001` Implementar `SimulationMode` com relógio controlado, personas e feature flags locais reproduzíveis. Config/seed seguros prontos; relógio e personas pendentes.
-- [ ] `SIM-002` Implementar GPS/rota simulados com pausa, rerota, precisão degradada, background e chegada.
-- [ ] `SIM-003` Implementar providers mockados de identidade, pagamento, notificação e suporte com cenários de sucesso/falha/retry.
+- [x] `SIM-001` Implementar `SimulationMode` com relógio controlado, personas e feature flags locais reproduzíveis em `:testing:simulation`.
+- [x] `SIM-002` Implementar GPS/rota simulados com pausa, rerota, precisão degradada, background e chegada, cobertos por testes.
+- [x] `SIM-003` Implementar providers mockados de identidade, pagamento, notificação e suporte com sucesso, falha, retry, idempotência e registros locais.
 - [ ] `MKT-001` Definir o recorte futuro de lojas: tipos de produto, logística, responsabilidade e modelo de receita do lojista.
 
 ### Fase 1 — conceito visual e fundação (estimativa: 1 semana)
@@ -909,3 +909,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-15 — confirmada `LOCAL_DELIVERY`; definidos limites/proibições, Mapbox v3, Stripe Connect, operação solo e fila canônica de desenvolvimento.
 - 2026-07-15 — corrigida política financeira: custo operacional pode ser repassado ao pagador sem margem; principal do executor e lucro/receita da plataforma permanecem separados.
 - 2026-07-15 — iniciado `DEVQ-001`: módulo `:core:config`, `CostGuard`, defaults de simulação e CI local/mock implementados; testes e lint Android passaram.
+- 2026-07-15 — concluído `DEVQ-001`: contratos externos neutros, relógio/personas determinísticos, navegação simulada e providers fake implementados; inventário de custos e scanner de segredos adicionados; `DEVQ-002` iniciado.
