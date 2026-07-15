@@ -87,6 +87,47 @@ Armazenar o mínimo possível:
 
 Documentos e biometria brutos não ficam em tabelas públicas. Se precisarem transitar pelo Storage, usam bucket privado, caminhos por usuário, acesso temporário, retenção curta e auditoria. A política final de retenção e base legal deve ser validada antes do piloto.
 
+## Opções de verificação no Brasil
+
+Uma consulta de situação cadastral do CPF confirma dados do cadastro, mas não prova que quem segura o celular é o titular. O gate `IDENTITY_VERIFIED` exige a combinação de dados biográficos, documento quando necessário, comparação facial e prova de vida.
+
+### Candidatos para spike
+
+| Opção | Capacidades relevantes | Papel possível |
+| --- | --- | --- |
+| Serpro Datavalid V4 + BioConnect | CPF/dados biográficos em bases oficiais, facial, vivacidade, QR Code de CNH e SDK de captura | Candidato direto para identidade e futuros motoristas |
+| idwall | CPF, documento, selfie versus documento, prova de vida, sinais de dispositivo e jornadas orquestradas | Candidato all-in-one com fluxo e gestão de risco |
+| Unico IDCloud | selfie com liveness, verificação de identidade, captura/OCR de documentos, CPF match, SDK web/nativo e API | Candidato all-in-one com revalidação e sinais de fraude |
+
+O spike compara cobertura real da população piloto, falso aceite/rejeição, acessibilidade, fallback manual, tempo, SDK Android, webhooks, disponibilidade, portabilidade, retenção, contrato e custo por verificação. A arquitetura não assume um vencedor antes desse teste.
+
+Fontes oficiais:
+
+- Datavalid V4: https://centraldeajuda.serpro.gov.br/duvidas/pt/avisos/avisodatavalidv4/
+- Datavalid/BioConnect: https://campanhas.serpro.gov.br/datavalid/novidades/
+- idwall: https://idwall.co/pt-BR/casos-de-uso/validacao-de-identidade/
+- Unico IDCloud: https://developer.unico.io/index.html
+
+## Assinatura eletrônica
+
+Autenticação de identidade e assinatura têm propósitos diferentes. O KYC cria confiança sobre a conta; a assinatura vincula uma pessoa identificada a um documento específico e preserva evidências de integridade e manifestação de vontade.
+
+Para quests comuns, aceite explícito, versão dos termos, timestamp e eventos auditáveis podem ser suficientes após análise jurídica. Assinatura integrada fica reservada inicialmente para:
+
+- termos de motorista, comerciante ou prestador regulado;
+- quests de maior valor ou risco definidas pela matriz;
+- orçamento/escopo formal de serviços complexos;
+- acordos empresariais e documentos que exijam evidência reforçada.
+
+Candidatos brasileiros para spike incluem Clicksign API 3.0 e Autentique, ambos com API e métodos adicionais de autenticação; a Clicksign documenta documentoscopia e biometria facial com verificação governamental, e a Autentique oferece biometria e validação documental. O nível de assinatura necessário — simples, avançada ou qualificada ICP-Brasil — depende do ato e da legislação aplicável, não apenas do nome comercial do produto.
+
+Fontes oficiais:
+
+- Clicksign API 3.0: https://developers.clicksign.com/docs/migracao-da-api-19-para-30
+- Autentique: https://www.autentique.com.br/
+- Lei 14.063/2020: https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l14063.htm
+- LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
+
 ## Controles adicionais
 
 - rate limits para tentativas e reenvios;

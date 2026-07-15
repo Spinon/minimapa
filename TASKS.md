@@ -340,6 +340,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PRD-006` Definir se a navegação/AR futura é para motorista, passageiro, pedestre ou dispositivo montado; isso altera requisitos de segurança.
 - [ ] `PRD-007` Definir a taxonomia inicial de tipos de quest e quais capacidades pertencem ao núcleo ou a módulos.
 - [ ] `PRD-008` Definir matriz de risco que limita publicação, visibilidade e verificação adicional por categoria de quest.
+- [ ] `PRD-009` Definir quais categorias/valores exigem aceite simples, assinatura avançada ou assinatura qualificada após validação jurídica.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
 - [ ] `BUS-002` Definir se o pagamento da quest acontece fora da plataforma ou como repasse transparente sem receita de take rate.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
@@ -389,6 +390,9 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `VER-005` Bloquear atribuição/execução enquanto o solicitante da quest não estiver verificado.
 - [ ] `VER-006` Exigir MFA/sessão `aal2` em ações sensíveis definidas pela matriz de risco.
 - [ ] `VER-007` Implementar webhooks assinados, idempotência, replay protection e revisão manual inconclusiva.
+- [ ] `VER-008` Fazer spike comparativo entre Datavalid V4/BioConnect e uma solução orquestrada como idwall ou Unico IDCloud.
+- [ ] `VER-009` Medir falso aceite/rejeição, abandono, acessibilidade, fallback, latência, cobertura, retenção e custo na região piloto.
+- [ ] `SIG-001` Fazer spike de assinatura eletrônica via Clicksign API 3.0 e Autentique para fluxos de maior risco.
 - [ ] `DRV-001` Implementar veículo, documentos e estado de aprovação.
 - [ ] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
 - [ ] `TST-011` Tentar contornar gates de verificação via cliente, JWT desatualizado, chamada direta e replay de webhook.
@@ -571,6 +575,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-016` | decidida | Separar level global, XP de skill, proficiência, karma contextual e verificação por credencial. |
 | 2026-07-14 | `DEC-017` | decidida | Usar o Conselho do Reino para escolher mensalmente serviços; vencedores compatíveis entram automaticamente em beta por schema versionado, com gates adicionais para alto risco. |
 | 2026-07-14 | `DEC-018` | decidida | Exigir identidade verificada para executar quests; permitir publicação limitada por não verificados, bloqueando atribuição até a verificação de ambas as partes. |
+| 2026-07-14 | `DEC-019` | proposta | Selecionar verificação após spike entre Datavalid e um orquestrador privado; manter assinatura eletrônica como controle separado e baseado em risco. |
 
 ## 9. Histórico de atualização
 
@@ -583,3 +588,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — arquitetura ampliada para quests genéricas de deslocamento e serviços, com skills, credenciais, karma contextual e elegibilidade auditável.
 - 2026-07-14 — adicionados XP/proficiência por skill e governança mensal do catálogo pelo Conselho do Reino, com publicação automática segura e versionada.
 - 2026-07-14 — definida verificação forte e revogável: não verificados podem publicar com alcance limitado, mas somente partes verificadas avançam para atribuição e execução.
+- 2026-07-14 — mapeados candidatos brasileiros para CPF, biometria/liveness e assinatura eletrônica, mantendo seleção final condicionada a spike técnico, jurídico e de custo.
