@@ -144,6 +144,8 @@ Quando a modalidade usa veículo, identidade e habilitação são claims indepen
 - expiração, reverificação baseada em risco e bloqueio server-side;
 - divergência denunciável pelo solicitante antes do início.
 
+Um jogador pode cadastrar vários meios de transporte próprios ou autorizados e escolher um por quest. Para frota empresarial, o vínculo do jogador com a organização, sua autorização sobre o asset e seus requisitos pessoais são verificados separadamente. Favorito é apenas preferência de interface; não concede elegibilidade. Uma empresa nunca cria uma identidade substituta para o funcionário: ele possui conta própria, aceita o vínculo e pode revisar suas permissões. Detalhes em `docs/architecture/transport-and-organizations.md`.
+
 Após a atribuição, a interface mostra foto, nome necessário para identificação, status verificado, categoria relevante e marca/modelo/cor/placa do veículo. Número da CNH, CPF, imagem do documento, biometria e referências internas nunca são exibidos. O Datavalid é candidato porque a documentação oficial inclui categoria, validade, registro/QR de CNH e validação biométrica; a integração continua em mock até aprovação de custo, contrato, base legal e retenção.
 
 ### Controles transversais

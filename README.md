@@ -15,6 +15,7 @@ O modelo de negócio não desconta uma porcentagem do ganho do motorista. A mone
 - RPG geolocalizado e dungeons em [`docs/architecture/location-rpg.md`](docs/architecture/location-rpg.md).
 - Referências externas de preço em [`docs/architecture/external-price-references.md`](docs/architecture/external-price-references.md).
 - Confiança e verificação em [`docs/architecture/trust-and-verification.md`](docs/architecture/trust-and-verification.md).
+- Garagem, frota e organizações em [`docs/architecture/transport-and-organizations.md`](docs/architecture/transport-and-organizations.md).
 - Revisão de produto e recorte do MVP em [`docs/product/product-scope-review.md`](docs/product/product-scope-review.md).
 - Piloto de Rio Claro, modalidades e liquidez em [`docs/product/rio-claro-pilot.md`](docs/product/rio-claro-pilot.md).
 - Pagamentos, cancelamentos e suporte em [`docs/architecture/payments-and-remedies.md`](docs/architecture/payments-and-remedies.md).

@@ -45,6 +45,8 @@ PAID/PAYOUT_* -> DISPUTED -> WON | LOST | PARTIALLY_REFUNDED
 
 O pagamento nasce após um `AgreedTermsSnapshot`. O repasse fica pendente até conclusão válida e fim da janela operacional aplicável. Uma disputa aberta congela o repasse quando o PSP permitir. O ledger local é um espelho imutável e reconciliável do PSP, nunca a fonte dos fundos.
 
+Em execução empresarial, contratado, despachante, funcionário executor, meio de transporte e beneficiário do payout são campos distintos. O recebedor vem do acordo e de uma conta aprovada pelo PSP; não é inferido pela pessoa que dirigiu, pelo proprietário do veículo ou por quem operou o painel. Trocar funcionário/asset não troca silenciosamente o beneficiário.
+
 Requisitos técnicos:
 
 - idempotency key por comando e deduplicação de webhook;

@@ -88,6 +88,8 @@ Para uma modalidade veicular, a identificação equivalente à experiência de a
 
 O usuário vê somente os atributos necessários à segurança. Número da CNH, documento bruto e biometria não são públicos. O domínio guarda claims verificados, validade e referência do provedor; evidências brutas têm acesso e retenção restritos. O Datavalid é candidato futuro porque valida dados cadastrais, categoria e validade da CNH e biometria, mas permanece apenas em adapter/mock até autorização de custo.
 
+Cada executor pode manter vários meios cadastrados, marcar uma seleção favorita e escolher o asset adequado para cada quest. Empresas podem manter frota e indicar um membro executor, desde que ele possua conta própria, tenha aceitado o vínculo no app e permaneça pessoalmente elegível. Contratado, despachante, executor, asset e beneficiário do pagamento aparecem como papéis distintos no acordo e na auditoria. O desenho está em `docs/architecture/transport-and-organizations.md`.
+
 ## Pendências bloqueantes
 
 - confirmar modalidade inicial e limite de valor/tamanho;

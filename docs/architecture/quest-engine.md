@@ -213,7 +213,9 @@ Ao aceitar uma oferta ou contraproposta, uma transação única revalida identid
 
 O snapshot contém versão do escopo, preço, componentes, prazo, materiais, garantias declaradas e responsabilidades. Alterações posteriores usam um aditivo bilateral versionado; nenhuma parte muda silenciosamente o acordo. A referência histórica ou externa que apareceu durante a negociação também fica registrada, mas nunca faz parte dos termos sem aceite explícito.
 
-Empresas e pessoas usam o mesmo protocolo de propostas. Uma empresa precisa de identidade organizacional verificada e de um responsável/executor elegível quando a categoria exigir execução pessoal ou credencial profissional.
+Empresas e pessoas usam o mesmo protocolo de propostas. Uma empresa precisa de identidade organizacional verificada e de um responsável/executor elegível quando a categoria exigir execução pessoal ou credencial profissional. A proposta pode selecionar executor e meio de transporte ou assumir o compromisso de indicá-los antes de um deadline definido pela modalidade.
+
+Contratado, executor, meio de transporte e despachante são referências distintas. O aceite revalida o vínculo organizacional, a autorização do despachante, a elegibilidade pessoal do executor, o asset selecionado e conflitos de agenda. O `AgreedTermsSnapshot` registra o contratado; um `AssignmentResourceSnapshot` versionado congela executor e asset. Substituição posterior usa solicitação auditável e novo consentimento quando material, nunca edição silenciosa. O desenho completo está em `docs/architecture/transport-and-organizations.md`.
 
 ## Ciclo de vida
 
@@ -235,6 +237,9 @@ Eventos de domínio registram todas as transições. Interfaces e notificações
 - preço sugerido: `price_suggestion_policies`, `price_suggestion_snapshots`, `transport_price_observations`;
 - referências externas: `external_price_sources`, `external_price_source_versions`, `external_price_references`, `external_price_category_mappings`;
 - confiança: `reputation_events`, `reputation_scores`, `ratings`.
+- transporte: `transport_assets`, `transport_asset_capabilities`, `transport_asset_documents`, `transport_preferences`, `transport_asset_authorizations`;
+- organizações: `organizations`, `organization_verifications`, `organization_units`, `organization_memberships`, `organization_member_roles`;
+- alocação: `resource_availability`, `resource_reservations`, `assignment_resource_snapshots`, `assignment_change_requests`.
 
 Campos flexíveis podem existir para metadados de apresentação versionados, mas dados usados por autorização, dinheiro, elegibilidade ou busca devem ser tipados e indexáveis.
 

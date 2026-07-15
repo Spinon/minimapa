@@ -1,6 +1,6 @@
 # TASKS — marketplace de quests
 
-Última atualização: 2026-07-14
+Última atualização: 2026-07-15
 
 Este arquivo é a fonte de verdade do planejamento. Ele deve ser atualizado em toda sessão de desenvolvimento que altere escopo, arquitetura, status ou decisões.
 
@@ -72,6 +72,8 @@ Somente identidades verificadas podem candidatar-se, aceitar, executar ou conclu
 No primeiro piloto fechado, aplica-se política mais restritiva: somente maiores de 18 anos com identidade verificada publicam ou executam. A publicação limitada por não verificados permanece como capacidade futura, desabilitada por feature flag até a operação comprovar segurança.
 
 O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
+
+Cada jogador pode manter uma garagem com vários meios de transporte, favorito global e seleção específica por quest. Empresas são organizações verificadas com membros que possuem contas próprias e aceitam o vínculo; um despachante autorizado pode selecionar funcionário e asset da frota, mas contratado, executor, transporte e beneficiário financeiro permanecem identidades separadas. Elegibilidade, documentos, autorização, vínculo e disponibilidade são revalidados no aceite e no início. Detalhes em `docs/architecture/transport-and-organizations.md`.
 
 Cancelamento, no-show, disputa e evidência são tratados por casos operacionais. Karma é uma consequência contextual de resultados confirmados, nunca juiz automático nem comando de payout/refund. Recusar ou ignorar uma quest não gera penalidade. Detalhes em `docs/architecture/karma-cases-and-evidence.md`.
 
@@ -160,13 +162,23 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 
 ### Motorista
 
-- Cadastro, perfil, documentos e veículo.
+- Cadastro, perfil, documentos e garagem com vários meios de transporte.
+- Favorito global e seleção de meio elegível específica para cada quest.
 - Estado online/offline.
 - Mural/lista de quests próximas com distância até a origem e recompensa.
 - Detalhe e aceite de uma quest ainda disponível.
 - Rota até a origem e depois até o destino.
 - Mudanças de status: a caminho, chegou, iniciada e concluída.
 - Histórico e resumo de ganhos.
+
+### Empresa executora
+
+- Organização verificada com responsáveis, unidades, membros e frota.
+- Convite e vínculo aceitos pelo funcionário em sua própria conta.
+- Roles separadas para administração, despacho, execução e financeiro.
+- Proposta em nome da empresa com seleção de funcionário e meio de transporte, imediata ou antes do deadline da modalidade.
+- Agenda e reservas que impedem dupla alocação de funcionário ou asset.
+- Troca pós-aceite somente com revalidação, histórico, aviso e consentimento quando material.
 
 ### Operação/administração
 
@@ -232,8 +244,18 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `quest_module_versions`
 - `quest_capability_definitions`
 - `driver_profiles`
-- `vehicles`
+- `transport_assets`
+- `transport_modes`
+- `transport_asset_capabilities`
+- `transport_asset_documents`
+- `transport_preferences`
+- `transport_asset_authorizations`
 - `driver_documents`
+- `organizations`
+- `organization_verifications`
+- `organization_units`
+- `organization_memberships`
+- `organization_member_roles`
 - `quests`
 - `quest_requirements`
 - `quest_applications`
@@ -242,6 +264,10 @@ Gold não deve esconder o preço real. Uma compra futura deve mostrar quantidade
 - `quest_offer_events`
 - `agreed_terms_snapshots`
 - `quest_assignments`
+- `resource_availability`
+- `resource_reservations`
+- `assignment_resource_snapshots`
+- `assignment_change_requests`
 - `quest_events`
 - `eligibility_evaluations`
 - `quest_movement_details`
@@ -443,6 +469,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DSN-002` Aprovar tokens: cores, tipografia, espaçamento, ícones e tom fantasy.
 - [ ] `DSN-003` Definir componentes e estados de acessibilidade/contraste.
 - [ ] `DSN-004` Projetar estados do minimapa: exploração, rota, manobra, rerota, GPS degradado e chegada.
+- [ ] `DSN-008` Projetar garagem/frota: lista de meios, favorito, elegibilidade por quest, documentos, vínculos e seleção de funcionário/asset pela empresa.
 - [ ] `DSN-007` Projetar shells distintos para mapa-mundo e modo corrida, incluindo transição, retorno e estados interrompidos.
 - [~] `DEV-001` Inicializar repositório, convenções, lint, format, testes e CI. Repositório, lint, testes e CI prontos; formatter dedicado ainda pendente.
 - [~] `DEV-002` Inicializar aplicativo Android nativo com Kotlin, Jetpack Compose e módulos por domínio. App-base compilando; modularização por domínio será feita junto aos primeiros módulos reais.
@@ -496,6 +523,12 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `DRV-001` Implementar veículo, documentos e estado de aprovação.
 - [ ] `DRV-002` Modelar CNH com categoria, validade, EAR quando aplicável e compatibilidade com veículo/modalidade, sem expor número ou imagem ao público.
 - [ ] `DRV-003` Projetar identificação pós-atribuição com foto verificada, nome necessário, veículo, cor e placa, além de fluxo de divergência/denúncia.
+- [ ] `TRN-001` Modelar `TransportSelection` como modo + asset opcional: caminhada sem veículo artificial e bicicleta/moto/carro/frota por `TransportAsset`, sem condicional global no core.
+- [ ] `TRN-002` Implementar garagem com múltiplos assets, arquivamento e favorito único por jogador/escopo em `transport_preferences`.
+- [ ] `TRN-003` Modelar capabilities, documentos, propriedade operacional e autorizações temporais de uso separadas do jogador.
+- [ ] `ORG-001` Modelar organização, verificação, unidades, membros, convites e aceite do vínculo por uma conta existente.
+- [ ] `ORG-002` Implementar roles `OWNER`, `ADMIN`, `DISPATCHER`, `WORKER` e `FINANCE` com mínimo privilégio, MFA/step-up e auditoria.
+- [ ] `ORG-003` Implementar entrada, saída e revogação de vínculo sem permitir funcionário-fantasma, apropriação da conta ou transferência silenciosa de quest ativa.
 - [ ] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
 - [ ] `TST-011` Tentar contornar gates de verificação via cliente, JWT desatualizado, chamada direta e replay de webhook.
 - [ ] `TST-010` Testar concessão única, pendência, confirmação e compensação de XP por skill sob retries e disputas.
@@ -542,6 +575,10 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `QST-009` Aceitar proposta em transação atômica, criar `AgreedTermsSnapshot` e expirar/rejeitar as propostas concorrentes.
 - [ ] `QST-010` Implementar revisão, retirada, rejeição, expiração e aditivo bilateral sem apagar versões anteriores.
 - [ ] `QST-011` Garantir que candidatos nunca vejam valores/termos das propostas concorrentes.
+- [ ] `ASN-001` Permitir seleção de asset elegível por proposta/quest, sugerindo o favorito apenas quando compatível.
+- [ ] `ASN-002` Permitir proposta empresarial com contratado, despachante, executor e asset distintos, todos revalidados atomicamente.
+- [ ] `ASN-003` Implementar disponibilidade/reserva transacional para impedir conflito de executor ou asset entre quests.
+- [ ] `ASN-004` Criar `AssignmentResourceSnapshot` e fluxo versionado de substituição com motivo, revalidação, notificação e novo consentimento quando material.
 - [ ] `TST-012` Testar aceite concorrente, proposta vencida, perda de elegibilidade, revisão e tentativa de alterar termos após atribuição.
 - [ ] `NTF-001` Enviar notificações de publicação, aceite e cancelamento.
 - [ ] `TST-002` Criar teste de concorrência para aceite único.
@@ -587,6 +624,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `PAY-001` Implementar `MarketplacePaymentProvider`, ledger espelho, inbox de webhooks idempotente, reconciliação e mocks sem chamadas faturáveis.
 - [ ] `PAY-002` Fazer spike sandbox de Stripe Connect, Mercado Pago Split e Pagar.me Marketplace comparando KYC, checkout in-app, repasse, refund, chargeback, Pix, custo e responsabilidades.
 - [ ] `PAY-003` Implementar estados de pagamento/payout/refund/disputa e congelar repasse durante caso quando suportado, sem usar Karma como ordem financeira.
+- [ ] `PAY-004` Separar contratado, executor físico e beneficiário do payout; o PSP paga somente a conta acordada/KYC sem inferir pelo asset ou despachante.
 
 ### Fase 7 — qualidade e beta (estimativa: 1–2 semanas)
 
@@ -691,6 +729,9 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Ignorar ou recusar uma quest não altera Karma, visibilidade futura ou acesso ao mural.
 - A descoberta envia apenas área aproximada estável; zoom e consultas repetidas não revelam o endereço exato.
 - CNH/categoria/EAR e veículo são validados quando aplicáveis, mas número e documento bruto não aparecem ao público.
+- Jogador cadastra vários meios, mantém favorito e seleciona um asset elegível por quest; favorito nunca contorna requisitos.
+- Empresa só designa membro que aceitou o vínculo no app; contratado, despachante, executor, asset e beneficiário ficam explícitos e auditáveis.
+- Executor e asset não podem possuir compromissos incompatíveis, e qualquer substituição material após o aceite é versionada e reconsentida.
 - Existe canal in-app de bugs/sugestões e audit log administrativo com acesso, redaction e ações materiais rastreáveis.
 - Build, CI e testes locais realizam zero chamadas faturáveis e funcionam apenas com serviços locais, mocks ou sandboxes garantidamente gratuitas.
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
@@ -797,6 +838,9 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-14 | `DEC-040` | decidida | Exibir quests públicas como área aproximada/círculo com ícone de exclamação; endereço exato só após atribuição e gates válidos, sem refinamento por zoom/consultas repetidas. |
 | 2026-07-14 | `DEC-041` | decidida | Identificação veicular inclui identidade/foto verificadas, categoria e validade da CNH, EAR quando aplicável e dados necessários do veículo, sem exposição do documento bruto. |
 | 2026-07-14 | `DEC-042` | decidida | Implementar audit log interno e módulo robusto de bugs/sugestões no painel admin, com adapters opcionais para suporte e issue tracker. |
+| 2026-07-15 | `DEC-043` | decidida | Permitir múltiplos meios de transporte por jogador, favorito como preferência e seleção explícita de asset por quest, sempre sujeita à elegibilidade revalidada. |
+| 2026-07-15 | `DEC-044` | decidida | Criar módulo genérico de organizações com vínculos aceitos por contas existentes, roles de mínimo privilégio, frota e seleção auditável de funcionário/asset. |
+| 2026-07-15 | `DEC-045` | decidida | Separar contratado, despachante, executor, meio de transporte e beneficiário financeiro; substituições após o acordo são versionadas e exigem novo consentimento quando materiais. |
 
 ## 9. Histórico de atualização
 
@@ -822,3 +866,4 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — auditoria pública mapeou riscos jurídicos/fraude e propôs `PolicyGate`, compliance humano, piloto 18+ verificado, localização progressiva e zero custódia financeira.
 - 2026-07-14 — definido piloto em Rio Claro com raio máximo de 50 km e zonas graduais; documentadas modalidades, liquidez, mural sem punição por recusa e descoberta por área aproximada.
 - 2026-07-14 — aprovado pagamento in-app via PSP sem custódia/take rate, arquitetura robusta de casos/Karma/evidência, identificação por CNH/veículo, auditoria e canal administrativo de bugs/sugestões.
+- 2026-07-15 — planejadas garagem com múltiplos meios/favorito, frota empresarial, vínculos consentidos, seleção de funcionário/asset e reservas contra dupla alocação.
