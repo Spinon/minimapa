@@ -52,7 +52,7 @@ O domínio não conhece SDKs nem tipos do fornecedor. Feature flags controlam a 
 | Rotas/navegação | rotas gravadas e `NavigationFrame` simulado | Mapbox v3 primário e fallback externo atrás de flags |
 | CPF/biometria | estados, webhooks e resultados mockados; sandbox do fornecedor | `IdentityVerificationProvider` |
 | Assinatura | envelopes e callbacks falsos ou sandbox | `SignatureProvider` |
-| Pagamentos | Stripe test mode/mocks e webhooks locais | Connect Accounts v2 atrás de `MarketplacePaymentProvider`; custos reais absorvidos pela plataforma sob orçamento |
+| Pagamentos | Stripe test mode/mocks e webhooks locais | Connect Accounts v2; custo operacional pode ser repassado ao pagador sem margem, sempre discriminado e reconciliado |
 | Email/SMS | Mailpit local e notificações fake | `NotificationProvider` |
 | Publicidade | campanhas e métricas sintéticas | adaptador de entrega e faturamento |
 

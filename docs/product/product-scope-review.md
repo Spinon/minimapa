@@ -44,7 +44,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 - chat mínimo, bloqueio, denúncia, contato de emergência e suporte humano;
 - cancelamento, no-show, disputa e compensação definidos;
 - avaliação bilateral com contestação;
-- pagamento dentro do app por PSP de marketplace, sem fundo custodiado pelo Minimapa, sem Gold e sem take rate;
+- pagamento dentro do app por PSP de marketplace, sem fundo custodiado/Gold/take rate; custos operacionais podem ser cobrados do pagador sem margem e fora do principal;
 - métricas e revisão semanal da operação.
 
 ## O que está faltando e tem alto retorno
@@ -54,7 +54,7 @@ Se a análise local tornar esse recorte desproporcionalmente oneroso, a alternat
 1. **Validação da modalidade:** `LOCAL_DELIVERY` está aprovada como produto; faltam parecer/checklist e obrigações em todos os municípios alcançados.
 2. **Service blueprint operacional:** definir quem atende fraude, acidente, item perdido, no-show, disputa, conta tomada e pedido policial, inclusive fora do horário.
 3. **Matriz categoria × território × risco:** uma categoria só pode ser publicada, atribuída e concluída se todos os gates aplicáveis estiverem ativos e vigentes.
-4. **Operação financeira:** o pagamento será in-app por PSP licenciado; falta escolher o provedor, merchant of record, pagador da tarifa, hold, payout, refund, chargeback e reconciliação.
+4. **Operação financeira:** Stripe Connect é o provider primário e o pagador cobre custo operacional sem margem; faltam validar merchant of record, representação contábil, tabela/quote, hold, payout, refund, chargeback e reconciliação.
 5. **Política de endereço e encontro:** aproximado na descoberta, revelação progressiva, pontos seguros e prazo de retenção.
 6. **Regras de cancelamento/no-show:** separar desistência legítima, risco, falha de veículo, atraso, item divergente e abuso recorrente. Karma deriva da decisão de um caso; não decide dinheiro nem presume culpa.
 7. **Lista de itens/serviços proibidos e restritos:** com fluxo de moderação e retirada emergencial.

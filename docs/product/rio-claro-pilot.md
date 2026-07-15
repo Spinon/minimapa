@@ -9,7 +9,7 @@ Data-base: 2026-07-14
 - Android, maiores de 18 anos e identidade verificada nas duas pontas;
 - mural aberto de quests: o executor escolhe o que deseja analisar, aceitar ou contra-ofertar;
 - nenhuma punição por ignorar ou recusar uma quest;
-- pagamento dentro do aplicativo por PSP de marketplace, sem custódia pelo Minimapa e sem percentual sobre a remuneração;
+- pagamento dentro do aplicativo por PSP de marketplace, sem custódia/take rate; o pagador pode cobrir custos operacionais discriminados e sem margem;
 - modalidade oficial inicial `LOCAL_DELIVERY`, com limites e proibições versionados;
 - sem garantia comercial ou seguro do Minimapa no piloto; um futuro Minimap Plus dependerá de seguradora/parceiro habilitado;
 - itens e serviços obedecem à legislação federal, estadual e municipal aplicável a cada trecho, não somente às regras de Rio Claro.

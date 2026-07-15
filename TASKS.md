@@ -33,7 +33,7 @@ Esta fila define a ordem real de execução. O backlog detalha requisitos; a fil
 | 7 | AGUARDANDO | `DEVQ-007` | Navegação simulada e Mapbox | `NAV-002`–`NAV-009`, `MAP-002`–`MAP-007`; primeiro provider simulado, depois SDK sob gate de custo |
 | 8 | AGUARDANDO | `DEVQ-008` | Casos, Karma e admin mínimo | `CAS-001`, `REP-001`–`REP-004`, `ADM-001`–`ADM-004`, `SAF-003`–`SAF-004` |
 | 9 | AGUARDANDO | `DEVQ-009` | Organização e frota | `ORG-001`–`ORG-003`, `ASN-002`–`ASN-004`; empresa → funcionário → asset sem dupla alocação |
-| 10 | AGUARDANDO | `DEVQ-010` | Pagamento sandbox | `PAY-001`–`PAY-006`; Stripe Connect mock/sandbox, zero taxa às partes e reconciliação |
+| 10 | AGUARDANDO | `DEVQ-010` | Pagamento sandbox | `PAY-001`–`PAY-006`; principal integral ao executor, custo operacional sem margem ao pagador e reconciliação |
 | 11 | AGUARDANDO | `DEVQ-011` | Piloto assistido | legal/compliance, testes de campo, sessão única supervisionada e critérios de parada |
 
 Itens pós-validação — ads, RPG, Conselho ativo, Gold, lojas e AR público — não entram na fila enquanto `DEVQ-011` não for concluído.
@@ -133,7 +133,7 @@ Progressão profissional e progressão de jogo são domínios distintos, ligados
 
 ### Modelo de negócio e princípios econômicos
 
-- **Sem taxa para as partes:** o solicitante paga o valor acordado e o executor não sofre take rate ou tarifa de processamento do Minimapa. A plataforma absorve o custo do PSP e o mede separadamente.
+- **Sem lucro sobre a quest:** o solicitante pode pagar custos operacionais discriminados além do principal; o executor recebe o valor integral negociado. O repasse usa margem zero e não é receita líquida da quest.
 - **Pagamento in-app sem custódia:** um PSP de marketplace processa checkout, KYC, repasse, refund e chargeback; o Minimapa mantém somente ledger reconciliável e não converte Gold. Detalhes em `docs/architecture/payments-and-remedies.md`.
 - **Receita principal:** empresas pagam por presença destacada, campanhas locais e pontos de interesse patrocinados.
 - **Receita digital:** cosméticos opcionais para avatar e personalização do minimapa, sem vantagem funcional sobre outros usuários.
@@ -476,7 +476,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `RSK-005` Aplicar server-side peso, volume, dimensão, valor e categoria proibida conforme modo/asset e versão de `LOCAL_DELIVERY`, com motivo explicável e kill switch.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
 - [x] `BUS-002` Definir pagamento da quest dentro do app como repasse transparente por PSP, sem custódia e sem receita de take rate.
-- [x] `BUS-003` Definir que o Minimapa absorve tarifas de PSP/payout/disputa; solicitante paga e executor recebe o valor acordado, salvo refund/reversão do principal ou obrigação legal.
+- [x] `BUS-003` Definir que o pagador pode arcar com custos operacionais discriminados e sem margem; executor recebe o principal integral e o Minimapa não lucra sobre a quest.
 - [ ] `INS-001` Redigir posicionamento do piloto sem cobertura adicional, preservando direitos legais e resposta a incidentes; desenhar Minimap Plus somente com seguradora/parceiro habilitado.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
 - [ ] `ADS-002` Definir modelo comercial do piloto: venda direta/faturada, CPM, período fixo ou destaque regional.
@@ -651,11 +651,11 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `SUP-004` Preparar adesão futura ao Consumidor.gov.br após CNPJ, SAC acessível, termos e operação diária estarem prontos.
 - [ ] `FBK-001` Criar canal in-app para bug, sugestão, acessibilidade, segurança e legal com anexos consentidos/redigidos e logs opt-in.
 - [ ] `PAY-001` Implementar `MarketplacePaymentProvider`, ledger espelho, inbox de webhooks idempotente, reconciliação e mocks sem chamadas faturáveis.
-- [ ] `PAY-002` Fazer spike sandbox do Stripe Connect Accounts v2 com destination charges, Pix, conta conectada, refund, disputa e payout sem `application_fee`.
+- [ ] `PAY-002` Fazer spike sandbox do Stripe Connect Accounts v2 com destination charges, Pix, principal integral, recuperação de custo sem margem, refund, disputa e payout.
 - [ ] `PAY-003` Implementar estados de pagamento/payout/refund/disputa e congelar repasse durante caso quando suportado, sem usar Karma como ordem financeira.
 - [ ] `PAY-004` Separar contratado, executor físico e beneficiário do payout; o PSP paga somente a conta acordada/KYC sem inferir pelo asset ou despachante.
-- [ ] `PAY-005` Registrar tarifas/chargebacks absorvidos em `platform_payment_costs`, aplicar orçamento/hard cap e provar por teste que não há surcharge nem desconto de payout.
-- [ ] `PAY-006` Implementar e testar refund total/parcial, payout hold/reversal do principal, disputa/chargeback, saldo negativo e recurso sem repassar tarifa externa às partes.
+- [ ] `PAY-005` Implementar `PaymentQuoteSnapshot` e ledgers de principal, custo cobrado/realizado, reconciliação e receita; provar `margin_bps=0`, `platform_quest_profit=0` e payout integral.
+- [ ] `PAY-006` Implementar e testar refund total/parcial por componente, payout hold/reversal do principal, disputa/chargeback, saldo negativo e recurso; custo inesperado nunca é debitado automaticamente.
 
 ### Fase 7 — qualidade e beta (estimativa: 1–2 semanas)
 
@@ -756,7 +756,7 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - Endereço exato não aparece na descoberta e só é liberado após relação, finalidade e janela autorizadas.
 - Existe lista de itens/serviços proibidos/restritos, notice/action, suporte humano, kill switch e runbook para incidente grave.
 - O pagamento da quest ocorre dentro do app por PSP licenciado; o Minimapa não custodia dinheiro, e produção exige integração, compliance e custo explicitamente aprovados.
-- Solicitante não paga surcharge e executor não sofre take rate/tarifa de processamento; custos do PSP são da plataforma, enquanto refund/reversão do principal segue decisão do caso.
+- Solicitante vê e aceita principal + custos operacionais sem margem; executor recebe o principal integral; `platform_quest_profit=0`, enquanto refund/reversão segue decisão do caso.
 - Karma nunca é a única base para refund, payout, culpa ou sanção material; existe caso, evidência proporcional, decisão explicável e recurso.
 - Ignorar ou recusar uma quest não altera Karma, visibilidade futura ou acesso ao mural.
 - A descoberta envia apenas área aproximada estável; zoom e consultas repetidas não revelam o endereço exato.
@@ -876,9 +876,10 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 | 2026-07-15 | `DEC-046` | decidida | Confirmar `LOCAL_DELIVERY` como modalidade oficial inicial, limitada a item pequeno, permitido, declarado e de baixo valor. |
 | 2026-07-15 | `DEC-047` | decidida | Adotar Mapbox Navigation SDK v3 como provider primário, com `NavigationFrame`, adapter, simulação e fallback externo independentes. |
 | 2026-07-15 | `DEC-048` | decidida | Aplicar limites conservadores por modo; van/caminhão e conteúdo financeiro, ilícito, perigoso ou regulado permanecem desabilitados no piloto. |
-| 2026-07-15 | `DEC-049` | decidida | Adotar Stripe Connect Accounts v2/destination charges como PSP primário em sandbox; Minimapa absorve tarifas e não cria surcharge/take rate. |
+| 2026-07-15 | `DEC-049` | substituída | Adotar Stripe Connect e fazer o Minimapa absorver tarifas. Substituída pela distinção entre repasse operacional e lucro em `DEC-052`. |
 | 2026-07-15 | `DEC-050` | decidida | Operar piloto real somente em sessões assistidas, sistema fechado por padrão e inicialmente uma quest simultânea; Codex não constitui plantão operacional. |
 | 2026-07-15 | `DEC-051` | decidida | Usar a seção Fila de Desenvolvimento como ordem canônica de execução, com no máximo um incremento em andamento. |
+| 2026-07-15 | `DEC-052` | decidida | O pagador pode pagar custos operacionais reais, discriminados e sem margem; o executor recebe o principal integral e quests geram lucro zero ao Minimapa. |
 
 ## 9. Histórico de atualização
 
@@ -905,5 +906,6 @@ Critérios da vertical slice: entrar em `ActiveQuestMode` ou simular velocidade 
 - 2026-07-14 — definido piloto em Rio Claro com raio máximo de 50 km e zonas graduais; documentadas modalidades, liquidez, mural sem punição por recusa e descoberta por área aproximada.
 - 2026-07-14 — aprovado pagamento in-app via PSP sem custódia/take rate, arquitetura robusta de casos/Karma/evidência, identificação por CNH/veículo, auditoria e canal administrativo de bugs/sugestões.
 - 2026-07-15 — planejadas garagem com múltiplos meios/favorito, frota empresarial, vínculos consentidos, seleção de funcionário/asset e reservas contra dupla alocação.
-- 2026-07-15 — confirmada `LOCAL_DELIVERY`; definidos limites/proibições, Mapbox v3, Stripe Connect subsidiado pela plataforma, operação solo e fila canônica de desenvolvimento.
+- 2026-07-15 — confirmada `LOCAL_DELIVERY`; definidos limites/proibições, Mapbox v3, Stripe Connect, operação solo e fila canônica de desenvolvimento.
+- 2026-07-15 — corrigida política financeira: custo operacional pode ser repassado ao pagador sem margem; principal do executor e lucro/receita da plataforma permanecem separados.
 - 2026-07-15 — iniciado `DEVQ-001`: módulo `:core:config`, `CostGuard`, defaults de simulação e CI local/mock implementados; testes e lint Android passaram.

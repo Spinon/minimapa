@@ -2,7 +2,7 @@
 
 Aplicativo mobile-first de quests e navegação curva a curva com identidade medieval/fantasy. Usuários publicam quests, motoristas as aceitam e o modo de navegação remove publicidade e distrações durante o deslocamento.
 
-O modelo de negócio não desconta uma porcentagem do ganho do motorista. A monetização planejada vem de publicidade local claramente identificada, cosméticos e, posteriormente, lojas de comerciantes.
+O modelo de negócio não desconta porcentagem do ganho do executor. O pagador pode cobrir custos operacionais discriminados sem margem; o lucro planejado vem de publicidade local, cosméticos/microtransações e, posteriormente, lojas de comerciantes.
 
 ## Estado atual
 

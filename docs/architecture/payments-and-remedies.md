@@ -8,8 +8,9 @@ Data-base: 2026-07-15
 - um PSP com produto de marketplace recebe, tokeniza, verifica o recebedor e faz repasse/reembolso/chargeback;
 - o Minimapa não mantém saldo sacável, não recebe dinheiro em conta própria para repassar e não converte Gold;
 - não há take rate sobre a remuneração do executor;
-- o solicitante paga exatamente o valor acordado da quest e o executor não paga tarifa do Minimapa;
-- o Minimapa absorve tarifas de processamento, payout e disputa do PSP como custo da plataforma;
+- o solicitante paga o valor acordado da quest mais custos operacionais claramente discriminados antes da confirmação;
+- o executor recebe integralmente o valor acordado, sem take rate ou desconto operacional do Minimapa;
+- custos operacionais recuperam despesas reais/estimadas sem margem de lucro; receita da plataforma permanece fora da quest;
 - estado informado pelo cliente nunca confirma pagamento: somente API server-side e webhook verificado;
 - toda integração começa em mock ou sandbox sem cobrança.
 
@@ -17,22 +18,38 @@ Data-base: 2026-07-15
 
 ## Provedor primário e fluxo financeiro
 
-O provedor primário escolhido para o piloto é **Stripe Connect**, usando Accounts v2 e uma configuração de contas conectadas em que a plataforma é pagadora das tarifas. O fluxo inicial usa **destination charges**, sem `application_fee`, e transfere ao beneficiário o valor integral acordado. Pix é o primeiro meio planejado; cartões permanecem atrás de feature flag até o fluxo de fraude/chargeback estar validado.
+O provedor primário escolhido para o piloto é **Stripe Connect**, usando Accounts v2 e uma configuração de contas conectadas em que a plataforma é pagadora técnica das tarifas. O fluxo inicial usa **destination charges** e transfere ao beneficiário o valor integral da quest. O pagador cobre separadamente o custo operacional informado no checkout; a forma exata de representar essa recuperação (`transfer_data[amount]`, application fee ou lançamento próprio) será validada no spike contábil/contratual, porque o Dashboard pode reconhecer o valor retido como receita bruta mesmo quando economicamente compensa despesa. Pix é o primeiro meio planejado; cartões permanecem atrás de feature flag até o fluxo de fraude/chargeback estar validado.
 
 Esta decisão é de arquitetura e sandbox. Conta, credencial, billing e produção não serão ativados sem autorização de custo e validação jurídica/contratual. `MarketplacePaymentProvider` preserva a possibilidade de trocar de PSP.
 
 Mercado Pago Split 1:1 não é o primário porque sua documentação atual desconta a tarifa do Mercado Pago do valor do vendedor, contrariando a regra econômica do Minimapa. Pagar.me permanece candidato de contingência mediante proposta comercial compatível.
 
-Não cobrar solicitante/executor significa:
+Não lucrar sobre a quest significa:
 
-- preço da quest não recebe adicional ou “taxa de serviço” do Minimapa;
+- `quest_principal` é o valor negociado que pertence ao executor;
+- `operational_cost` é repasse sem margem de custo de pagamento, payout e infraestrutura transacional aprovada;
+- `platform_quest_revenue` e `platform_quest_profit` são zero;
 - payout não desconta comissão nem tarifa operacional do Minimapa;
-- taxas externas não são escondidas dentro da sugestão de preço;
-- custos são registrados em `platform_payment_costs` e subsidiados pela receita/capital da plataforma;
+- custos não são escondidos dentro da sugestão de preço: aparecem por item e no total antes da confirmação;
+- custos cobrados e realizados são registrados em ledgers separados e reconciliados;
 - tributos/retenções legalmente obrigatórios não são tarifa do Minimapa e precisam de tratamento próprio;
 - refund ou reversão do principal de uma quest inválida não é taxa: é desfazer o pagamento correspondente, sempre por policy/caso.
 
-Esse subsídio precisa de orçamento e limite. Se a receita futura de publicidade, lojas e microtransações não cobrir o custo, o sistema pausa novos pagamentos; não transfere silenciosamente o custo às partes.
+O custo operacional não pode conter markup, comissão, percentual de remuneração ou margem oculta. Arredondamento e diferença entre estimativa e custo real usam uma conta de reconciliação, com policy contábil aprovada; não viram lucro silencioso. Monetização vem de publicidade, lojas, software e microtransações digitais.
+
+## Composição do checkout
+
+```text
+quest_principal
++ payment_processing_cost
++ payout_cost, quando aplicável
++ tributo/encargo obrigatório identificado, quando aplicável
+= payer_total
+```
+
+Cada componente possui moeda, valor, origem, versão da tabela, natureza (`PASS_THROUGH`, `STATUTORY` ou `PLATFORM_REVENUE`) e política de reembolso. Para quests, `PLATFORM_REVENUE` deve ser zero. A tela mostra “Valor da quest”, “Custos operacionais” e “Total” sem chamar custo de recompensa do executor.
+
+O cálculo usa quote/tabela versionada do PSP e `margin_bps = 0`. Se o custo depender do meio de pagamento, o total é recalculado antes da confirmação e nunca depois. Alteração exige novo consentimento.
 
 ## Contrato neutro de provedor
 
@@ -76,9 +93,10 @@ Requisitos técnicos:
 - alteração de conta de repasse com MFA, cooldown e alerta fora de banda;
 - jobs de reconciliação e fila de exceções;
 - logs sem PAN, CVV, token reutilizável ou documento bruto.
-- `application_fee=0` e teste contratual garantindo que nenhuma tarifa Minimapa seja criada;
-- ledger separado de custos absorvidos pela plataforma, sem descontá-los do payout;
-- hard cap financeiro que bloqueia produção quando o subsídio autorizado acabar.
+- teste contratual garantindo `transfer_to_executor = quest_principal` e `platform_quest_profit = 0`;
+- ledgers separados para principal, custo cobrado, custo realizado, diferença de reconciliação e receita externa à quest;
+- cálculo sem margem, idempotente e congelado no `PaymentQuoteSnapshot`;
+- hard cap que bloqueia produção diante de custo desconhecido, tabela vencida ou diferença fora da tolerância.
 
 ## Cancelamento, no-show, disputa e evidência
 
@@ -103,6 +121,8 @@ No-show exige janela de tolerância versionada, check-in, tentativas de contato 
 
 Uma disputa possui SLA, estado, motivo, valor, evidências, contramanifestação, decisão fundamentada e recurso humano. Evidências variam por modalidade: PIN/QR de coleta e entrega, timestamps, acordo/chat, fotos consentidas e minimizadas, coerência de rota e confirmação bilateral. Foto, avaliação ou GPS nunca são verdade absoluta.
 
+No reembolso, principal e cada custo são tratados separadamente. A Stripe informa que tarifas originais de processamento/Connect normalmente não são devolvidas. A policy deve informar antes do pagamento quando um custo de terceiro não é recuperável; se a falha for do Minimapa ou a lei exigir devolução integral, a plataforma absorve essa diferença. Tarifa inesperada de chargeback/disputa não é debitada automaticamente do solicitante ou executor: qualquer alocação depende de base contratual/legal e decisão revisável do caso.
+
 ## Atendimento e automação
 
 `support_cases` e `operational_cases` são a fonte de verdade no Minimapa. Um `SupportCaseProvider` sincroniza canais externos. Para desenvolvimento sem custo, o primeiro spike será Chatwoot self-hosted local, que oferece API e webhooks; a ativação hospedada fica condicionada a orçamento e operação.
@@ -123,6 +143,8 @@ Automação classifica e sugere; não encerra incidente grave, decide disputa ma
 - Stripe Connect: https://docs.stripe.com/connect?locale=pt-BR
 - Connect Accounts v2: https://docs.stripe.com/connect/accounts-v2
 - tipos de cobrança Connect: https://docs.stripe.com/connect/charges?locale=pt-BR
+- destination charges e refunds: https://docs.stripe.com/connect/destination-charges
+- preços no Brasil: https://stripe.com/br/pricing
 - Pix com Connect: https://docs.stripe.com/payments/pix
 - Mercado Pago Split 1:1: https://www.mercadopago.com.br/developers/pt/docs/split-payments/split-1-1/integration-configuration/integrate-marketplace
 - Consumidor.gov.br: https://www.consumidor.gov.br/pages/conteudo/publico/1
