@@ -56,6 +56,8 @@ Cada skill possui XP e proficiência próprios. Concluir uma quest concede XP so
 
 O **Conselho do Reino** permite propor e votar mensalmente no próximo serviço. O vencedor que couber no workflow genérico entra automaticamente em beta por uma definição orientada a schema; serviços regulados ou de alto risco entram como aprovados pendentes de auditoria de segurança. Votação nunca injeta código nem cria skills livres diretamente.
 
+Somente identidades verificadas podem candidatar-se, aceitar, executar ou concluir quests. Contas não verificadas podem publicar quests de baixo risco com o aviso **Identidade do solicitante não verificada**, mas a atribuição e a execução permanecem bloqueadas até o solicitante também concluir a verificação. Verificação de identidade, credencial profissional, karma e MFA são sinais independentes.
+
 O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture/community-governance.md`.
 
 ### Métricas iniciais
@@ -181,6 +183,9 @@ O detalhamento está em `docs/architecture/quest-engine.md` e `docs/architecture
 ### Entidades principais
 
 - `profiles`
+- `identity_verifications`
+- `identity_verification_events`
+- `verification_provider_sessions`
 - `quest_types`
 - `driver_profiles`
 - `vehicles`
@@ -334,6 +339,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `ADR-003` Decidir se pagamento real entra no beta fechado.
 - [ ] `PRD-006` Definir se a navegação/AR futura é para motorista, passageiro, pedestre ou dispositivo montado; isso altera requisitos de segurança.
 - [ ] `PRD-007` Definir a taxonomia inicial de tipos de quest e quais capacidades pertencem ao núcleo ou a módulos.
+- [ ] `PRD-008` Definir matriz de risco que limita publicação, visibilidade e verificação adicional por categoria de quest.
 - [x] `BUS-001` Registrar que o Minimapa não recebe percentual do valor pago ao motorista.
 - [ ] `BUS-002` Definir se o pagamento da quest acontece fora da plataforma ou como repasse transparente sem receita de take rate.
 - [ ] `ADS-001` Definir inventário inicial: busca, mapa de exploração, mural, pré-rota e chegada; excluir navegação ativa.
@@ -376,8 +382,16 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `SEC-001` Ativar RLS e políticas mínimas para todas as tabelas expostas.
 - [ ] `AUTH-001` Implementar cadastro, login, recuperação e encerramento de sessão.
 - [ ] `AUTH-002` Implementar perfis de usuário e motorista sem confiar em roles editáveis pelo cliente.
+- [ ] `VER-001` Implementar máquina de estados de verificação, validade, reverificação, suspensão e recurso.
+- [ ] `VER-002` Criar adaptador de provedor para documento, dados cadastrais e prova de vida sem acoplar o domínio ao fornecedor.
+- [ ] `VER-003` Implementar publicação limitada e badge acessível de identidade não verificada sem usar rótulo “inseguro”.
+- [ ] `VER-004` Bloquear no servidor candidatura, aceite, atribuição, execução e conclusão para executor não verificado.
+- [ ] `VER-005` Bloquear atribuição/execução enquanto o solicitante da quest não estiver verificado.
+- [ ] `VER-006` Exigir MFA/sessão `aal2` em ações sensíveis definidas pela matriz de risco.
+- [ ] `VER-007` Implementar webhooks assinados, idempotência, replay protection e revisão manual inconclusiva.
 - [ ] `DRV-001` Implementar veículo, documentos e estado de aprovação.
 - [ ] `TST-001` Testar RLS com usuários distintos e tentativas de acesso indevido.
+- [ ] `TST-011` Tentar contornar gates de verificação via cliente, JWT desatualizado, chamada direta e replay de webhook.
 - [ ] `TST-010` Testar concessão única, pendência, confirmação e compensação de XP por skill sob retries e disputas.
 
 ### Fase 3 — spikes de navegação, mapas e criação de quest (estimativa: 2–3 semanas)
@@ -440,6 +454,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - [ ] `ADS-005` Registrar impressões/interações agregadas, frequência e orçamento sem trilha individual vendável.
 - [ ] `ADS-006` Criar relatório simples para validar valor com os primeiros anunciantes locais.
 - [ ] `PRV-001` Definir retenção e exclusão de localização/documentos conforme LGPD.
+- [ ] `PRV-002` Definir minimização, retenção, criptografia/tokenização e acesso auditado para documento e biometria.
 - [ ] `SAF-001` Implementar contato de emergência e compartilhamento da quest, se aplicável ao tipo escolhido.
 
 ### Fase 7 — qualidade e beta (estimativa: 1–2 semanas)
@@ -497,6 +512,8 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 
 - Um usuário consegue publicar uma quest válida em menos de dois minutos.
 - Somente um motorista consegue aceitar a mesma quest, inclusive sob concorrência.
+- Nenhum usuário não verificado consegue ser atribuído, iniciar ou concluir uma quest por qualquer cliente ou chamada direta.
+- Uma quest de solicitante não verificado fica claramente marcada e não avança para atribuição/execução antes da verificação.
 - Origem, destino, preço, motorista e veículo permanecem claros em todas as telas críticas.
 - Localização só é coletada com consentimento e durante a finalidade declarada.
 - RLS impede acesso cruzado a dados privados e documentos.
@@ -553,6 +570,7 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 | 2026-07-14 | `DEC-015` | decidida | Tratar Quest como núcleo universal extensível por módulos tipados, requisitos versionados e estratégias configuráveis de atribuição. |
 | 2026-07-14 | `DEC-016` | decidida | Separar level global, XP de skill, proficiência, karma contextual e verificação por credencial. |
 | 2026-07-14 | `DEC-017` | decidida | Usar o Conselho do Reino para escolher mensalmente serviços; vencedores compatíveis entram automaticamente em beta por schema versionado, com gates adicionais para alto risco. |
+| 2026-07-14 | `DEC-018` | decidida | Exigir identidade verificada para executar quests; permitir publicação limitada por não verificados, bloqueando atribuição até a verificação de ambas as partes. |
 
 ## 9. Histórico de atualização
 
@@ -564,3 +582,4 @@ Mapa, busca de endereço, cálculo de rota e navegação curva a curva são prod
 - 2026-07-14 — emulador Android 16/API 36 configurado e aplicativo instalado/aberto com sucesso no aparelho virtual `medium_phone`.
 - 2026-07-14 — arquitetura ampliada para quests genéricas de deslocamento e serviços, com skills, credenciais, karma contextual e elegibilidade auditável.
 - 2026-07-14 — adicionados XP/proficiência por skill e governança mensal do catálogo pelo Conselho do Reino, com publicação automática segura e versionada.
+- 2026-07-14 — definida verificação forte e revogável: não verificados podem publicar com alcance limitado, mas somente partes verificadas avançam para atribuição e execução.

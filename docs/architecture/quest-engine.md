@@ -66,10 +66,13 @@ Requisitos são predicados tipados e versionados, por exemplo:
 - `MinimumKarma(score = 80, scope = PLUMBING)`;
 - `RequiredSkill(skill = PLUMBING, minimumProficiency = INTERMEDIATE)`;
 - `RequiredCredential(type = PLUMBING_COURSE, verification = VERIFIED)`;
+- `RequiredIdentityVerification(level = IDENTITY_VERIFIED)`;
 - `MaximumDistance(kilometers = 15)`;
 - `RequiredVehicle(type = MOTORCYCLE)`.
 
 O servidor avalia todos os predicados e retorna um resultado explicável: elegível, não elegível ou pendente de comprovação, com motivos seguros para exibição. A decisão usa uma fotografia versionada das qualificações no momento da candidatura ou aceite para permitir auditoria posterior.
+
+Identidade verificada é requisito estrutural para executar qualquer quest e não pode ser removida pelo criador, template ou Conselho do Reino. Quests publicadas por solicitantes ainda não verificados permanecem limitadas até a verificação ocorrer.
 
 Requisitos não podem usar atributos protegidos ou criar discriminação ilegal. O cliente nunca decide sozinho se um jogador é elegível.
 
